@@ -1,8 +1,8 @@
 package com.exemple.integration.actuate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -34,7 +34,7 @@ public class InfoIT {
 
         Element versionDiv = doc.getElementById("version");
 
-        assertThat("La version doit être renseignée", versionDiv.text(), not(isEmptyOrNullString()));
+        assertThat("La version doit être renseignée", versionDiv.text(), not(emptyOrNullString()));
 
         Matcher matcher = Pattern.compile(".*:([a-zA-Z0-9-.]*)").matcher(versionDiv.text().replaceAll(" ", ""));
         assertThat("L'expression régulière doit correspondre", matcher.find(), is(true));
@@ -44,7 +44,7 @@ public class InfoIT {
     @Test
     public void info() {
 
-        Response response = JsonRestTemplate.given().get("/ws/info");
+        Response response = JsonRestTemplate.given().get("/actuator/info");
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
         assertThat(response.jsonPath().getString("version"), is(notNullValue()));

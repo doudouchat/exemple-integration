@@ -1,0 +1,32 @@
+version: "3.5"
+services:
+  cassandra:
+    container_name: exemple-test
+    image: exemple-test
+    networks:
+    - test
+    environment:
+    - HEAP_NEWSIZE=1M
+    - MAX_HEAP_SIZE=512m
+    ports:
+    - 9042:9042
+    volumes:
+    - ./src/test/resources/cassandra:/usr/local/tmp/cassandra
+    - ./src/main/conf/cassandra:/usr/local/etc/cassandra
+    healthcheck:
+      test: ["CMD", "sh", "/usr/local/etc/cassandra/healthcheck_cassandra.sh"]
+      interval: 30s
+      start_period: 30s
+  zookeeper:
+    container_name: exemple-zookeeper
+    image: zookeeper:3.5.7
+    restart: always
+    networks:
+    - test
+    ports:
+    - 10024:2181
+    hostname: zookeeper
+networks:
+  test:
+    name: exemple-test
+    driver: bridge

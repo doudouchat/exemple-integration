@@ -30,7 +30,7 @@ import com.exemple.service.application.detail.ApplicationDetailService;
 import com.exemple.service.resource.core.ResourceConfiguration;
 import com.exemple.service.resource.core.ResourceExecutionContext;
 import com.exemple.service.resource.schema.SchemaResource;
-import com.exemple.service.resource.schema.model.ResourceSchema;
+import com.exemple.service.resource.schema.model.SchemaEntity;
 import com.google.common.collect.Sets;
 
 @Configuration
@@ -90,7 +90,7 @@ public class IntegrationTestConfiguration {
 
         ResourceExecutionContext.get().setKeyspace(detail.getKeyspace());
 
-        ResourceSchema accountSchema = new ResourceSchema();
+        SchemaEntity accountSchema = new SchemaEntity();
         accountSchema.setApplication(AccountNominalIT.APP_HEADER_VALUE);
         accountSchema.setVersion(AccountNominalIT.VERSION_HEADER_VALUE);
         accountSchema.setResource("account");
@@ -108,7 +108,7 @@ public class IntegrationTestConfiguration {
         loginRules.put("login", Collections.singleton("/login"));
         loginRules.put("createOnly", Collections.singleton("/id"));
 
-        ResourceSchema loginSchema = new ResourceSchema();
+        SchemaEntity loginSchema = new SchemaEntity();
         loginSchema.setApplication(AccountNominalIT.APP_HEADER_VALUE);
         loginSchema.setVersion(AccountNominalIT.VERSION_HEADER_VALUE);
         loginSchema.setResource("login");
@@ -124,7 +124,7 @@ public class IntegrationTestConfiguration {
         Map<String, Set<String>> subscriptionRules = new HashMap<>();
         subscriptionRules.put("login", Collections.singleton("/email"));
 
-        ResourceSchema subscriptionSchema = new ResourceSchema();
+        SchemaEntity subscriptionSchema = new SchemaEntity();
         subscriptionSchema.setApplication(AccountNominalIT.APP_HEADER_VALUE);
         subscriptionSchema.setVersion(AccountNominalIT.VERSION_HEADER_VALUE);
         subscriptionSchema.setResource("subscription");
@@ -147,7 +147,7 @@ public class IntegrationTestConfiguration {
 
         // ADMIN
 
-        loginSchema = new ResourceSchema();
+        loginSchema = new SchemaEntity();
         loginSchema.setApplication(PasswordIT.APP_HEADER_VALUE);
         loginSchema.setVersion(PasswordIT.VERSION_HEADER_VALUE);
         loginSchema.setResource("login");
