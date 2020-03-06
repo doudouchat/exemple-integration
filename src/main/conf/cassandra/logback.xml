@@ -7,8 +7,8 @@
 		</encoder>
 	</appender>
 
-	<logger name="com.datastax.driver.core.QueryLogger.NORMAL">
-		<level value="DEBUG" />
+	<logger name="org.apache.cassandra">
+		<level value="INFO" />
 	</logger>
 	
 	<!-- Niveau general pour l'application -->
