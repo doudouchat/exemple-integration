@@ -10,3 +10,4 @@ node/
 npm-debug.log
 /.idea/
 **/*.iml
+data/

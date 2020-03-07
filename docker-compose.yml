@@ -13,6 +13,7 @@ services:
     volumes:
     - ./src/test/resources/cassandra:/usr/local/tmp/cassandra
     - ./src/main/conf/cassandra:/usr/local/etc/cassandra
+    - ./data/cassandra:/var/lib/cassandra
     healthcheck:
       test: ["CMD", "sh", "/usr/local/etc/cassandra/healthcheck_cassandra.sh"]
       interval: 30s
