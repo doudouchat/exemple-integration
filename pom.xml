@@ -282,7 +282,7 @@
 								<version>${tomcat.version}</version>
 							</artifactInstaller>
 							<systemProperties>
-								<spring.profiles.active>etude,noEvent</spring.profiles.active>
+								<spring.profiles.active>etude</spring.profiles.active>
 							</systemProperties>
 						</container>
 						<configuration>
@@ -429,9 +429,8 @@
 							<dependency>
 								<groupId>org.codehaus.groovy</groupId>
 								<artifactId>groovy</artifactId>
-								<version>2.5.9</version>
+								<version>3.0.2</version>
 							</dependency>
-
 						</dependencies>
 					</plugin>
 
@@ -485,6 +484,11 @@
 							</deployables>
 							<configuration>
 								<properties>
+									<cargo.resource.resource.spring>
+										cargo.resource.name=spring.config.location|
+										cargo.resource.type=java.lang.String|
+										cargo.resource.parameters=factory=com.exemple.service.api.integration.core.PrimitivesAndStringFactory;value=classpath:default.yml
+									</cargo.resource.resource.spring>
 									<cargo.resource.resource.api>
 										cargo.resource.name=${configuration.name}|
 										cargo.resource.type=java.lang.String|
