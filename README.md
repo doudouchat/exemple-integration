@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/doudouchat/exemple-integration.svg?branch=master)](https://travis-ci.org/doudouchat/exemple-integration)
+
 # exemple-integration
 
 ## maven
