@@ -56,6 +56,11 @@
 		<zookeeper-version>3.5.7</zookeeper-version>
 		<cassandra-version>3.11.6</cassandra-version>
 
+		<!-- SONAR -->
+
+		<!-- force sonar to use jacoco -->
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+
 	</properties>
 
 	<dependencies>
@@ -235,6 +240,42 @@
 					</configuration>
 				</plugin>
 
+				<!-- JACOCO -->
+				<!-- http://www.eclemma.org/jacoco/trunk/doc/maven.html -->
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>0.8.5</version>
+					<executions>
+						<execution>
+							<id>prepare-jacoco-integration-agent</id>
+							<goals>
+								<goal>prepare-agent-integration</goal>
+							</goals>
+							<phase>pre-integration-test</phase>
+							<configuration>
+								<propertyName>jacoco.it.agent.argLine</propertyName>
+								<includes>
+									<include>com.exemple.service.*</include>
+									<include>com.exemple.authorization.*</include>
+								</includes>
+								<excludes>
+									<exclude>com.exemple.service.application.core.ApplicationConfiguration</exclude>
+									<exclude>*EnhancerBySpringCGLIB*</exclude>
+									<exclude>*FastClassBySpringCGLIB*</exclude>
+								</excludes>
+								<classDumpDir>${project.build.outputDirectory}</classDumpDir>
+							</configuration>
+						</execution>
+						<execution>
+							<id>report-integration</id>
+							<goals>
+								<goal>report-integration</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
 				<!-- CASSANDRA -->
 				<!-- http://www.mojohaus.org/cassandra-maven-plugin/index.html -->
 				<plugin>
@@ -292,7 +333,7 @@
 								<cargo.servlet.port>${application.port}</cargo.servlet.port>
 								<cargo.rmi.port>${cargo.rmi.port}</cargo.rmi.port>
 								<cargo.tomcat.ajp.port>${cargo.ajp.port}</cargo.tomcat.ajp.port>
-								<cargo.jvmargs>
+								<cargo.jvmargs>${jacoco.it.agent.argLine}
 									-Dlogging.config=file:${application.log.file}</cargo.jvmargs>
 							</properties>
 						</configuration>
@@ -398,6 +439,12 @@
 								</configuration>
 							</execution>
 						</executions>
+					</plugin>
+
+					<!-- JACOCO -->
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
 					</plugin>
 
 					<!-- CASSANDRA -->
