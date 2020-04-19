@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/doudouchat/exemple-integration.svg?branch=master)](https://travis-ci.org/doudouchat/exemple-integration)
+[![codecov](https://codecov.io/gh/doudouchat/exemple-integration/graph/badge.svg)](https://codecov.io/gh/doudouchat/exemple-integration) 
 
 # exemple-integration
 
