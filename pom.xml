@@ -229,6 +229,14 @@
 					<version>3.1.0</version>
 				</plugin>
 
+				<!-- DEPENDENCIES -->
+				<!-- https://maven.apache.org/plugins/maven-dependency-plugin/index.html -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>3.1.2</version>
+				</plugin>
+
 				<!-- VERSION -->
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -436,6 +444,54 @@
 										<portName>zmp.shutdownPort</portName>
 										<portName>kafka.port</portName>
 									</portNames>
+								</configuration>
+							</execution>
+							<execution>
+								<id>add-source</id>
+								<goals>
+									<goal>add-source</goal>
+								</goals>
+								<phase>verify</phase>
+								<configuration>
+									<sources>
+										<source>${project.build.directory}/exemple-service</source>
+										<source>${project.build.directory}/exemple-authorization</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!-- DEPENDENCIES -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack</id>
+								<phase>package</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>exemple</groupId>
+											<artifactId>exemple-service</artifactId>
+											<version>1.0.2-SNAPSHOT</version>
+											<type>jar</type>
+											<classifier>sources</classifier>
+											<outputDirectory>${project.build.directory}/exemple-service</outputDirectory>
+										</artifactItem>
+										<artifactItem>
+											<groupId>exemple</groupId>
+											<artifactId>exemple-authorization</artifactId>
+											<version>1.0.1-SNAPSHOT</version>
+											<type>jar</type>
+											<classifier>sources</classifier>
+											<outputDirectory>${project.build.directory}/exemple-authorization</outputDirectory>
+										</artifactItem>
+									</artifactItems>
 								</configuration>
 							</execution>
 						</executions>
