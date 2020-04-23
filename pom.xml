@@ -60,6 +60,8 @@
 
 		<!-- force sonar to use jacoco -->
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.sources>${project.build.directory}/exemple-service,${project.build.directory}/exemple-authorization</sonar.sources>
+		<sonar.cpd.exclusions>target/exemple-service/**,target/exemple-authorization/**</sonar.cpd.exclusions>
 
 	</properties>
 
@@ -71,6 +73,7 @@
 			<groupId>exemple</groupId>
 			<artifactId>exemple-service-api-integration</artifactId>
 			<version>1.0.2-SNAPSHOT</version>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- RESOURCE -->
@@ -268,18 +271,12 @@
 									<include>com.exemple.authorization.*</include>
 								</includes>
 								<excludes>
-									<exclude>com.exemple.service.application.core.ApplicationConfiguration</exclude>
 									<exclude>*EnhancerBySpringCGLIB*</exclude>
 									<exclude>*FastClassBySpringCGLIB*</exclude>
+									<exclude>*__MapperGenerated*</exclude>
 								</excludes>
 								<classDumpDir>${project.build.outputDirectory}</classDumpDir>
 							</configuration>
-						</execution>
-						<execution>
-							<id>report-integration</id>
-							<goals>
-								<goal>report-integration</goal>
-							</goals>
 						</execution>
 					</executions>
 				</plugin>
@@ -342,7 +339,7 @@
 								<cargo.rmi.port>${cargo.rmi.port}</cargo.rmi.port>
 								<cargo.tomcat.ajp.port>${cargo.ajp.port}</cargo.tomcat.ajp.port>
 								<cargo.jvmargs>${jacoco.it.agent.argLine}
-									-Dlogging.config=file:${application.log.file}</cargo.jvmargs>
+									-Dlogging.config=file:${application.log.file} -Xmx1g</cargo.jvmargs>
 							</properties>
 						</configuration>
 					</configuration>
@@ -444,54 +441,6 @@
 										<portName>zmp.shutdownPort</portName>
 										<portName>kafka.port</portName>
 									</portNames>
-								</configuration>
-							</execution>
-							<execution>
-								<id>add-source</id>
-								<goals>
-									<goal>add-source</goal>
-								</goals>
-								<phase>verify</phase>
-								<configuration>
-									<sources>
-										<source>${project.build.directory}/exemple-service</source>
-										<source>${project.build.directory}/exemple-authorization</source>
-									</sources>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-
-					<!-- DEPENDENCIES -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>unpack</id>
-								<phase>package</phase>
-								<goals>
-									<goal>unpack</goal>
-								</goals>
-								<configuration>
-									<artifactItems>
-										<artifactItem>
-											<groupId>exemple</groupId>
-											<artifactId>exemple-service</artifactId>
-											<version>1.0.2-SNAPSHOT</version>
-											<type>jar</type>
-											<classifier>sources</classifier>
-											<outputDirectory>${project.build.directory}/exemple-service</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>exemple</groupId>
-											<artifactId>exemple-authorization</artifactId>
-											<version>1.0.1-SNAPSHOT</version>
-											<type>jar</type>
-											<classifier>sources</classifier>
-											<outputDirectory>${project.build.directory}/exemple-authorization</outputDirectory>
-										</artifactItem>
-									</artifactItems>
 								</configuration>
 							</execution>
 						</executions>
@@ -633,7 +582,96 @@
 								<authorization.port>${application.port}</authorization.port>
 								<authorization.contextpath>${authorization.contextpath}</authorization.contextpath>
 							</systemPropertyVariables>
+							<argLine>${jacoco.it.agent.argLine}</argLine>
 						</configuration>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>report</id>
+			<build>
+
+				<plugins>
+
+					<!-- HELPER -->
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>add-source</id>
+								<goals>
+									<goal>add-source</goal>
+								</goals>
+								<phase>pre-integration-test</phase>
+								<configuration>
+									<sources>
+										<source>${project.build.directory}/exemple-service</source>
+										<source>${project.build.directory}/exemple-authorization</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!-- DEPENDENCIES -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack</id>
+								<phase>package</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>exemple</groupId>
+											<artifactId>exemple-service</artifactId>
+											<version>1.0.2-SNAPSHOT</version>
+											<type>jar</type>
+											<classifier>sources</classifier>
+											<outputDirectory>${project.build.directory}/exemple-service</outputDirectory>
+											<excludes>com/exemple/service/api/integration/**</excludes>
+										</artifactItem>
+										<artifactItem>
+											<groupId>exemple</groupId>
+											<artifactId>exemple-authorization</artifactId>
+											<version>1.0.1-SNAPSHOT</version>
+											<type>jar</type>
+											<classifier>sources</classifier>
+											<outputDirectory>${project.build.directory}/exemple-authorization</outputDirectory>
+											<excludes>com/exemple/authorization/integration/**</excludes>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!-- JACOCO -->
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>report-integration</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>report-integration</goal>
+								</goals>
+								<configuration>
+									<excludes>
+										<exclude>com/exemple/service/application/core/**</exclude>
+									</excludes>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 
 				</plugins>
