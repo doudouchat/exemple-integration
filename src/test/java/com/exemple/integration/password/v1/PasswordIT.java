@@ -124,7 +124,7 @@ public class PasswordIT extends AbstractTestNGSpringContextTests {
                 .header("Authorization", "Bearer " + accessToken).get(LoginIT.URL + "/{login}", AccountNominalIT.ACCOUNT_BODY.get("email"));
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
-        assertThat(response.jsonPath().getString("login"), is(AccountNominalIT.ACCOUNT_BODY.get("email")));
+        assertThat(response.jsonPath().getString("username"), is(AccountNominalIT.ACCOUNT_BODY.get("email")));
 
     }
 

@@ -103,9 +103,9 @@ public class IntegrationTestConfiguration {
         Set<String> loginFilter = new HashSet<>();
         loginFilter.add("id");
         loginFilter.add("enable");
-        loginFilter.add("login");
+        loginFilter.add("username");
         Map<String, Set<String>> loginRules = new HashMap<>();
-        loginRules.put("login", Collections.singleton("/login"));
+        loginRules.put("login", Collections.singleton("/username"));
         loginRules.put("createOnly", Collections.singleton("/id"));
 
         SchemaEntity loginSchema = new SchemaEntity();

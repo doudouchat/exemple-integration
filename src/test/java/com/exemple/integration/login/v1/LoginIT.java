@@ -38,7 +38,7 @@ public class LoginIT {
     public void create() {
 
         Map<String, Object> body = new HashMap<>();
-        body.put("login", LOGIN);
+        body.put("username", LOGIN);
         body.put("password", "mdp");
         body.put("id", UUID.randomUUID());
 
