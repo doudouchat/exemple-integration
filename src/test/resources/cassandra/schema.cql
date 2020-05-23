@@ -63,11 +63,6 @@ CREATE TABLE IF NOT EXISTS account_history (
 	PRIMARY KEY ((id), field)
 );
 
-CREATE TABLE IF NOT EXISTS parameter ( 
-	app text PRIMARY KEY,
-	histories map<text, boolean>
-);
-
 CREATE TABLE IF NOT EXISTS resource_schema ( 
 	app text,
 	version text,
