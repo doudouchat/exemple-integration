@@ -218,6 +218,21 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- SPRING KAFKA -->
+
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka-test</artifactId>
+			<version>2.5.2.RELEASE</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.module</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -427,13 +442,43 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>copy-dependencies2</id>
+								<id>copy slf4J</id>
 								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>copy-dependencies</goal>
 								</goals>
 								<configuration>
 									<includeGroupIds>org.slf4j</includeGroupIds>
+								</configuration>
+							</execution>
+							<execution>
+								<id>copy jackson</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<includeGroupIds>com.fasterxml.jackson.core</includeGroupIds>
+								</configuration>
+							</execution>
+							<execution>
+								<id>copy spring</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<includeArtifactIds>spring-beans,spring-core</includeArtifactIds>
+								</configuration>
+							</execution>
+							<execution>
+								<id>copy logback</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<includeGroupIds>ch.qos.logback</includeGroupIds>
 								</configuration>
 							</execution>
 						</executions>
@@ -550,7 +595,7 @@
 									<cargo.resource.resource.spring>
 										cargo.resource.name=spring.config.location|
 										cargo.resource.type=java.lang.String|
-										cargo.resource.parameters=factory=com.exemple.service.api.integration.core.PrimitivesAndStringFactory;value=classpath:default.yml
+										cargo.resource.parameters=factory=com.exemple.service.api.integration.core.PrimitivesAndStringFactory;value=classpath:default.yml,${configuration.path}
 									</cargo.resource.resource.spring>
 									<cargo.resource.resource.api>
 										cargo.resource.name=${configuration.name}|
