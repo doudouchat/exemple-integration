@@ -185,9 +185,9 @@ public class IntegrationTestConfiguration {
                 .and()
 
                 .withClient("test_user").secret(password).authorizedGrantTypes("password", "authorization_code", "refresh_token").redirectUris("xxx")
-                .scopes("account:read", "account:update", "login:update", "login:delete")
-                .autoApprove("account:read", "account:update", "login:update", "login:delete").authorities("ROLE_APP").resourceIds("exemple")
-                .additionalInformation("keyspace=test")
+                .scopes("account:read", "account:update", "login:update", "login:delete", "login:read")
+                .autoApprove("account:read", "account:update", "login:update", "login:delete", "login:read").authorities("ROLE_APP")
+                .resourceIds("exemple").additionalInformation("keyspace=test")
 
                 .and()
 

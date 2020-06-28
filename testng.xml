@@ -11,6 +11,7 @@
 			<class name="com.exemple.integration.account.v1.AccountNominalIT" />
 			<class name="com.exemple.integration.account.v1.AccountFailureIT" />
 			<class name="com.exemple.integration.login.v1.LoginIT" />
+			<class name="com.exemple.integration.login.v1.LoginUpdateUsernameIT" />
 			<class name="com.exemple.integration.disconnection.v1.DisconnectionIT" />
 			<class name="com.exemple.integration.password.v1.PasswordIT" />
 			<class name="com.exemple.integration.subscription.v1.SubscriptionIT" />
@@ -19,6 +20,11 @@
 	<test name="stock">
 		<packages>
 			<package name="com.exemple.integration.stock.v1" />
+		</packages>
+	</test>
+	<test name="swagger">
+		<packages>
+			<package name="com.exemple.integration.swagger" />
 		</packages>
 	</test>
 </suite>

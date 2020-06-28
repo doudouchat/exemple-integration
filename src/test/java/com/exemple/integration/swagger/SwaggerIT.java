@@ -1,11 +1,8 @@
-package com.exemple.integration.actuate;
+package com.exemple.integration.swagger;
 
 import static com.exemple.integration.account.v1.AccountNominalIT.APP_HEADER_VALUE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,9 +18,27 @@ import io.restassured.response.Response;
 public class SwaggerIT extends AbstractTestNGSpringContextTests {
 
     @Test
-    public void swagger() throws IOException, URISyntaxException {
+    public void swagger() {
 
         Response response = JsonRestTemplate.given().get("/ws/" + APP_HEADER_VALUE + "/openapi.json");
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
+
+    }
+
+    @Test
+    public void schema() {
+
+        Response response = JsonRestTemplate.given().get("/ws/v1/schemas/account/test/v1/user");
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
+
+    }
+
+    @Test
+    public void patch() {
+
+        Response response = JsonRestTemplate.given().get("/ws/v1/schemas/patch");
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
 
