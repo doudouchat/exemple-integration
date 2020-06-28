@@ -305,6 +305,20 @@
 					</executions>
 				</plugin>
 
+				<!-- COVERALLS -->
+				<!-- https://github.com/trautonen/coveralls-maven-plugin -->
+				<plugin>
+					<groupId>org.eluder.coveralls</groupId>
+					<artifactId>coveralls-maven-plugin</artifactId>
+					<version>4.3.0</version>
+					<configuration>
+						<sourceDirectories>
+							<sourceDirectory>${project.build.directory}/exemple-service</sourceDirectory>
+							<sourceDirectory>${project.build.directory}/exemple-authorization</sourceDirectory>
+						</sourceDirectories>
+					</configuration>
+				</plugin>
+
 				<!-- CASSANDRA -->
 				<!-- http://www.mojohaus.org/cassandra-maven-plugin/index.html -->
 				<plugin>
@@ -724,7 +738,13 @@
 								</goals>
 								<configuration>
 									<excludes>
+										<exclude>com/exemple/service/customer/login/resource/LoginServiceResourceImpl*</exclude>
+										<exclude>com/exemple/service/customer/account/validation/AccountValidationCustomImpl*</exclude>
+										<exclude>com/exemple/service/customer/account/resource/AccountServiceResourceImpl*</exclude>
+										<exclude>com/exemple/service/resource/**/mapper/*MapperBuilder*</exclude>
+										<exclude>com/exemple/authorization/resource/**/mapper/*MapperBuilder*</exclude>
 										<exclude>com/exemple/service/application/core/**</exclude>
+										<exclude>com/exemple/service/api/integration/**</exclude>
 									</excludes>
 								</configuration>
 							</execution>

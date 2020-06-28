@@ -11,7 +11,7 @@ before_script:
     - mvn -f /tmp/exemple-authorization -s .travis.settings.xml clean install -Dmaven.test.skip=true
 script: mvn -s .travis.settings.xml verify -Pwebservice,it,report
 after_success:
-    - bash <(curl -s https://codecov.io/bash)
+    - mvn -s .travis.settings.xml coveralls:report
 install: true
 sudo: false
 cache:
