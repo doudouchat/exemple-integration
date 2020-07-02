@@ -27,8 +27,6 @@ import io.restassured.response.Response;
 
 public class LoginUpdateUsernameIT {
 
-    public static final String URL = "/ws/v1/logins";
-
     private static final String LOGIN = UUID.randomUUID() + "@gmail.com";
 
     private static final String NEW_LOGIN = UUID.randomUUID() + "@gmail.com";
@@ -53,7 +51,7 @@ public class LoginUpdateUsernameIT {
 
                 .header("Authorization", "Bearer " + ACCESS_APP_TOKEN)
 
-                .body(body).post(LoginUpdateUsernameIT.URL);
+                .body(body).post(LoginIT.URL);
 
         assertThat(create.getStatusCode(), is(HttpStatus.CREATED.value()));
 
@@ -98,7 +96,7 @@ public class LoginUpdateUsernameIT {
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN)
 
-                .body(patchs).patch(LoginUpdateUsernameIT.URL + "/{login}", LOGIN);
+                .body(patchs).patch(LoginIT.URL + "/{login}", LOGIN);
 
         assertThat(response.getStatusCode(), is(HttpStatus.NO_CONTENT.value()));
 
@@ -130,7 +128,7 @@ public class LoginUpdateUsernameIT {
 
                 .header("Authorization", "Bearer " + accessToken)
 
-                .get(URL + "/{login}", NEW_LOGIN);
+                .get(LoginIT.URL + "/{login}", NEW_LOGIN);
         assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
 
         assertThat(response.jsonPath().get("password"), is(nullValue()));
@@ -148,7 +146,7 @@ public class LoginUpdateUsernameIT {
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN)
 
-                .get(URL + "/{login}", LOGIN);
+                .get(LoginIT.URL + "/{login}", LOGIN);
         assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND.value()));
 
     }
