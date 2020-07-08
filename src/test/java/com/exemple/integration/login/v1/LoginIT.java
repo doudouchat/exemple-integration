@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.exemple.integration.core.IntegrationTestConfiguration;
@@ -108,17 +110,37 @@ public class LoginIT {
 
     }
 
-    @Test(dependsOnMethods = "connexionSuccess")
-    public void updateFailure() {
+    @DataProvider(name = "updateFailure")
+    private static Object[][] updateFailure() {
 
-        List<Map<String, Object>> patchs = new ArrayList<>();
+        Map<String, Object> patch0 = new HashMap<>();
+        patch0.put("op", "replace");
+        patch0.put("path", "/id");
+        patch0.put("value", UUID.randomUUID());
 
-        Map<String, Object> patch = new HashMap<>();
-        patch.put("op", "replace");
-        patch.put("path", "/id");
-        patch.put("value", UUID.randomUUID());
+        Map<String, Object> patch1 = new HashMap<>();
+        patch1.put("op", "replace");
+        patch1.put("path", "/username");
+        patch1.put("value", "jean.dupond@gmail.com");
 
-        patchs.add(patch);
+        Map<String, Object> patch2 = new HashMap<>();
+        patch2.put("op", "replace");
+        patch2.put("path", "/username");
+        patch2.put("value", LOGIN);
+
+        return new Object[][] {
+                // id is createOnly
+                { patch0, "/id", "createOnly" },
+                // username is unique
+                { patch1, "/username", "login" },
+                // username is unique
+                { patch2, "/username", "login" }, };
+    }
+
+    @Test(dataProvider = "updateFailure", dependsOnMethods = "connexionSuccess")
+    public void updateFailure(Map<String, Object> patch, String expectedPath, String expectedCode) {
+
+        List<Map<String, Object>> patchs = Collections.singletonList(patch);
 
         Response response = JsonRestTemplate.given()
 
@@ -127,6 +149,8 @@ public class LoginIT {
                 .header("Authorization", "Bearer " + ACCESS_TOKEN).body(patchs).patch(LoginIT.URL + "/{login}", LOGIN);
 
         assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST.value()));
+        assertThat(response.jsonPath().getList("code").get(0), is(expectedCode));
+        assertThat(response.jsonPath().getList("path").get(0), is(expectedPath));
 
     }
 
