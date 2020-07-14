@@ -186,6 +186,8 @@ public class AccountNominalIT extends AbstractTestNGSpringContextTests {
         assertThat(response.jsonPath().getString("email"), is(ACCOUNT_BODY.get("email")));
         assertThat(response.jsonPath().getBoolean("optin_mobile"), is(ACCOUNT_BODY.get("optin_mobile")));
         assertThat(response.jsonPath().getString("birthday"), is(ACCOUNT_BODY.get("birthday")));
+        assertThat(response.jsonPath().getString("creation_date"), is(notNullValue()));
+
     }
 
     @Test(dependsOnMethods = "getSuccess")
@@ -272,6 +274,7 @@ public class AccountNominalIT extends AbstractTestNGSpringContextTests {
         assertThat(responseGet.jsonPath().getString("lastname"), is(patch0.get("value")));
         assertThat(responseGet.jsonPath().getString("firstname"), is(patch1.get("value")));
         assertThat(responseGet.jsonPath().getString("email"), is(ACCOUNT_BODY.get("email")));
+        assertThat(responseGet.jsonPath().getString("update_date"), is(notNullValue()));
 
     }
 
