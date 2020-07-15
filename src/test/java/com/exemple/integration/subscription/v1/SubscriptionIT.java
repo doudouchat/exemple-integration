@@ -90,6 +90,7 @@ public class SubscriptionIT {
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
         assertThat(response.jsonPath().getString("email"), is(EMAIL));
+        assertThat(response.jsonPath().getString("subscription_date"), is(notNullValue()));
 
     }
 
