@@ -103,7 +103,7 @@ public class LoginUpdateUsernameIT {
     }
 
     @Test(dependsOnMethods = "update")
-    public void getLoginSuccess() throws InterruptedException {
+    public void getLoginSuccess() {
 
         // connection
 
