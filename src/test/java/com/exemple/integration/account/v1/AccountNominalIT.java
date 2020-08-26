@@ -154,7 +154,7 @@ public class AccountNominalIT extends AbstractTestNGSpringContextTests {
     }
 
     @Test(dependsOnMethods = "connexionSuccess")
-    public void getLoginSuccess() throws InterruptedException {
+    public void getLoginSuccess() {
 
         Response response = JsonRestTemplate.given()
 

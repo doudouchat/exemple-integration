@@ -5,7 +5,7 @@ before_script:
     - echo "MAVEN_OPTS='-Xmx1g'" > ~/.mavenrc
     - git clone https://github.com/doudouchat/exemple-service.git /tmp/exemple-service
     - git clone https://github.com/doudouchat/exemple-authorization.git /tmp/exemple-authorization
-    - mvn -f /tmp/exemple-service source:aggregate install:install-file -Dfile=/tmp/exemple-service/target/exemple-service-1.0.2-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-service -Dpackaging=jar -Dversion=1.0.2-SNAPSHOT -Dclassifier=sources
+    - mvn -f /tmp/exemple-service source:aggregate install:install-file -Dfile=/tmp/exemple-service/target/exemple-service-2.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-service -Dpackaging=jar -Dversion=2.0.0-SNAPSHOT -Dclassifier=sources
     - mvn -f /tmp/exemple-service clean install -Dmaven.test.skip=true
     - mvn -f /tmp/exemple-authorization -s .travis.settings.xml source:aggregate install:install-file -Dfile=/tmp/exemple-authorization/target/exemple-authorization-1.0.1-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-authorization -Dpackaging=jar -Dversion=1.0.1-SNAPSHOT -Dclassifier=sources
     - mvn -f /tmp/exemple-authorization -s .travis.settings.xml clean install -Dmaven.test.skip=true

@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.Test;
 
-import com.exemple.integration.account.v1.AccountNominalIT;
 import com.exemple.integration.core.IntegrationTestConfiguration;
 import com.exemple.service.api.integration.core.JsonRestTemplate;
 
@@ -103,10 +102,10 @@ public class SubscriptionIT {
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN)
 
-                .body(Collections.emptyMap()).put(URL + "/{email}", AccountNominalIT.ACCOUNT_BODY.get("email"));
+                .body(Collections.emptyMap()).put(URL + "/{email}", "toto");
 
         assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST.value()));
-        assertThat(response.jsonPath().getList("code").get(0), is("login"));
+        assertThat(response.jsonPath().getList("code").get(0), is("format"));
         assertThat(response.jsonPath().getList("path").get(0), is("/email"));
 
     }
@@ -120,7 +119,7 @@ public class SubscriptionIT {
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN)
 
-                .get(URL + "/{email}", AccountNominalIT.ACCOUNT_BODY.get("email"));
+                .get(URL + "/{email}", UUID.randomUUID().toString() + "@gmail.com");
 
         assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND.value()));
     }
