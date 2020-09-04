@@ -47,7 +47,7 @@
 
 		<!-- API -->
 		<cassandra.host>127.0.0.1</cassandra.host>
-		<cassandra.nativeTransportPort>9042</cassandra.nativeTransportPort>
+		<cassandra.port>9042</cassandra.port>
 		<hazelcast.port>5705</hazelcast.port>
 		<zookeeper.port>10024</zookeeper.port>
 
@@ -62,6 +62,7 @@
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.sources>${project.build.directory}/exemple-service,${project.build.directory}/exemple-authorization</sonar.sources>
 		<sonar.cpd.exclusions>target/exemple-service/**,target/exemple-authorization/**</sonar.cpd.exclusions>
+		<sonar.coverage.exclusions>**/com/exemple/service/api/core/embedded/CassandraConfiguration.java</sonar.coverage.exclusions>
 
 	</properties>
 
@@ -323,21 +324,6 @@
 					</configuration>
 				</plugin>
 
-				<!-- CASSANDRA -->
-				<!-- http://www.mojohaus.org/cassandra-maven-plugin/index.html -->
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>cassandra-maven-plugin</artifactId>
-					<version>3.6</version>
-					<dependencies>
-						<dependency>
-							<groupId>org.apache.cassandra</groupId>
-							<artifactId>cassandra-all</artifactId>
-							<version>${cassandra-version}</version>
-						</dependency>
-					</dependencies>
-				</plugin>
-
 				<!-- CARGO -->
 				<!-- https://codehaus-cargo.github.io/cargo/Maven2+plugin.html -->
 				<plugin>
@@ -519,11 +505,7 @@
 										<portName>application.port</portName>
 										<portName>cargo.rmi.port</portName>
 										<portName>cargo.ajp.port</portName>
-										<portName>cassandra.rpcPort</portName>
-										<portName>cassandra.jmxPort</portName>
-										<portName>cassandra.storagePort</portName>
-										<portName>cassandra.stopPort</portName>
-										<portName>cassandra.nativeTransportPort</portName>
+										<portName>cassandra.port</portName>
 										<portName>hazelcast.port</portName>
 										<portName>zookeeeper.port</portName>
 										<portName>kafka.port</portName>
@@ -537,40 +519,6 @@
 					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
-					</plugin>
-
-					<!-- CASSANDRA -->
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>cassandra-maven-plugin</artifactId>
-						<configuration>
-							<script>${project.basedir}/src/test/resources/cassandra/schema.cql</script>
-							<cqlScript>${project.basedir}/src/test/resources/cassandra/exec.cql</cqlScript>
-							<logLevel>INFO</logLevel>
-							<cqlVersion>3.4.5</cqlVersion>
-							<startNativeTransport>true</startNativeTransport>
-							<addTestClasspath>true</addTestClasspath>
-							<systemPropertyVariables>
-								<cassandra.unsafesystem>true</cassandra.unsafesystem>
-							</systemPropertyVariables>
-						</configuration>
-						<executions>
-							<execution>
-								<id>start cassandra</id>
-								<goals>
-									<goal>start</goal>
-									<goal>cql-exec</goal>
-									<goal>stop</goal>
-								</goals>
-							</execution>
-						</executions>
-						<dependencies>
-							<dependency>
-								<groupId>org.codehaus.groovy</groupId>
-								<artifactId>groovy</artifactId>
-								<version>3.0.2</version>
-							</dependency>
-						</dependencies>
 					</plugin>
 
 					<!-- CARGO -->
@@ -751,7 +699,7 @@
 										<exclude>com/exemple/service/customer/account/resource/TestAccountServiceResource*</exclude>
 										<exclude>com/exemple/service/resource/**/mapper/*MapperBuilder*</exclude>
 										<exclude>com/exemple/authorization/resource/**/mapper/*MapperBuilder*</exclude>
-										<exclude>com/exemple/service/application/core/**</exclude>
+										<exclude>com/exemple/service/api/core/embedded/CassandraConfiguration.java</exclude>
 										<exclude>com/exemple/service/api/integration/**</exclude>
 									</excludes>
 								</configuration>
