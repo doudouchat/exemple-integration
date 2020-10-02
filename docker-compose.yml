@@ -20,7 +20,7 @@ services:
       start_period: 30s
   zookeeper:
     container_name: exemple-zookeeper
-    image: zookeeper:3.5.7
+    image: zookeeper:3.6.2
     restart: always
     networks:
     - test
