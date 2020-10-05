@@ -1,10 +1,10 @@
 package com.exemple.integration.login.v1;
 
-import static com.exemple.integration.account.v1.AccountNominalIT.ACCESS_APP_TOKEN;
-import static com.exemple.integration.account.v1.AccountNominalIT.APP_HEADER;
-import static com.exemple.integration.account.v1.AccountNominalIT.APP_HEADER_VALUE;
-import static com.exemple.integration.account.v1.AccountNominalIT.VERSION_HEADER;
-import static com.exemple.integration.account.v1.AccountNominalIT.VERSION_HEADER_VALUE;
+import static com.exemple.integration.core.IntegrationTestConfiguration.ACCESS_APP_TOKEN;
+import static com.exemple.integration.core.IntegrationTestConfiguration.APP_HEADER;
+import static com.exemple.integration.core.IntegrationTestConfiguration.TEST_APP;
+import static com.exemple.integration.core.IntegrationTestConfiguration.VERSION_HEADER;
+import static com.exemple.integration.core.IntegrationTestConfiguration.VERSION_V1;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -35,7 +35,7 @@ public class LoginUpdateUsernameIT {
 
     private static String ACCESS_TOKEN = null;
 
-    @Test(dependsOnMethods = "com.exemple.integration.account.v1.AccountNominalIT.connexion")
+    @Test
     public void update() {
 
         // create login
@@ -47,7 +47,7 @@ public class LoginUpdateUsernameIT {
 
         Response create = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, VERSION_HEADER_VALUE)
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, VERSION_V1)
 
                 .header("Authorization", "Bearer " + ACCESS_APP_TOKEN)
 
@@ -92,7 +92,7 @@ public class LoginUpdateUsernameIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, "v1")
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, "v1")
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN)
 
@@ -124,7 +124,7 @@ public class LoginUpdateUsernameIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, "v1")
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, "v1")
 
                 .header("Authorization", "Bearer " + accessToken)
 
@@ -142,7 +142,7 @@ public class LoginUpdateUsernameIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, "v1")
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, "v1")
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN)
 

@@ -1,10 +1,10 @@
 package com.exemple.integration.login.v1;
 
-import static com.exemple.integration.account.v1.AccountNominalIT.ACCESS_APP_TOKEN;
-import static com.exemple.integration.account.v1.AccountNominalIT.APP_HEADER;
-import static com.exemple.integration.account.v1.AccountNominalIT.APP_HEADER_VALUE;
-import static com.exemple.integration.account.v1.AccountNominalIT.VERSION_HEADER;
-import static com.exemple.integration.account.v1.AccountNominalIT.VERSION_HEADER_VALUE;
+import static com.exemple.integration.core.IntegrationTestConfiguration.ACCESS_APP_TOKEN;
+import static com.exemple.integration.core.IntegrationTestConfiguration.APP_HEADER;
+import static com.exemple.integration.core.IntegrationTestConfiguration.TEST_APP;
+import static com.exemple.integration.core.IntegrationTestConfiguration.VERSION_HEADER;
+import static com.exemple.integration.core.IntegrationTestConfiguration.VERSION_V1;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -36,7 +36,7 @@ public class LoginIT {
 
     private static String ACCESS_TOKEN = null;
 
-    @Test(dependsOnMethods = "com.exemple.integration.account.v1.AccountNominalIT.connexion")
+    @Test
     public void create() {
 
         Map<String, Object> body = new HashMap<>();
@@ -46,7 +46,7 @@ public class LoginIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, VERSION_HEADER_VALUE)
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, VERSION_V1)
 
                 .header("Authorization", "Bearer " + ACCESS_APP_TOKEN)
 
@@ -61,7 +61,7 @@ public class LoginIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header("Authorization", "Bearer " + ACCESS_APP_TOKEN)
+                .header(APP_HEADER, TEST_APP).header("Authorization", "Bearer " + ACCESS_APP_TOKEN)
 
                 .head(URL + "/{login}", LOGIN);
         assertThat(response.getStatusCode(), is(HttpStatus.NO_CONTENT.value()));
@@ -102,7 +102,7 @@ public class LoginIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, "v1")
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, "v1")
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN).body(patchs).patch(LoginIT.URL + "/{login}", LOGIN);
 
@@ -137,7 +137,7 @@ public class LoginIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, "v1")
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, "v1")
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN).body(patchs).patch(LoginIT.URL + "/{login}", LOGIN);
 
@@ -152,7 +152,7 @@ public class LoginIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header(APP_HEADER, TEST_APP).header("Authorization", "Bearer " + ACCESS_TOKEN)
 
                 .delete(URL + "/{login}", LOGIN);
 
@@ -165,7 +165,7 @@ public class LoginIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header("Authorization", "Bearer " + ACCESS_APP_TOKEN)
+                .header(APP_HEADER, TEST_APP).header("Authorization", "Bearer " + ACCESS_APP_TOKEN)
 
                 .head(URL + "/{login}", LOGIN);
 

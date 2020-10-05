@@ -1,6 +1,6 @@
 package com.exemple.integration.swagger;
 
-import static com.exemple.integration.account.v1.AccountNominalIT.APP_HEADER_VALUE;
+import static com.exemple.integration.core.IntegrationTestConfiguration.TEST_APP;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -20,7 +20,7 @@ public class SwaggerIT extends AbstractTestNGSpringContextTests {
     @Test
     public void swagger() {
 
-        Response response = JsonRestTemplate.given().get("/ws/" + APP_HEADER_VALUE + "/openapi.json");
+        Response response = JsonRestTemplate.given().get("/ws/" + TEST_APP + "/openapi.json");
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
 

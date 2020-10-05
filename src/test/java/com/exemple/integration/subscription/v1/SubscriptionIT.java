@@ -1,16 +1,15 @@
 package com.exemple.integration.subscription.v1;
 
-import static com.exemple.integration.account.v1.AccountNominalIT.APP_HEADER;
-import static com.exemple.integration.account.v1.AccountNominalIT.APP_HEADER_VALUE;
-import static com.exemple.integration.account.v1.AccountNominalIT.VERSION_HEADER;
-import static com.exemple.integration.account.v1.AccountNominalIT.VERSION_HEADER_VALUE;
+import static com.exemple.integration.core.IntegrationTestConfiguration.ACCESS_APP_TOKEN;
+import static com.exemple.integration.core.IntegrationTestConfiguration.APP_HEADER;
+import static com.exemple.integration.core.IntegrationTestConfiguration.TEST_APP;
+import static com.exemple.integration.core.IntegrationTestConfiguration.VERSION_HEADER;
+import static com.exemple.integration.core.IntegrationTestConfiguration.VERSION_V1;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,6 @@ import org.testng.annotations.Test;
 import com.exemple.integration.core.IntegrationTestConfiguration;
 import com.exemple.service.api.integration.core.JsonRestTemplate;
 
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
 @ContextConfiguration(classes = { IntegrationTestConfiguration.class })
@@ -30,32 +28,14 @@ public class SubscriptionIT {
 
     private static final String EMAIL = UUID.randomUUID().toString() + "@gmail.com";
 
-    static String ACCESS_TOKEN = null;
-
     @Test
-    public void connexion() {
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("grant_type", "client_credentials");
-
-        Response response = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC).auth()
-                .basic(APP_HEADER_VALUE, "secret").formParams(params).post("/oauth/token");
-
-        assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
-
-        ACCESS_TOKEN = response.jsonPath().getString("access_token");
-        assertThat(ACCESS_TOKEN, is(notNullValue()));
-
-    }
-
-    @Test(dependsOnMethods = "connexion")
     public void createSubscription() {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, "v1")
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, "v1")
 
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + ACCESS_APP_TOKEN)
 
                 .body(Collections.emptyMap()).put(URL + "/{email}", EMAIL);
 
@@ -68,9 +48,9 @@ public class SubscriptionIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, "v1")
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, "v1")
 
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + ACCESS_APP_TOKEN)
 
                 .body(Collections.emptyMap()).put(URL + "/{email}", EMAIL);
 
@@ -83,9 +63,9 @@ public class SubscriptionIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, VERSION_HEADER_VALUE)
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, VERSION_V1)
 
-                .header("Authorization", "Bearer " + ACCESS_TOKEN).get(URL + "/{email}", EMAIL);
+                .header("Authorization", "Bearer " + ACCESS_APP_TOKEN).get(URL + "/{email}", EMAIL);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
         assertThat(response.jsonPath().getString("email"), is(EMAIL));
@@ -93,14 +73,14 @@ public class SubscriptionIT {
 
     }
 
-    @Test(dependsOnMethods = { "connexion", "com.exemple.integration.account.v1.AccountNominalIT.createSuccess" })
+    @Test
     public void createSubscriptionFailure() {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, "v1")
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, "v1")
 
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + ACCESS_APP_TOKEN)
 
                 .body(Collections.emptyMap()).put(URL + "/{email}", "toto");
 
@@ -110,14 +90,14 @@ public class SubscriptionIT {
 
     }
 
-    @Test(dependsOnMethods = { "connexion", "com.exemple.integration.account.v1.AccountNominalIT.createSuccess" })
+    @Test
     public void readSubscriptionFailure() {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, "v1")
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, "v1")
 
-                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                .header("Authorization", "Bearer " + ACCESS_APP_TOKEN)
 
                 .get(URL + "/{email}", UUID.randomUUID().toString() + "@gmail.com");
 
