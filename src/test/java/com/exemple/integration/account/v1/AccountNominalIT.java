@@ -1,5 +1,10 @@
 package com.exemple.integration.account.v1;
 
+import static com.exemple.integration.core.IntegrationTestConfiguration.ACCESS_APP_TOKEN;
+import static com.exemple.integration.core.IntegrationTestConfiguration.APP_HEADER;
+import static com.exemple.integration.core.IntegrationTestConfiguration.TEST_APP;
+import static com.exemple.integration.core.IntegrationTestConfiguration.VERSION_HEADER;
+import static com.exemple.integration.core.IntegrationTestConfiguration.VERSION_V1;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -27,43 +32,17 @@ import io.restassured.response.Response;
 @ContextConfiguration(classes = { IntegrationTestConfiguration.class })
 public class AccountNominalIT extends AbstractTestNGSpringContextTests {
 
-    public static final String APP_HEADER = "app";
-
-    public static final String APP_HEADER_VALUE = "test";
-
-    public static final String VERSION_HEADER = "version";
-
-    public static final String VERSION_HEADER_VALUE = "v1";
-
     public static final String ACCOUNT_URL = "/ws/v1/accounts";
 
-    public static UUID ID = null;
+    protected static UUID ID = null;
 
-    public static String ACCESS_TOKEN = null;
+    protected static String ACCESS_TOKEN = null;
 
-    public static String ACCESS_APP_TOKEN = null;
+    protected static Map<String, Object> ACCOUNT_BODY;
 
-    public static Map<String, Object> ACCOUNT_BODY;
-
-    public static Map<String, Object> LOGIN_BODY;
+    protected static Map<String, Object> LOGIN_BODY;
 
     @Test
-    public void connexion() {
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("grant_type", "client_credentials");
-
-        Response response = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC).auth()
-                .basic(APP_HEADER_VALUE, "secret").formParams(params).post("/oauth/token");
-
-        assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
-
-        ACCESS_APP_TOKEN = response.jsonPath().getString("access_token");
-        assertThat(ACCESS_APP_TOKEN, is(notNullValue()));
-
-    }
-
-    @Test(dependsOnMethods = "connexion")
     public void createSuccess() {
 
         ACCOUNT_BODY = new HashMap<>();
@@ -101,7 +80,7 @@ public class AccountNominalIT extends AbstractTestNGSpringContextTests {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, VERSION_HEADER_VALUE)
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, VERSION_V1)
 
                 .header("Authorization", "Bearer " + ACCESS_APP_TOKEN)
 
@@ -123,7 +102,7 @@ public class AccountNominalIT extends AbstractTestNGSpringContextTests {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, "v1")
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, "v1")
 
                 .header("Authorization", "Bearer " + ACCESS_APP_TOKEN)
 
@@ -158,7 +137,7 @@ public class AccountNominalIT extends AbstractTestNGSpringContextTests {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, "v1")
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, "v1")
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN)
 
@@ -176,7 +155,7 @@ public class AccountNominalIT extends AbstractTestNGSpringContextTests {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, VERSION_HEADER_VALUE)
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, VERSION_V1)
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN).get(ACCOUNT_URL + "/{id}", ID);
 
@@ -259,7 +238,7 @@ public class AccountNominalIT extends AbstractTestNGSpringContextTests {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, VERSION_HEADER_VALUE)
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, VERSION_V1)
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN).body(patchs).patch(ACCOUNT_URL + "/{id}", ID);
 
@@ -267,7 +246,7 @@ public class AccountNominalIT extends AbstractTestNGSpringContextTests {
 
         Response responseGet = JsonRestTemplate.given()
 
-                .header(APP_HEADER, APP_HEADER_VALUE).header(VERSION_HEADER, VERSION_HEADER_VALUE)
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, VERSION_V1)
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN).get(ACCOUNT_URL + "/{id}", ID);
 

@@ -1,7 +1,13 @@
 package com.exemple.integration.core;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -14,13 +20,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.exemple.authorization.core.client.AuthorizationClientBuilder;
 import com.exemple.authorization.core.client.AuthorizationClientConfiguration;
-import com.exemple.integration.account.v1.AccountNominalIT;
-import com.exemple.integration.password.v1.PasswordIT;
-import com.exemple.integration.stock.v1.StockNominalIT;
+import com.exemple.service.api.integration.core.JsonRestTemplate;
 import com.exemple.service.application.common.model.ApplicationDetail;
 import com.exemple.service.application.core.ApplicationConfiguration;
 import com.exemple.service.application.detail.ApplicationDetailService;
@@ -33,9 +38,32 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Sets;
 
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+
 @Configuration
 @Import({ ResourceConfiguration.class, ApplicationConfiguration.class, AuthorizationClientConfiguration.class })
 public class IntegrationTestConfiguration {
+
+    public static final String APP_HEADER = "app";
+
+    public static final String BACK_APP = "back";
+
+    public static final String TEST_APP = "test";
+
+    public static final String ADMIN_APP = "admin";
+
+    public static final String VERSION_HEADER = "version";
+
+    public static final String VERSION_V0 = "v0";
+
+    public static final String VERSION_V1 = "v1";
+
+    public static String ACCESS_APP_TOKEN = null;
+
+    public static String ACCESS_ADMIN_TOKEN = null;
+
+    public static String ACCESS_BACK_TOKEN = null;
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -90,8 +118,8 @@ public class IntegrationTestConfiguration {
         ResourceExecutionContext.get().setKeyspace(detail.getKeyspace());
 
         SchemaEntity accountSchema = new SchemaEntity();
-        accountSchema.setApplication(AccountNominalIT.APP_HEADER_VALUE);
-        accountSchema.setVersion(AccountNominalIT.VERSION_HEADER_VALUE);
+        accountSchema.setApplication(TEST_APP);
+        accountSchema.setVersion(VERSION_V1);
         accountSchema.setResource("account");
         accountSchema.setProfile("user");
         accountSchema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("account.json").getInputStream())));
@@ -99,11 +127,21 @@ public class IntegrationTestConfiguration {
 
         schemaResource.save(accountSchema);
 
+        SchemaEntity accountV0Schema = new SchemaEntity();
+        accountV0Schema.setApplication(TEST_APP);
+        accountV0Schema.setVersion(VERSION_V0);
+        accountV0Schema.setResource("account");
+        accountV0Schema.setProfile("user");
+        accountV0Schema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("account.v0.json").getInputStream())));
+        accountV0Schema.setFilters(accountFilter);
+
+        schemaResource.save(accountV0Schema);
+
         Set<String> loginFilter = new HashSet<>();
         loginFilter.add("id");
         loginFilter.add("enable");
         loginFilter.add("username");
-        
+
         ObjectNode patch = MAPPER.createObjectNode();
         patch.put("op", "add");
         patch.put("path", "/properties/id/readOnly");
@@ -113,8 +151,8 @@ public class IntegrationTestConfiguration {
         loginPatchs.add(patch);
 
         SchemaEntity loginSchema = new SchemaEntity();
-        loginSchema.setApplication(AccountNominalIT.APP_HEADER_VALUE);
-        loginSchema.setVersion(AccountNominalIT.VERSION_HEADER_VALUE);
+        loginSchema.setApplication(TEST_APP);
+        loginSchema.setVersion(VERSION_V1);
         loginSchema.setResource("login");
         loginSchema.setProfile("user");
         loginSchema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("login.json").getInputStream())));
@@ -128,8 +166,8 @@ public class IntegrationTestConfiguration {
         subscriptionFilter.add("subscription_date");
 
         SchemaEntity subscriptionSchema = new SchemaEntity();
-        subscriptionSchema.setApplication(AccountNominalIT.APP_HEADER_VALUE);
-        subscriptionSchema.setVersion(AccountNominalIT.VERSION_HEADER_VALUE);
+        subscriptionSchema.setApplication(TEST_APP);
+        subscriptionSchema.setVersion(VERSION_V1);
         subscriptionSchema.setResource("subscription");
         subscriptionSchema.setProfile("user");
         subscriptionSchema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("subscription.json").getInputStream())));
@@ -137,7 +175,7 @@ public class IntegrationTestConfiguration {
 
         schemaResource.save(subscriptionSchema);
 
-        applicationDetailService.put(AccountNominalIT.APP_HEADER_VALUE, detail);
+        applicationDetailService.put(TEST_APP, detail);
 
         // STOCK
 
@@ -146,13 +184,13 @@ public class IntegrationTestConfiguration {
         backDetail.setCompany("test_company");
         backDetail.setClientIds(Sets.newHashSet("back", "back_user"));
 
-        applicationDetailService.put(StockNominalIT.APP_HEADER_VALUE, backDetail);
+        applicationDetailService.put(BACK_APP, backDetail);
 
         // ADMIN
 
         loginSchema = new SchemaEntity();
-        loginSchema.setApplication(PasswordIT.APP_HEADER_VALUE);
-        loginSchema.setVersion(PasswordIT.VERSION_HEADER_VALUE);
+        loginSchema.setApplication(ADMIN_APP);
+        loginSchema.setVersion(VERSION_V1);
         loginSchema.setResource("login");
         loginSchema.setProfile("user");
         loginSchema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("login.json").getInputStream())));
@@ -166,7 +204,7 @@ public class IntegrationTestConfiguration {
         adminDetail.setCompany("test_company");
         adminDetail.setClientIds(Sets.newHashSet("admin"));
 
-        applicationDetailService.put(PasswordIT.APP_HEADER_VALUE, adminDetail);
+        applicationDetailService.put(ADMIN_APP, adminDetail);
 
     }
 
@@ -209,6 +247,27 @@ public class IntegrationTestConfiguration {
                 .authorities("ROLE_TRUSTED_CLIENT").resourceIds("exemple").additionalInformation("keyspace=test")
 
                 .and().build();
+
+        ACCESS_APP_TOKEN = initToken(TEST_APP, "secret");
+
+        ACCESS_ADMIN_TOKEN = initToken(ADMIN_APP, "secret");
+
+        ACCESS_BACK_TOKEN = initToken(BACK_APP, "secret");
+    }
+
+    private static String initToken(String username, String password) {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("grant_type", "client_credentials");
+
+        Response response = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC).auth()
+                .basic(username, password).formParams(params).post("/oauth/token");
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
+        assertThat(response.jsonPath().getString("access_token"), is(notNullValue()));
+
+        return response.jsonPath().getString("access_token");
+
     }
 
 }
