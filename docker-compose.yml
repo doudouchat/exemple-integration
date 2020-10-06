@@ -27,6 +27,7 @@ services:
     ports:
     - 10024:2181
     volumes:
+    - ./src/main/conf/zookeeper:/usr/local/etc/zookeeper
     - ./data/zookeeper:/data
     hostname: zookeeper
 networks:
