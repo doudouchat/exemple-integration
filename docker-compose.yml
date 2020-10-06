@@ -24,12 +24,18 @@ services:
     restart: always
     networks:
     - test
+    environment:
+    - ZOO_4LW_COMMANDS_WHITELIST=srvr, ruok
     ports:
     - 10024:2181
     volumes:
     - ./src/main/conf/zookeeper:/usr/local/etc/zookeeper
     - ./data/zookeeper:/data
     hostname: zookeeper
+    healthcheck:
+      test: ["CMD", "sh", "/usr/local/etc/zookeeper/healthcheck_zookeeper.sh"]
+      interval: 10s
+      start_period: 5s
 networks:
   test:
     name: exemple-test
