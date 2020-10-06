@@ -26,6 +26,8 @@ services:
     - test
     ports:
     - 10024:2181
+    volumes:
+    - ./data/zookeeper:/data
     hostname: zookeeper
 networks:
   test:
