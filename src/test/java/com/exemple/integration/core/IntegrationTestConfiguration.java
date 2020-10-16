@@ -223,7 +223,7 @@ public class IntegrationTestConfiguration {
                 .and()
 
                 .withClient("test_user").secret(password).authorizedGrantTypes("password", "authorization_code", "refresh_token").redirectUris("xxx")
-                .scopes("account:read", "account:update", "login:update", "login:delete", "login:read")
+                .scopes("account:read", "account:update", "login:update", "login:delete", "login:read", "login:head")
                 .autoApprove("account:read", "account:update", "login:update", "login:delete", "login:read").authorities("ROLE_APP")
                 .resourceIds("exemple").additionalInformation("keyspace=test")
 
