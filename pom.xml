@@ -54,7 +54,7 @@
 		<!-- VERSION -->
 
 		<zookeeper-version>3.5.7</zookeeper-version>
-		<cassandra-version>3.11.8</cassandra-version>
+		<cassandra-version>3.11.9</cassandra-version>
 
 		<!-- SONAR -->
 
