@@ -44,4 +44,9 @@
 			<package name="com.exemple.integration.swagger" />
 		</packages>
 	</test>
+	<test name="jws">
+		<packages>
+			<package name="com.exemple.integration.jws" />
+		</packages>
+	</test>
 </suite>
