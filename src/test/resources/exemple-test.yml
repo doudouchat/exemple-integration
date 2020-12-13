@@ -1,9 +1,9 @@
+spring:
+   hazelcast:
+      config: file:${project.build.testOutputDirectory}/hazelcast.yaml
 resource:
    cassandra:
       resource_configuration: file:${project.build.testOutputDirectory}/cassandra.conf
-   hazelcast:
-      port: ${hazelcast.port}
-      member: 127.0.0.1:${hazelcast.port}
 customer: 
    contexts: 
       path: ${project.build.testOutputDirectory}/contexts
@@ -45,8 +45,6 @@ api:
    resourceId: exemple
    authorization:
       path: ${authorization.host}:${application.port}/${authorization.contextpath}
-      hazelcast:
-         addresses: 127.0.0.1:${hazelcast.port}
       client:
          clientId: resource
          clientSecret: secret
