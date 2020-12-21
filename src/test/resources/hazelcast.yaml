@@ -1,13 +1,3 @@
-hazelcast:
-   config:
-      network:
-         port: ${hazelcast.port}
-         port-auto-increment: false
-         join:
-            tcp-ip:
-               enabled: true
-            multicast:
-               enabled: false
 hazelcast-client:
    network:
       cluster-members:

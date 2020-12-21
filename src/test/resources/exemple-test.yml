@@ -4,16 +4,13 @@ spring:
 resource:
    cassandra:
       resource_configuration: file:${project.build.testOutputDirectory}/cassandra.conf
-customer: 
-   contexts: 
+customer:
+   contexts:
       path: ${project.build.testOutputDirectory}/contexts
 authorization:
    resource:
       cassandra:
          resource_configuration: file:${project.build.testOutputDirectory}/cassandra.conf
-   hazelcast:
-      port: ${hazelcast.port}
-      member: 127.0.0.1:${hazelcast.port}
    zookeeper:
       host: 127.0.0.1:${zookeeper.port}
       sleepMsBetweenRetries: 10000
@@ -24,6 +21,8 @@ authorization:
    kafka:
       bootstrap-servers: localhost:${kafka.port}
    embedded:
+      hazelcast:
+         port: ${hazelcast.port}
       cassandra:
          port: ${cassandra.port}
          version: ${cassandra-version}
