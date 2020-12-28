@@ -124,7 +124,7 @@ public class DisconnectionIT extends AbstractTestNGSpringContextTests {
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN).get(ACCOUNT_URL + "/{id}", ID);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN.value()));
+        assertThat(response.getStatusCode(), is(HttpStatus.UNAUTHORIZED.value()));
     }
 
 }

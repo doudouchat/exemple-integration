@@ -164,11 +164,11 @@ public class PasswordIT extends AbstractTestNGSpringContextTests {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, VERSION_V1)
+                .header(APP_HEADER, ADMIN_APP).header(VERSION_HEADER, VERSION_V1)
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN).body(patchs).patch(LoginIT.URL + "/{login}", USERNAME);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN.value()));
+        assertThat(response.getStatusCode(), is(HttpStatus.UNAUTHORIZED.value()));
 
     }
 
