@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/doudouchat/exemple-integration.svg?branch=master)](https://travis-ci.com/doudouchat/exemple-integration)
+[![build](https://github.com/doudouchat/exemple-integration/workflows/build/badge.svg)](https://github.com/doudouchat/exemple-integration/actions)
 [![Coverage Status](https://coveralls.io/repos/github/doudouchat/exemple-integration/badge.svg?branch=master)](https://coveralls.io/github/doudouchat/exemple-integration?branch=master)
 
 # exemple-integration
