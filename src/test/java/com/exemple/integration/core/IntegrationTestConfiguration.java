@@ -97,7 +97,7 @@ public class IntegrationTestConfiguration {
         // APP
 
         ApplicationDetail detail = new ApplicationDetail();
-        detail.setKeyspace("test");
+        detail.setKeyspace("test_keyspace");
         detail.setCompany("test_company");
         detail.setClientIds(Sets.newHashSet("test", "test_user"));
 
@@ -180,7 +180,7 @@ public class IntegrationTestConfiguration {
         // STOCK
 
         ApplicationDetail backDetail = new ApplicationDetail();
-        backDetail.setKeyspace("test");
+        backDetail.setKeyspace("test_keyspace");
         backDetail.setCompany("test_company");
         backDetail.setClientIds(Sets.newHashSet("back", "back_user"));
 
@@ -200,7 +200,7 @@ public class IntegrationTestConfiguration {
         schemaResource.save(loginSchema);
 
         ApplicationDetail adminDetail = new ApplicationDetail();
-        adminDetail.setKeyspace("test");
+        adminDetail.setKeyspace("test_keyspace");
         adminDetail.setCompany("test_company");
         adminDetail.setClientIds(Sets.newHashSet("admin"));
 
@@ -218,24 +218,25 @@ public class IntegrationTestConfiguration {
                 .withClient("test").secret(password).authorizedGrantTypes("client_credentials").redirectUris("xxx")
                 .scopes("account:create", "login:head", "login:create", "subscription:update", "subscription:read")
                 .autoApprove("account:create", "login:create", "subscription:update", "subscription:read").authorities("ROLE_APP")
-                .resourceIds("exemple").additionalInformation("keyspace=test")
+                .resourceIds("exemple").additionalInformation("keyspace=test_keyspace")
 
                 .and()
 
                 .withClient("test_user").secret(password).authorizedGrantTypes("password", "authorization_code", "refresh_token").redirectUris("xxx")
                 .scopes("account:read", "account:update", "login:update", "login:delete", "login:read", "login:head")
                 .autoApprove("account:read", "account:update", "login:update", "login:delete", "login:read").authorities("ROLE_APP")
-                .resourceIds("exemple").additionalInformation("keyspace=test")
+                .resourceIds("exemple").additionalInformation("keyspace=test_keyspace")
 
                 .and()
 
                 .withClient("back").secret(password).authorizedGrantTypes("client_credentials").scopes("stock").autoApprove("stock")
-                .authorities("ROLE_BACK").resourceIds("exemple").additionalInformation("keyspace=test")
+                .authorities("ROLE_BACK").resourceIds("exemple").additionalInformation("keyspace=test_keyspace")
 
                 .and()
 
                 .withClient("back_user").secret(password).authorizedGrantTypes("password").scopes("stock:read", "stock:update")
-                .autoApprove("stock:read", "stock:update").authorities("ROLE_BACK").resourceIds("exemple").additionalInformation("keyspace=test")
+                .autoApprove("stock:read", "stock:update").authorities("ROLE_BACK").resourceIds("exemple")
+                .additionalInformation("keyspace=test_keyspace")
 
                 .and()
 
@@ -244,7 +245,7 @@ public class IntegrationTestConfiguration {
                 .and()
 
                 .withClient("admin").secret(password).authorizedGrantTypes("client_credentials").scopes("xxx").autoApprove("xxx")
-                .authorities("ROLE_TRUSTED_CLIENT").resourceIds("exemple").additionalInformation("keyspace=test")
+                .authorities("ROLE_TRUSTED_CLIENT").resourceIds("exemple").additionalInformation("keyspace=test_keyspace")
 
                 .and().build();
 
