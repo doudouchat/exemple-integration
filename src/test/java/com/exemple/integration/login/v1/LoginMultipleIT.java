@@ -6,6 +6,9 @@ import static com.exemple.integration.core.InitData.TEST_APP;
 import static com.exemple.integration.core.InitData.VERSION_HEADER;
 import static com.exemple.integration.core.InitData.VERSION_V1;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -36,6 +39,8 @@ public class LoginMultipleIT {
     private static final String LOGIN_3 = UUID.randomUUID() + "@gmail.com";
 
     private static final UUID ID = UUID.randomUUID();
+
+    private static final UUID ID_3 = UUID.randomUUID();
 
     private static String ACCESS_TOKEN = null;
 
@@ -70,7 +75,7 @@ public class LoginMultipleIT {
         assertThat(response.getStatusCode(), is(HttpStatus.CREATED.value()));
 
         body.put("username", LOGIN_3);
-        body.put("id", UUID.randomUUID());
+        body.put("id", ID_3);
 
         response = JsonRestTemplate.given()
 
@@ -109,7 +114,7 @@ public class LoginMultipleIT {
 
         Response response = JsonRestTemplate.given()
 
-                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, "v1")
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, VERSION_V1)
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN)
 
@@ -123,6 +128,24 @@ public class LoginMultipleIT {
     }
 
     @Test(dependsOnMethods = "connexionSuccess")
+    public void getById() {
+
+        Response response = JsonRestTemplate.given()
+
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, VERSION_V1)
+
+                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+
+                .get(URL + "/id/{id}", ID);
+        assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
+
+        assertThat(response.jsonPath().getList("password"), everyItem(is(nullValue())));
+        assertThat(response.jsonPath().getList("id"), everyItem(is(ID.toString())));
+        assertThat(response.jsonPath().getList("username"), containsInAnyOrder(equalTo(LOGIN_1), equalTo(LOGIN_2)));
+
+    }
+
+    @Test(dependsOnMethods = "connexionSuccess")
     public void getFailure() {
 
         Response response = JsonRestTemplate.given()
@@ -132,6 +155,21 @@ public class LoginMultipleIT {
                 .header("Authorization", "Bearer " + ACCESS_TOKEN)
 
                 .get(LoginIT.URL + "/{login}", LOGIN_3);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN.value()));
+
+    }
+
+    @Test(dependsOnMethods = "connexionSuccess")
+    public void getByIdFailure() {
+
+        Response response = JsonRestTemplate.given()
+
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, "v1")
+
+                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+
+                .get(LoginIT.URL + "/id/{id}", ID_3);
 
         assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN.value()));
 
