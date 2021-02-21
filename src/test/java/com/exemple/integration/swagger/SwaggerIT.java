@@ -1,6 +1,6 @@
 package com.exemple.integration.swagger;
 
-import static com.exemple.integration.core.IntegrationTestConfiguration.TEST_APP;
+import static com.exemple.integration.core.InitData.TEST_APP;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
