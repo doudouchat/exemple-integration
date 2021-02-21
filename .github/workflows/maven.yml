@@ -39,6 +39,9 @@ jobs:
          run: mvn -f ${{ github.workspace }}/exemple-authorization source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-authorization/target/exemple-authorization-1.0.1-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-authorization -Dpackaging=jar -Dversion=1.0.1-SNAPSHOT -Dclassifier=sources
       -  name: Build with Maven
          run: mvn clean verify -Pwebservice,it,report
+      -  name: display logs cargo
+         if: ${{ failure() }}
+         run: cat target/cargo/configurations/tomcat9x/logs/container.log
       -  name: Coveralls Maven plugin
          env:
            CI_NAME: Github
