@@ -1,12 +1,12 @@
 package com.exemple.integration.password.v1;
 
-import static com.exemple.integration.core.IntegrationTestConfiguration.ACCESS_ADMIN_TOKEN;
-import static com.exemple.integration.core.IntegrationTestConfiguration.ACCESS_APP_TOKEN;
-import static com.exemple.integration.core.IntegrationTestConfiguration.ADMIN_APP;
-import static com.exemple.integration.core.IntegrationTestConfiguration.APP_HEADER;
-import static com.exemple.integration.core.IntegrationTestConfiguration.TEST_APP;
-import static com.exemple.integration.core.IntegrationTestConfiguration.VERSION_HEADER;
-import static com.exemple.integration.core.IntegrationTestConfiguration.VERSION_V1;
+import static com.exemple.integration.core.InitData.ACCESS_ADMIN_TOKEN;
+import static com.exemple.integration.core.InitData.ACCESS_APP_TOKEN;
+import static com.exemple.integration.core.InitData.ADMIN_APP;
+import static com.exemple.integration.core.InitData.APP_HEADER;
+import static com.exemple.integration.core.InitData.TEST_APP;
+import static com.exemple.integration.core.InitData.VERSION_HEADER;
+import static com.exemple.integration.core.InitData.VERSION_V1;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;

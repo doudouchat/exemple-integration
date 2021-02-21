@@ -210,15 +210,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- CURATOR -->
-
-		<dependency>
-			<groupId>org.apache.curator</groupId>
-			<artifactId>curator-test</artifactId>
-			<version>5.1.0</version>
-			<scope>provided</scope>
-		</dependency>
-
 		<!-- SPRING KAFKA -->
 
 		<dependency>
@@ -267,6 +258,14 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
 					<version>3.1.2</version>
+				</plugin>
+
+				<!-- WAR -->
+				<!-- http://maven.apache.org/plugins/maven-war-plugin/ -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>3.3.1</version>
 				</plugin>
 
 				<!-- VERSION -->
@@ -417,7 +416,7 @@
 
 				<dependency>
 					<groupId>${project.groupId}</groupId>
-					<artifactId>exemple-authorization-server</artifactId>
+					<artifactId>exemple-authorization-server-embedded</artifactId>
 					<version>1.0.1-SNAPSHOT</version>
 					<type>war</type>
 				</dependency>
@@ -540,20 +539,21 @@
 							<deployables>
 								<deployable>
 									<groupId>${project.groupId}</groupId>
-									<artifactId>exemple-service-api</artifactId>
-									<type>war</type>
-									<properties>
-										<context>/${application.contextpath}</context>
-									</properties>
-								</deployable>
-								<deployable>
-									<groupId>${project.groupId}</groupId>
-									<artifactId>exemple-authorization-server</artifactId>
+									<artifactId>exemple-authorization-server-embedded</artifactId>
 									<type>war</type>
 									<properties>
 										<context>/${authorization.contextpath}</context>
 									</properties>
 									<pingUrlPath>/${authorization.contextpath}/actuator/health</pingUrlPath>
+								</deployable>
+								<deployable>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>exemple-service-api</artifactId>
+									<type>war</type>
+									<properties>
+										<context>/${application.contextpath}</context>
+									</properties>
+									<pingUrlPath>/${application.contextpath}/actuator/health</pingUrlPath>
 								</deployable>
 							</deployables>
 							<configuration>
