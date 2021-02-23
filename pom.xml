@@ -58,15 +58,120 @@
 
 		<!-- SONAR -->
 
-		<!-- force sonar to use jacoco -->
+		<sonar.coverage.exclusions>**/integration/**/*.java</sonar.coverage.exclusions>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.sources>${project.build.directory}/exemple-service,${project.build.directory}/exemple-authorization</sonar.sources>
 		<sonar.cpd.exclusions>target/exemple-service/**,target/exemple-authorization/**</sonar.cpd.exclusions>
-		<sonar.coverage.exclusions>**/com/exemple/service/api/core/embedded/CassandraConfiguration.java</sonar.coverage.exclusions>
 
 	</properties>
 
+	<dependencyManagement>
+
+		<dependencies>
+
+			<!-- SPRING BOOT -->
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>2.4.3</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- HAZELCAST -->
+
+			<dependency>
+				<groupId>com.hazelcast</groupId>
+				<artifactId>hazelcast</artifactId>
+				<version>4.1.1</version>
+			</dependency>
+
+			<!-- GROOVY -->
+
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy</artifactId>
+				<version>3.0.7</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-xml</artifactId>
+				<version>3.0.7</version>
+			</dependency>
+
+			<!-- REST ASSURED -->
+
+			<dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>rest-assured</artifactId>
+				<version>4.3.3</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>rest-assured-all</artifactId>
+				<version>4.3.3</version>
+				<scope>test</scope>
+			</dependency>
+
+		</dependencies>
+
+	</dependencyManagement>
+
 	<dependencies>
+
+		<!-- CASSANDRA EMBEDDED -->
+
+		<dependency>
+			<groupId>com.github.nosan</groupId>
+			<artifactId>embedded-cassandra</artifactId>
+			<version>4.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.nosan</groupId>
+			<artifactId>embedded-cassandra-spring-boot-starter</artifactId>
+			<version>4.0.1</version>
+		</dependency>
+
+		<!-- CURATOR -->
+
+		<dependency>
+			<groupId>org.apache.curator</groupId>
+			<artifactId>curator-test</artifactId>
+			<version>5.1.0</version>
+		</dependency>
+
+		<!-- HAZELCAST -->
+
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast</artifactId>
+		</dependency>
+
+		<!-- SPRING KAFKA -->
+
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka-test</artifactId>
+		</dependency>
+
+		<!-- SPRING BOOT -->
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<!-- GROOVY -->
+
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy</artifactId>
+		</dependency>
 
 		<!-- API INTEGRATION -->
 
@@ -105,35 +210,11 @@
 			<classifier>classes</classifier>
 		</dependency>
 
-		<!-- SPRING FRAMEWORK -->
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>5.3.4</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>5.3.4</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>5.3.4</version>
-			<scope>test</scope>
-		</dependency>
-
 		<!-- COMMONS APACHE -->
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.11</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -144,42 +225,33 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- JSON -->
-
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.12.1</version>
-			<scope>test</scope>
-		</dependency>
-
 		<!-- LOGGING -->
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.30</version>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-			<version>1.7.30</version>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jul-to-slf4j</artifactId>
-			<version>1.7.30</version>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.2.3</version>
+		</dependency>
+
+		<!-- TEST -->
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 
@@ -210,22 +282,14 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- SPRING KAFKA -->
-
-		<dependency>
-			<groupId>org.springframework.kafka</groupId>
-			<artifactId>spring-kafka-test</artifactId>
-			<version>2.6.6</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.module</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
 	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 
 	<build>
 
@@ -323,6 +387,34 @@
 					</configuration>
 				</plugin>
 
+				<!-- SPRING BOOT -->
+				<!-- https://docs.spring.io/spring-boot/docs/current/maven-plugin/index.html -->
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>2.4.3</version>
+					<configuration>
+						<jvmArguments>-Dlogging.config=file:${application.log.file}</jvmArguments>
+						<jmxPort>${embedded.jmx.port}</jmxPort>
+						<wait>3000</wait>
+						<fork>true</fork>
+					</configuration>
+					<executions>
+						<execution>
+							<id>pre-integration-test</id>
+							<goals>
+								<goal>start</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>post-integration-test</id>
+							<goals>
+								<goal>stop</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
 				<!-- CARGO -->
 				<!-- https://codehaus-cargo.github.io/cargo/Maven2+plugin.html -->
 				<plugin>
@@ -398,6 +490,19 @@
 
 		</pluginManagement>
 
+		<plugins>
+
+			<!-- VERSION -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<configuration>
+					<processDependencyManagement>false</processDependencyManagement>
+				</configuration>
+			</plugin>
+
+		</plugins>
+
 	</build>
 
 	<profiles>
@@ -416,7 +521,7 @@
 
 				<dependency>
 					<groupId>${project.groupId}</groupId>
-					<artifactId>exemple-authorization-server-embedded</artifactId>
+					<artifactId>exemple-authorization-server</artifactId>
 					<version>1.0.1-SNAPSHOT</version>
 					<type>war</type>
 				</dependency>
@@ -426,66 +531,6 @@
 			<build>
 
 				<plugins>
-
-					<!-- DEPENDENCIES -->
-
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>copy-dependencies</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>copy-dependencies</goal>
-								</goals>
-								<configuration>
-									<includeScope>provided</includeScope>
-									<excludeArtifactIds>log4j</excludeArtifactIds>
-								</configuration>
-							</execution>
-							<execution>
-								<id>copy slf4J</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>copy-dependencies</goal>
-								</goals>
-								<configuration>
-									<includeGroupIds>org.slf4j</includeGroupIds>
-								</configuration>
-							</execution>
-							<execution>
-								<id>copy jackson</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>copy-dependencies</goal>
-								</goals>
-								<configuration>
-									<includeGroupIds>com.fasterxml.jackson.core</includeGroupIds>
-								</configuration>
-							</execution>
-							<execution>
-								<id>copy spring</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>copy-dependencies</goal>
-								</goals>
-								<configuration>
-									<includeArtifactIds>spring-beans,spring-core</includeArtifactIds>
-								</configuration>
-							</execution>
-							<execution>
-								<id>copy logback</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>copy-dependencies</goal>
-								</goals>
-								<configuration>
-									<includeGroupIds>ch.qos.logback</includeGroupIds>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
 
 					<!-- HELPER -->
 					<plugin>
@@ -507,6 +552,7 @@
 										<portName>hazelcast.port</portName>
 										<portName>zookeeeper.port</portName>
 										<portName>kafka.port</portName>
+										<portName>embedded.jmx.port</portName>
 									</portNames>
 								</configuration>
 							</execution>
@@ -517,6 +563,17 @@
 					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
+					</plugin>
+
+					<!-- SPRING BOOT -->
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+						<configuration>
+							<arguments>
+								<argument>--spring.config.location=${configuration.path}</argument>
+							</arguments>
+						</configuration>
 					</plugin>
 
 					<!-- CARGO -->
@@ -530,16 +587,13 @@
 										<groupId>exemple</groupId>
 										<artifactId>exemple-service-api-integration</artifactId>
 									</dependency>
-									<dependency>
-										<location>${project.build.directory}/dependency</location>
-									</dependency>
 								</dependencies>
 							</container>
 							<ignoreFailures>true</ignoreFailures>
 							<deployables>
 								<deployable>
 									<groupId>${project.groupId}</groupId>
-									<artifactId>exemple-authorization-server-embedded</artifactId>
+									<artifactId>exemple-authorization-server</artifactId>
 									<type>war</type>
 									<properties>
 										<context>/${authorization.contextpath}</context>
@@ -698,8 +752,8 @@
 										<exclude>com/exemple/service/customer/account/resource/TestAccountServiceResource*</exclude>
 										<exclude>com/exemple/service/resource/**/mapper/*MapperBuilder*</exclude>
 										<exclude>com/exemple/authorization/resource/**/mapper/*MapperBuilder*</exclude>
-										<exclude>com/exemple/service/api/core/embedded/CassandraConfiguration.java</exclude>
 										<exclude>com/exemple/service/api/integration/**</exclude>
+										<exclude>com/exemple/integration/**</exclude>
 									</excludes>
 								</configuration>
 							</execution>
