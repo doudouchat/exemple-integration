@@ -2,8 +2,6 @@ package com.exemple.integration;
 
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.curator.test.TestingServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,15 +92,9 @@ public class TestServerApplication {
                     logDir + "/" + UUID.randomUUID());
             embeddedKafka.kafkaPorts(kafkaPort);
 
-            return embeddedKafka;
-        }
-
-        @PostConstruct
-        public void startKafka() {
-
             LOG.info("STARTING EMBEDDED KAFKA");
 
-            embeddedKafka().afterPropertiesSet();
+            return embeddedKafka;
         }
 
     }
