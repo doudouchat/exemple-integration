@@ -111,8 +111,8 @@ public class AccountFailureIT extends AbstractTestNGSpringContextTests {
 
     }
 
-    @DataProvider(name = "updateFailure")
-    private static Object[][] updateFailure() {
+    @DataProvider(name = "updatePatchFailures")
+    private static Object[][] updatePatchFailures() {
 
         Map<String, Object> patch0 = new HashMap<>();
         patch0.put("op", "replace");
@@ -194,8 +194,8 @@ public class AccountFailureIT extends AbstractTestNGSpringContextTests {
         };
     }
 
-    @Test(dataProvider = "updateFailure", dependsOnMethods = "com.exemple.integration.account.v1.AccountNominalIT.updateSuccess")
-    public void updateFailure(Map<String, Object> patch, String expectedPath, String expectedCode) {
+    @Test(dataProvider = "updatePatchFailures", dependsOnMethods = "com.exemple.integration.account.v1.AccountNominalIT.updateSuccess")
+    public void updatePatchFailures(Map<String, Object> patch, String expectedPath, String expectedCode) {
 
         LOG.debug("{}", JsonRestTemplate.given()
 
@@ -245,6 +245,36 @@ public class AccountFailureIT extends AbstractTestNGSpringContextTests {
 
                 .get(ACCOUNT_URL + "/{id}", UUID.randomUUID());
         assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN.value()));
+
+    }
+
+    @DataProvider(name = "updateFailure")
+    private static Object[][] updateFailure() {
+
+        Map<String, Object> patch0 = new HashMap<>();
+        patch0.put("op", "replace");
+        patch0.put("path", "/lastname");
+
+        return new Object[][] {
+                // patch empty
+                { Collections.EMPTY_LIST },
+                // patch without value
+                { Collections.singletonList(patch0) }
+                //
+        };
+    }
+
+    @Test(dataProvider = "updateFailure", dependsOnMethods = "com.exemple.integration.account.v1.AccountNominalIT.updateSuccess")
+    public void updateFailure(List<Map<String, Object>> patchs) {
+
+        Response response = JsonRestTemplate.given()
+
+                .header(APP_HEADER, TEST_APP).header(VERSION_HEADER, VERSION_V1)
+
+                .header("Authorization", "Bearer " + ACCESS_TOKEN)
+
+                .body(patchs).patch(ACCOUNT_URL + "/{id}", ID);
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST.value()));
 
     }
 
