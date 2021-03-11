@@ -127,7 +127,7 @@ public class LoginIT {
                 // id is createOnly
                 { patch0, "/id", "readOnly" },
                 // username is unique
-                { patch1, "/username", "login" } };
+                { patch1, "/username", "username" } };
     }
 
     @Test(dataProvider = "updateFailure", dependsOnMethods = "connexionSuccess")
