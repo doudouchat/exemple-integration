@@ -104,7 +104,7 @@ public class StockNominalIT extends AbstractTestNGSpringContextTests {
     }
 
     @Test(dependsOnMethods = "getSuccess")
-    public void updateFailure() {
+    public void updateInsufficientStockFailure() {
 
         Response response = JsonRestTemplate.given().body(Collections.singletonMap("increment", -100))
 
@@ -113,6 +113,23 @@ public class StockNominalIT extends AbstractTestNGSpringContextTests {
                 .post(STOCK_URL, store, product);
         assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST.value()));
         assertThat(response.getBody().asString(), is("Stock /test_company/" + store + "/" + product + ":13 is insufficient for quantity -100"));
+
+    }
+
+    @Test(dependsOnMethods = "getSuccess")
+    public void updateUnrecognizedFieldFailure() {
+
+        Map<String, Object> stock = new HashMap<>();
+        stock.put("increment", 1);
+        stock.put("other", 10);
+
+        Response response = JsonRestTemplate.given().body(stock)
+
+                .header("Authorization", "Bearer " + ACCESS_TOKEN).header(APP_HEADER, BACK_APP)
+
+                .post(STOCK_URL, store, product);
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST.value()));
+        assertThat(response.getBody().asString(), is("One or more fields are unrecognized"));
 
     }
 
