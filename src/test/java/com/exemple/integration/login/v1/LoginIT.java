@@ -6,6 +6,7 @@ import static com.exemple.integration.core.InitData.TEST_APP;
 import static com.exemple.integration.core.InitData.VERSION_HEADER;
 import static com.exemple.integration.core.InitData.VERSION_V1;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -142,8 +143,8 @@ public class LoginIT {
                 .header("Authorization", "Bearer " + ACCESS_TOKEN).body(patchs).patch(LoginIT.URL + "/{login}", LOGIN);
 
         assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST.value()));
-        assertThat(response.jsonPath().getList("code").get(0), is(expectedCode));
-        assertThat(response.jsonPath().getList("path").get(0), is(expectedPath));
+        assertThat(response.jsonPath().getList("code"), everyItem(is(expectedCode)));
+        assertThat(response.jsonPath().getList("path"), everyItem(is(expectedPath)));
 
     }
 
