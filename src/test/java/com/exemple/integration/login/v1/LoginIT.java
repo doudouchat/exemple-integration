@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -30,7 +31,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
 @ContextConfiguration(classes = { IntegrationTestConfiguration.class })
-public class LoginIT {
+public class LoginIT extends AbstractTestNGSpringContextTests {
 
     public static final String URL = "/ws/v1/logins";
 
@@ -151,7 +152,7 @@ public class LoginIT {
                 // id is createOnly
                 { patch0, "/id", "readOnly" },
                 // username is unique
-                { patch1, "/username", "username" } };
+                { patch1, "/username", "readOnly" } };
     }
 
     @Test(dataProvider = "updateFailure", dependsOnMethods = "connexionSuccess")

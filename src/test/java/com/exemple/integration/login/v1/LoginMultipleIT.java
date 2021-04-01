@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.Test;
 
 import com.exemple.integration.core.IntegrationTestConfiguration;
@@ -28,7 +29,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
 @ContextConfiguration(classes = { IntegrationTestConfiguration.class })
-public class LoginMultipleIT {
+public class LoginMultipleIT extends AbstractTestNGSpringContextTests {
 
     public static final String URL = "/ws/v1/logins";
 

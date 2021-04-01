@@ -153,7 +153,7 @@ public class LoginUpdatePasswordIT extends AbstractTestNGSpringContextTests {
         assertThat(response.jsonPath().get("password"), is(nullValue()));
         assertThat(response.jsonPath().getString("id"), is(ID.toString()));
         assertThat(response.jsonPath().getString("username"), is(LOGIN));
-        assertThat(response.jsonPath().getString("disable"), is(nullValue()));
+        assertThat(response.jsonPath().getString("disabled"), is(nullValue()));
 
     }
 }
