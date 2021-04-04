@@ -5,8 +5,55 @@ on:
 env:
    MAVEN_OPTS: -Xmx1g
 jobs:
-   build:
+   build_service:
       runs-on: ubuntu-latest
+      steps:
+      -  uses: actions/checkout@v2
+      -  name: Set up JDK 1.8
+         uses: actions/setup-java@v1
+         with:
+            java-version: 1.8
+      -  name: Cache Maven packages
+         uses: actions/cache@v2
+         with:
+            path: ~/.m2
+            key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+            restore-keys: ${{ runner.os }}-m2
+      - name: Checkout exemple service
+        uses: actions/checkout@v2
+        with:
+            path: exemple-service
+            repository: doudouchat/exemple-service
+      -  name: Build exemple service
+         run: mvn -f ${{ github.workspace }}/exemple-service clean install -Dmaven.test.skip=true
+      -  name: Build exemple service source
+         run: mvn -f ${{ github.workspace }}/exemple-service source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-service/target/exemple-service-2.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-service -Dpackaging=jar -Dversion=2.0.0-SNAPSHOT -Dclassifier=sources
+   build_authorization:
+      runs-on: ubuntu-latest
+      steps:
+      -  uses: actions/checkout@v2
+      -  name: Set up JDK 1.8
+         uses: actions/setup-java@v1
+         with:
+            java-version: 1.8
+      -  name: Cache Maven packages
+         uses: actions/cache@v2
+         with:
+            path: ~/.m2
+            key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+            restore-keys: ${{ runner.os }}-m2
+      - name: Checkout exemple authorization
+        uses: actions/checkout@v2
+        with:
+            path: exemple-authorization
+            repository: doudouchat/exemple-authorization
+      -  name: Build exemple authorization
+         run: mvn -f ${{ github.workspace }}/exemple-authorization clean install -Dmaven.test.skip=true
+      -  name: Build exemple authorization source
+         run: mvn -f ${{ github.workspace }}/exemple-authorization source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-authorization/target/exemple-authorization-1.0.1-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-authorization -Dpackaging=jar -Dversion=1.0.1-SNAPSHOT -Dclassifier=sources
+   build_integration:
+      runs-on: ubuntu-latest
+      needs: [build_service, build_authorization]
       steps:
       -  uses: actions/checkout@v2
       -  name: Set up JDK 1.8
@@ -25,24 +72,6 @@ jobs:
             path: ~/.embedded-cassandra
             key: ${{ runner.os }}-embedded-cassandra-${{ hashFiles('**/CHANGES.txt') }}
             restore-keys: ${{ runner.os }}-embedded-cassandra
-      - name: Checkout exemple service
-        uses: actions/checkout@v2
-        with:
-            path: exemple-service
-            repository: doudouchat/exemple-service
-      -  name: Build exemple service
-         run: mvn -f ${{ github.workspace }}/exemple-service clean install -Dmaven.test.skip=true
-      -  name: Build exemple service source
-         run: mvn -f ${{ github.workspace }}/exemple-service source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-service/target/exemple-service-2.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-service -Dpackaging=jar -Dversion=2.0.0-SNAPSHOT -Dclassifier=sources
-      - name: Checkout exemple authorization
-        uses: actions/checkout@v2
-        with:
-            path: exemple-authorization
-            repository: doudouchat/exemple-authorization
-      -  name: Build exemple authorization
-         run: mvn -f ${{ github.workspace }}/exemple-authorization clean install -Dmaven.test.skip=true
-      -  name: Build exemple authorization source
-         run: mvn -f ${{ github.workspace }}/exemple-authorization source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-authorization/target/exemple-authorization-1.0.1-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-authorization -Dpackaging=jar -Dversion=1.0.1-SNAPSHOT -Dclassifier=sources
       -  name: Build with Maven
          run: mvn clean verify -Pwebservice,it,report
       -  name: display logs cargo
