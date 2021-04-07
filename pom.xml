@@ -758,6 +758,7 @@
 										<exclude>com/exemple/authorization/resource/**/mapper/*MapperBuilder*</exclude>
 										<exclude>com/exemple/service/api/integration/**</exclude>
 										<exclude>com/exemple/integration/**</exclude>
+										<exclude>com/exemple/authorization/application/**</exclude>
 									</excludes>
 								</configuration>
 							</execution>
