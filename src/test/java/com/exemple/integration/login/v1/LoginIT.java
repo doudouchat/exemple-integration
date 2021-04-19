@@ -17,7 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
@@ -96,20 +99,59 @@ public class LoginIT extends AbstractTestNGSpringContextTests {
     @Test(dependsOnMethods = "exist")
     public void connexionSuccess() {
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("grant_type", "password");
-        params.put("username", LOGIN);
-        params.put("password", "mdp");
+        Response response = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC)
+
+                .header("Authorization", "Bearer " + ACCESS_APP_TOKEN).formParams("username", LOGIN, "password", "mdp")
+
+                .post("/login");
+
+        assertThat(response.getStatusCode(), is(HttpStatus.FOUND.value()));
+
+        String xAuthToken = response.getHeader("X-Auth-Token");
+        assertThat(xAuthToken, is(notNullValue()));
+
+        response = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC).redirects().follow(false)
+
+                .header("X-Auth-Token", xAuthToken)
+
+                .queryParam("response_type", "code")
+
+                .queryParam("client_id", "test_user")
+
+                .queryParam("scope", "login:update login:read login:delete")
+
+                .queryParam("state", "123")
+
+                .get("/oauth/authorize");
+
+        assertThat(response.getStatusCode(), is(HttpStatus.SEE_OTHER.value()));
+
+        String location = response.getHeader(HttpHeaders.LOCATION);
+        assertThat(location, is(notNullValue()));
+
+        Matcher locationMatcher = Pattern.compile(".*code=(\\w*)(&state=)?(.*)?", Pattern.DOTALL).matcher(location);
+        assertThat(locationMatcher.lookingAt(), is(true));
+
+        String code = locationMatcher.group(1);
+        String state = locationMatcher.group(3);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("grant_type", "authorization_code");
+        params.put("code", code);
         params.put("client_id", "test_user");
         params.put("redirect_uri", "xxx");
 
-        Response response = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC).auth()
-                .basic("test_user", "secret").formParams(params).post("/oauth/token");
+        response = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC)
+
+                .auth().basic("test_user", "secret")
+
+                .formParams(params).post("/oauth/token");
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
 
         ACCESS_TOKEN = response.jsonPath().getString("access_token");
         assertThat(ACCESS_TOKEN, is(notNullValue()));
+        assertThat(state, is("123"));
 
     }
 
