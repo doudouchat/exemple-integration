@@ -20,6 +20,8 @@ authorization:
       password: mypass
    kafka:
       bootstrap-servers: localhost:${kafka.port}
+   hazelcast:
+      addresses: localhost:${hazelcast.port}
 store:
    zookeeper:
       host: 127.0.0.1:${zookeeper.port}

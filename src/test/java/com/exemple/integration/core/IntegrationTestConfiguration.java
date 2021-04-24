@@ -1,5 +1,6 @@
 package com.exemple.integration.core;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
@@ -14,6 +15,9 @@ import com.exemple.authorization.core.client.AuthorizationClientConfiguration;
 import com.exemple.service.application.core.ApplicationConfiguration;
 import com.exemple.service.resource.core.ResourceConfiguration;
 import com.github.nosan.boot.autoconfigure.embedded.cassandra.EmbeddedCassandraAutoConfiguration;
+import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.client.config.ClientConfig;
+import com.hazelcast.core.HazelcastInstance;
 
 @Configuration
 @Import({ ResourceConfiguration.class, ApplicationConfiguration.class, AuthorizationClientConfiguration.class })
@@ -34,6 +38,15 @@ public class IntegrationTestConfiguration {
 
         propertySourcesPlaceholderConfigurer.setProperties(properties.getObject());
         return propertySourcesPlaceholderConfigurer;
+    }
+
+    @Bean
+    public HazelcastInstance hazelcastInstance(@Value("${authorization.hazelcast.addresses}") String[] addresses) {
+
+        ClientConfig config = new ClientConfig();
+        config.getNetworkConfig().addAddress(addresses);
+
+        return HazelcastClient.newHazelcastClient(config);
     }
 
 }
