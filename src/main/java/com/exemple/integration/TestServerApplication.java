@@ -59,6 +59,7 @@ public class TestServerApplication {
             config.getNetworkConfig().setPort(port);
             config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
             config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(false);
+            config.getUserCodeDeploymentConfig().setEnabled(true);
 
             LOG.info("STARTING EMBEDDED HAZELCAST");
 
