@@ -48,7 +48,7 @@
 		<!-- API -->
 		<cassandra.host>127.0.0.1</cassandra.host>
 		<cassandra.port>9042</cassandra.port>
-		<hazelcast.port>5705</hazelcast.port>
+		<hazelcast.port>5706</hazelcast.port>
 		<zookeeper.port>10024</zookeeper.port>
 
 		<!-- VERSION -->
