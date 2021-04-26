@@ -1,4 +1,7 @@
 hazelcast:
+  user-code-deployment:
+    enabled: true
+    class-cache-mode: ETERNAL
   network:
     rest-api:
       enabled: true
