@@ -1,6 +1,5 @@
 package com.exemple.integration.core;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
@@ -41,11 +40,9 @@ public class IntegrationTestConfiguration {
     }
 
     @Bean
-    public HazelcastInstance hazelcastInstance(@Value("${authorization.hazelcast.addresses}") String[] addresses) {
+    public HazelcastInstance hazelcastInstance() {
 
-        ClientConfig config = new ClientConfig();
-        config.getNetworkConfig().addAddress(addresses);
-
+        ClientConfig config = ClientConfig.load();
         return HazelcastClient.newHazelcastClient(config);
     }
 
