@@ -22,6 +22,7 @@ authorization:
       bootstrap-servers: localhost:${kafka.port}
    hazelcast:
       addresses: localhost:${hazelcast.port}
+      cluster: "dev"
 store:
    zookeeper:
       host: 127.0.0.1:${zookeeper.port}
