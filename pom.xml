@@ -437,6 +437,8 @@
 							</artifactInstaller>
 							<systemProperties>
 								<spring.profiles.active>etude</spring.profiles.active>
+								<hazelcast.config>${project.build.testOutputDirectory}/hazelcast.yaml</hazelcast.config>
+								<hazelcast.client.config>${project.build.testOutputDirectory}/hazelcast-client.yaml</hazelcast.client.config>
 							</systemProperties>
 						</container>
 						<configuration>
