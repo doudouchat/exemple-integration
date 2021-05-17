@@ -168,7 +168,7 @@ public class PasswordIT extends AbstractTestNGSpringContextTests {
 
                 .header("Authorization", "Bearer " + ACCESS_TOKEN).body(patchs).patch(LoginIT.URL + "/{login}", USERNAME);
 
-        assertThat(response.getStatusCode(), is(HttpStatus.UNAUTHORIZED.value()));
+        assertThat(response.getStatusCode(), is(HttpStatus.NO_CONTENT.value()));
 
     }
 

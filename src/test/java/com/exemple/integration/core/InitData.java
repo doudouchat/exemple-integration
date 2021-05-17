@@ -247,25 +247,24 @@ public class InitData {
                 .withClient("test").secret(password).authorizedGrantTypes("client_credentials").redirectUris("xxx")
                 .scopes("account:create", "login:head", "login:create", "subscription:update", "subscription:read")
                 .autoApprove("account:create", "login:create", "subscription:update", "subscription:read").authorities("ROLE_APP")
-                .resourceIds("exemple").additionalInformation("keyspace=test_keyspace")
+                .additionalInformation("keyspace=test_keyspace")
 
                 .and()
 
                 .withClient("test_user").secret(password).authorizedGrantTypes("password", "authorization_code", "refresh_token").redirectUris("xxx")
                 .scopes("account:read", "account:update", "login:update", "login:delete", "login:read", "login:head")
                 .autoApprove("account:read", "account:update", "login:update", "login:delete", "login:read").authorities("ROLE_APP")
-                .resourceIds("exemple").additionalInformation("keyspace=test_keyspace")
+                .additionalInformation("keyspace=test_keyspace")
 
                 .and()
 
                 .withClient("back").secret(password).authorizedGrantTypes("client_credentials").scopes("stock").autoApprove("stock")
-                .authorities("ROLE_BACK").resourceIds("exemple").additionalInformation("keyspace=test_keyspace")
+                .authorities("ROLE_BACK").additionalInformation("keyspace=test_keyspace")
 
                 .and()
 
                 .withClient("back_user").secret(password).authorizedGrantTypes("password").scopes("stock:read", "stock:update")
-                .autoApprove("stock:read", "stock:update").authorities("ROLE_BACK").resourceIds("exemple")
-                .additionalInformation("keyspace=test_keyspace")
+                .autoApprove("stock:read", "stock:update").authorities("ROLE_BACK").additionalInformation("keyspace=test_keyspace")
 
                 .and()
 
@@ -274,7 +273,7 @@ public class InitData {
                 .and()
 
                 .withClient("admin").secret(password).authorizedGrantTypes("client_credentials").scopes("xxx").autoApprove("xxx")
-                .authorities("ROLE_TRUSTED_CLIENT").resourceIds("exemple").additionalInformation("keyspace=test_keyspace")
+                .authorities("ROLE_TRUSTED_CLIENT").additionalInformation("keyspace=test_keyspace")
 
                 .and().build();
 
