@@ -25,7 +25,7 @@ import com.hazelcast.core.HazelcastInstance;
 public class IntegrationTestConfiguration {
 
     public static final String AUTHORIZATION_URL = System.getProperty("authorization.host", "http://localhost") + ":"
-            + System.getProperty("authorization.port", "8084") + "/" + System.getProperty("authorization.contextpath", "ExempleAuthorization");
+            + System.getProperty("authorization.port", "8090") + "/" + System.getProperty("authorization.contextpath", "ExempleAuthorization");
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
