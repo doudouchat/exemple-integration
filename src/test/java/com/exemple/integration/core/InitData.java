@@ -60,11 +60,11 @@ public class InitData {
         // APP
 
         Map<String, Object> detail = new HashMap<>();
-        detail.put("keyspace", "test_keyspace");
-        detail.put("authorization_keyspace", "test_keyspace");
+        detail.put("keyspace", "test_service");
+        detail.put("authorization_keyspace", "test_authorization");
         detail.put("company", "test_company");
-        detail.put("clientIds", Sets.newHashSet("test", "test_user"));
-        detail.put("authorization_clientIds", Sets.newHashSet("test", "test_user"));
+        detail.put("clientIds", Sets.newHashSet("test_service", "test_service_user"));
+        detail.put("authorization_clientIds", Sets.newHashSet("test_service", "test_service_user"));
 
         Set<String> accountFilter = new HashSet<>();
         accountFilter.add("lastname");
@@ -92,7 +92,7 @@ public class InitData {
         accountField.add("addresses[*[city,street]]");
         accountField.add("cgus[code,version]");
 
-        ResourceExecutionContext.get().setKeyspace("test_keyspace");
+        ResourceExecutionContext.get().setKeyspace("test_service");
 
         SchemaEntity accountSchema = new SchemaEntity();
         accountSchema.setApplication(TEST_APP);
@@ -192,11 +192,9 @@ public class InitData {
         // STOCK
 
         Map<String, Object> backDetail = new HashMap<>();
-        backDetail.put("keyspace", "test_keyspace");
-        backDetail.put("authorization_keyspace", "test_keyspace");
+        backDetail.put("keyspace", "test_service");
         backDetail.put("company", "test_company");
-        backDetail.put("clientIds", Sets.newHashSet("back", "back_user"));
-        backDetail.put("authorization_clientIds", Sets.newHashSet("back", "back_user"));
+        backDetail.put("clientIds", Sets.newHashSet("test_back", "test_back_user"));
 
         applicationDetailService.put(BACK_APP, MAPPER.convertValue(backDetail, JsonNode.class));
 
@@ -214,11 +212,11 @@ public class InitData {
         schemaResource.save(loginSchema);
 
         Map<String, Object> adminDetail = new HashMap<>();
-        adminDetail.put("keyspace", "test_keyspace");
-        adminDetail.put("authorization_keyspace", "test_keyspace");
+        adminDetail.put("keyspace", "test_service");
+        adminDetail.put("authorization_keyspace", "test_authorization");
         adminDetail.put("company", "test_company");
-        adminDetail.put("clientIds", Sets.newHashSet("admin"));
-        adminDetail.put("authorization_clientIds", Sets.newHashSet("admin"));
+        adminDetail.put("clientIds", Sets.newHashSet("test_admin"));
+        adminDetail.put("authorization_clientIds", Sets.newHashSet("test_admin"));
 
         applicationDetailService.put(ADMIN_APP, MAPPER.convertValue(adminDetail, JsonNode.class));
 
@@ -231,27 +229,27 @@ public class InitData {
 
         authorizationClientBuilder
 
-                .withClient("test").secret(password).authorizedGrantTypes("client_credentials").redirectUris("xxx")
+                .withClient("test_service").secret(password).authorizedGrantTypes("client_credentials").redirectUris("xxx")
                 .scopes("account:create", "login:head", "login:create", "subscription:update", "subscription:read")
                 .autoApprove("account:create", "login:create", "subscription:update", "subscription:read").authorities("ROLE_APP")
-                .additionalInformation("keyspace=test_keyspace")
+                .additionalInformation("keyspace=test_authorization")
 
                 .and()
 
-                .withClient("test_user").secret(password).authorizedGrantTypes("password", "authorization_code", "refresh_token").redirectUris("xxx")
-                .scopes("account:read", "account:update", "login:update", "login:delete", "login:read", "login:head")
+                .withClient("test_service_user").secret(password).authorizedGrantTypes("password", "authorization_code", "refresh_token")
+                .redirectUris("xxx").scopes("account:read", "account:update", "login:update", "login:delete", "login:read", "login:head")
                 .autoApprove("account:read", "account:update", "login:update", "login:delete", "login:read").authorities("ROLE_APP")
-                .additionalInformation("keyspace=test_keyspace")
+                .additionalInformation("keyspace=test_authorization")
 
                 .and()
 
-                .withClient("back").secret(password).authorizedGrantTypes("client_credentials").scopes("stock").autoApprove("stock")
-                .authorities("ROLE_BACK").additionalInformation("keyspace=test_keyspace")
+                .withClient("test_back").secret(password).authorizedGrantTypes("client_credentials").scopes("stock").autoApprove("stock")
+                .authorities("ROLE_BACK")
 
                 .and()
 
-                .withClient("back_user").secret(password).authorizedGrantTypes("password").scopes("stock:read", "stock:update")
-                .autoApprove("stock:read", "stock:update").authorities("ROLE_BACK").additionalInformation("keyspace=test_keyspace")
+                .withClient("test_back_user").secret(password).authorizedGrantTypes("password").scopes("stock:read", "stock:update")
+                .autoApprove("stock:read", "stock:update").authorities("ROLE_BACK")
 
                 .and()
 
@@ -259,8 +257,8 @@ public class InitData {
 
                 .and()
 
-                .withClient("admin").secret(password).authorizedGrantTypes("client_credentials").scopes("xxx").autoApprove("xxx")
-                .authorities("ROLE_TRUSTED_CLIENT").additionalInformation("keyspace=test_keyspace")
+                .withClient("test_admin").secret(password).authorizedGrantTypes("client_credentials").scopes("xxx").autoApprove("xxx")
+                .authorities("ROLE_TRUSTED_CLIENT")
 
                 .and().build();
     }

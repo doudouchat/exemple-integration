@@ -1,7 +1,7 @@
 Feature: api put account
 
   Background: 
-    Given connection to client 'test'
+    Given connection to client 'test_service'
     And delete username 'jean.dupond@gmail.com'
     And create account for application 'test' and version 'v1'
       """
@@ -31,14 +31,23 @@ Feature: api put account
           "lastname": "Dupont"
       }
       """
-    And create login for application 'test' and version 'v1' and last id
+    And account status is 201
+    And create authorization login 'jean.dupond@gmail.com' for application 'test'
       """
       {
-          "username": "jean.dupond@gmail.com",
           "password": "mdp"
       }
       """
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_user'
+    And account status is 201
+    And login authorization status is 201
+    And create service login for application 'test' and last id
+      """
+      {
+          "username": "jean.dupond@gmail.com"
+      }
+      """
+    And login service status is 201
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
     And connection status is 200
 
   Scenario: put account

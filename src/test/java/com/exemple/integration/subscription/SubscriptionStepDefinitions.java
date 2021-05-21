@@ -45,7 +45,7 @@ public class SubscriptionStepDefinitions {
     public void initKeyspace() {
 
         ApplicationDetail detail = new ApplicationDetail();
-        detail.setKeyspace("test_keyspace");
+        detail.setKeyspace("test_service");
 
         ResourceExecutionContext.get().setKeyspace(detail.getKeyspace());
 
