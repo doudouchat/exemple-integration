@@ -1,7 +1,9 @@
 package com.exemple.integration.core;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -14,7 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import com.exemple.authorization.core.client.AuthorizationClientBuilder;
-import com.exemple.service.application.common.model.ApplicationDetail;
 import com.exemple.service.application.detail.ApplicationDetailService;
 import com.exemple.service.resource.core.ResourceExecutionContext;
 import com.exemple.service.resource.schema.SchemaResource;
@@ -58,10 +59,11 @@ public class InitData {
 
         // APP
 
-        ApplicationDetail detail = new ApplicationDetail();
-        detail.setKeyspace("test_keyspace");
-        detail.setCompany("test_company");
-        detail.setClientIds(Sets.newHashSet("test", "test_user"));
+        Map<String, Object> detail = new HashMap<>();
+        detail.put("keyspace", "test_keyspace");
+        detail.put("authorization_keyspace", "test_keyspace");
+        detail.put("company", "test_company");
+        detail.put("clientIds", Sets.newHashSet("test", "test_user"));
 
         Set<String> accountFilter = new HashSet<>();
         accountFilter.add("id");
@@ -91,7 +93,7 @@ public class InitData {
         accountField.add("addresses[*[city,street]]");
         accountField.add("cgus[code,version]");
 
-        ResourceExecutionContext.get().setKeyspace(detail.getKeyspace());
+        ResourceExecutionContext.get().setKeyspace("test_keyspace");
 
         SchemaEntity accountSchema = new SchemaEntity();
         accountSchema.setApplication(TEST_APP);
@@ -187,16 +189,17 @@ public class InitData {
 
         schemaResource.save(subscriptionSchema);
 
-        applicationDetailService.put(TEST_APP, detail);
+        applicationDetailService.put(TEST_APP, MAPPER.convertValue(detail, JsonNode.class));
 
         // STOCK
 
-        ApplicationDetail backDetail = new ApplicationDetail();
-        backDetail.setKeyspace("test_keyspace");
-        backDetail.setCompany("test_company");
-        backDetail.setClientIds(Sets.newHashSet("back", "back_user"));
+        Map<String, Object> backDetail = new HashMap<>();
+        backDetail.put("keyspace", "test_keyspace");
+        backDetail.put("authorization_keyspace", "test_keyspace");
+        backDetail.put("company", "test_company");
+        backDetail.put("clientIds", Sets.newHashSet("back", "back_user"));
 
-        applicationDetailService.put(BACK_APP, backDetail);
+        applicationDetailService.put(BACK_APP, MAPPER.convertValue(backDetail, JsonNode.class));
 
         // ADMIN
 
@@ -211,12 +214,13 @@ public class InitData {
 
         schemaResource.save(loginSchema);
 
-        ApplicationDetail adminDetail = new ApplicationDetail();
-        adminDetail.setKeyspace("test_keyspace");
-        adminDetail.setCompany("test_company");
-        adminDetail.setClientIds(Sets.newHashSet("admin"));
+        Map<String, Object> adminDetail = new HashMap<>();
+        adminDetail.put("keyspace", "test_keyspace");
+        adminDetail.put("authorization_keyspace", "test_keyspace");
+        adminDetail.put("company", "test_company");
+        adminDetail.put("clientIds", Sets.newHashSet("admin"));
 
-        applicationDetailService.put(ADMIN_APP, adminDetail);
+        applicationDetailService.put(ADMIN_APP, MAPPER.convertValue(adminDetail, JsonNode.class));
 
     }
 
