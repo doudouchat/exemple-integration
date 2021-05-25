@@ -1,13 +1,7 @@
 package com.exemple.integration.core;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -16,12 +10,10 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import com.exemple.authorization.core.client.AuthorizationClientBuilder;
-import com.exemple.service.api.integration.core.JsonRestTemplate;
 import com.exemple.service.application.common.model.ApplicationDetail;
 import com.exemple.service.application.detail.ApplicationDetailService;
 import com.exemple.service.resource.core.ResourceExecutionContext;
@@ -31,9 +23,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Sets;
-
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 
 @Component
 @DependsOn("initCassandra")
@@ -52,12 +41,6 @@ public class InitData {
     public static final String VERSION_V1 = "v1";
 
     public static final String VERSION_V0 = "v0";
-
-    public static String ACCESS_APP_TOKEN = null;
-
-    public static String ACCESS_ADMIN_TOKEN = null;
-
-    public static String ACCESS_BACK_TOKEN = null;
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -276,27 +259,6 @@ public class InitData {
                 .authorities("ROLE_TRUSTED_CLIENT").additionalInformation("keyspace=test_keyspace")
 
                 .and().build();
-
-        ACCESS_APP_TOKEN = initToken(TEST_APP, "secret");
-
-        ACCESS_ADMIN_TOKEN = initToken(ADMIN_APP, "secret");
-
-        ACCESS_BACK_TOKEN = initToken(BACK_APP, "secret");
-    }
-
-    private static String initToken(String username, String password) {
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("grant_type", "client_credentials");
-
-        Response response = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC).auth()
-                .basic(username, password).formParams(params).post("/oauth/token");
-
-        assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
-        assertThat(response.jsonPath().getString("access_token"), is(notNullValue()));
-
-        return response.jsonPath().getString("access_token");
-
     }
 
 }
