@@ -48,7 +48,6 @@ Feature: api account
     And connection status is 200
     And account exists
     And account 'creation_date' exists
-    And account 'id' exists
     And account is
       """
       {
