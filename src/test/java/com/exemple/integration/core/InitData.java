@@ -64,6 +64,7 @@ public class InitData {
         detail.put("authorization_keyspace", "test_keyspace");
         detail.put("company", "test_company");
         detail.put("clientIds", Sets.newHashSet("test", "test_user"));
+        detail.put("authorization_clientIds", Sets.newHashSet("test", "test_user"));
 
         Set<String> accountFilter = new HashSet<>();
         accountFilter.add("lastname");
@@ -195,6 +196,7 @@ public class InitData {
         backDetail.put("authorization_keyspace", "test_keyspace");
         backDetail.put("company", "test_company");
         backDetail.put("clientIds", Sets.newHashSet("back", "back_user"));
+        backDetail.put("authorization_clientIds", Sets.newHashSet("back", "back_user"));
 
         applicationDetailService.put(BACK_APP, MAPPER.convertValue(backDetail, JsonNode.class));
 
@@ -216,6 +218,7 @@ public class InitData {
         adminDetail.put("authorization_keyspace", "test_keyspace");
         adminDetail.put("company", "test_company");
         adminDetail.put("clientIds", Sets.newHashSet("admin"));
+        adminDetail.put("authorization_clientIds", Sets.newHashSet("admin"));
 
         applicationDetailService.put(ADMIN_APP, MAPPER.convertValue(adminDetail, JsonNode.class));
 
