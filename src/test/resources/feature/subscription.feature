@@ -1,7 +1,7 @@
 Feature: api subscription
 
   Background: 
-    Given connection to client 'test'
+    Given connection to client 'test_service'
 
   Scenario: create subscription
     Given delete subscription 'jean.dupond@gmail.com'

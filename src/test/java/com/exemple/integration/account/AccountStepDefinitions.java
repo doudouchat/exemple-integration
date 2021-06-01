@@ -25,7 +25,6 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
 import io.cucumber.java.en.And;
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
@@ -112,17 +111,6 @@ public class AccountStepDefinitions {
 
         DocumentContext account = JsonPath.parse(resource.getInputStream());
         Map<String, Object> body = account.put("$", property, value).json();
-
-        createAccount(TEST_APP, VERSION_V1, MAPPER.convertValue(body, JsonNode.class));
-
-    }
-
-    @Given("create account")
-    public void createAccount() throws IOException {
-
-        Resource resource = new ClassPathResource("account/nominal_account.json");
-
-        Map<String, Object> body = JsonPath.parse(resource.getInputStream()).json();
 
         createAccount(TEST_APP, VERSION_V1, MAPPER.convertValue(body, JsonNode.class));
 

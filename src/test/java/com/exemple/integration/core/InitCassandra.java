@@ -33,7 +33,6 @@ public class InitCassandra {
 
     @PostConstruct
     public void initKeyspace() {
-
         LOG.info("INIT EMBEDDED CASSANDRA");
 
         Arrays.stream(scripts).map(ResourceCqlScript::new).forEach((CqlScript script) -> script.forEachStatement(session::execute));

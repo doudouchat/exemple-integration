@@ -1,10 +1,16 @@
-CREATE KEYSPACE IF NOT EXISTS test_keyspace 
+CREATE KEYSPACE IF NOT EXISTS test_service 
   WITH REPLICATION = { 
    'class' : 'NetworkTopologyStrategy', 
    'datacenter1' : 1
 };
 
-USE test_keyspace;
+CREATE KEYSPACE IF NOT EXISTS test_authorization 
+  WITH REPLICATION = { 
+   'class' : 'NetworkTopologyStrategy', 
+   'datacenter1' : 1
+};
+
+USE test_service;
 
 CREATE TYPE IF NOT EXISTS address (
 	street text,
@@ -41,11 +47,7 @@ CREATE TABLE IF NOT EXISTS account (
 
 CREATE TABLE IF NOT EXISTS login (
 	id UUID,
-	username text PRIMARY KEY,
-	password text,
-	disabled boolean,
-	account_locked boolean,
-	roles set<text>
+	username text PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS subscription (
@@ -88,4 +90,14 @@ CREATE TABLE IF NOT EXISTS stock (
 	product text,
 	quantity counter,
 	PRIMARY KEY ((store, product))
+);
+
+USE test_authorization;
+
+CREATE TABLE IF NOT EXISTS login (
+	username text PRIMARY KEY,
+	password text,
+	disabled boolean,
+	account_locked boolean,
+	roles set<text>
 );

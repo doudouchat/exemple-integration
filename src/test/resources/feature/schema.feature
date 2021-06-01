@@ -15,5 +15,5 @@ Feature: schema
 
     Examples: 
       | application | keyspace        |
-      | 'test'      | 'test_keyspace' |
+      | 'test'      | 'test_service' |
 #      | 'other'     | 'other_keyspace' |

@@ -1,100 +1,160 @@
 Feature: api login
 
   Background: 
-    Given connection to client 'test'
+    Given connection to client 'test_service'
     And delete username 'jean.dupond@gmail.com'
 
   Scenario: create login
-    When create login for application 'test' and version 'v1'
+    Given create authorization login 'jean.dupond@gmail.com' for application 'test'
       """
       {
-          "username": "jean.dupond@gmail.com",
-          "password": "mdp",
-          "id": "4a62b95a-3a0a-4104-baee-7bbce9249c6b"
+          "password": "mdp"
       }
       """
-    Then login status is 201
-    And login 'jean.dupond@gmail.com' exists
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_user' with scopes 'login:update login:read login:delete'
-    And connection status is 200
-    And login 'jean.dupond@gmail.com' is
+    And create service login for application 'test'
       """
       {
           "username": "jean.dupond@gmail.com",
-          "id": "4a62b95a-3a0a-4104-baee-7bbce9249c6b"
+          "id": "0bdb83b1-ddba-470d-a2a0-3c06091e909f"
+      }
+      """
+    Then login service status is 201
+    And login authorization status is 201
+    And login authorization 'jean.dupond@gmail.com' exists
+    And login service 'jean.dupond@gmail.com' exists
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user' with scopes 'login:update login:read login:delete'
+    And connection status is 200
+    And login authorization 'jean.dupond@gmail.com' is
+      """
+      {
+          "disabled": false,
+          "accountLocked": false,
+          "roles": []
+          
+      }
+      """
+    And login service 'jean.dupond@gmail.com' is
+      """
+      {
+          "id": "0bdb83b1-ddba-470d-a2a0-3c06091e909f"
       }
       """
 
   Scenario: create multi login
-    Given create login for application 'test' and version 'v1'
+    Given create authorization login 'jean.dupond@gmail.com' for application 'test'
+      """
+      {
+          "password": "mdp"
+      }
+      """
+    And create service login for application 'test'
       """
       {
           "username": "jean.dupond@gmail.com",
-          "password": "mdp",
           "id": "404b2983-3cdc-4c58-8198-35e2fc9d09cf"
       }
       """
     And delete username 'jean.dupont@gmail.com'
-    And create login for application 'test' and version 'v1'
+    And create authorization login 'jean.dupont@gmail.com' for application 'test'
+      """
+      {
+          "password": "mdp"
+      }
+      """
+    And create service login for application 'test'
       """
       {
           "username": "jean.dupont@gmail.com",
-          "password": "mdp",
           "id": "404b2983-3cdc-4c58-8198-35e2fc9d09cf"
       }
       """
-    And login 'jean.dupond@gmail.com' exists
-    And login 'jean.dupont@gmail.com' exists
-    When connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_user' with scopes 'login:update login:read login:delete'
+    And login authorization 'jean.dupond@gmail.com' exists
+    And login service 'jean.dupond@gmail.com' exists
+    And login authorization 'jean.dupont@gmail.com' exists
+    And login service 'jean.dupont@gmail.com' exists
+    When connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user' with scopes 'login:update login:read login:delete'
     Then connection status is 200
-    And login 'jean.dupont@gmail.com' is
+    And login service 'jean.dupont@gmail.com' is
       """
       {
-          "username": "jean.dupont@gmail.com",
           "id": "404b2983-3cdc-4c58-8198-35e2fc9d09cf"
       }
       """
-    And login 'jean.dupond@gmail.com' is
+    And login service 'jean.dupond@gmail.com' is
       """
       {
-          "username": "jean.dupond@gmail.com",
           "id": "404b2983-3cdc-4c58-8198-35e2fc9d09cf"
+      }
+      """
+    And login authorization 'jean.dupond@gmail.com' is
+      """
+      {
+          "disabled": false,
+          "accountLocked": false,
+          "roles": []
+      }
+      """
+    And connection with username 'jean.dupont@gmail.com' and password 'mdp' to client 'test_service_user'
+    And login authorization 'jean.dupont@gmail.com' is
+      """
+      {
+          "disabled": false,
+          "accountLocked": false,
+          "roles": []
       }
       """
 
   Scenario: delete login
-    Given create login for application 'test' and version 'v1'
+    Given create authorization login 'jean.dupond@gmail.com' for application 'test'
       """
       {
-          "password": "mdp",
+          "password": "mdp"
+      }
+      """
+    And create service login for application 'test'
+      """
+      {
           "username": "jean.dupond@gmail.com",
           "id": "636325d4-4d23-419f-b92b-0090502bb965"
       }
       """
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_user'
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
     When delete login 'jean.dupond@gmail.com'
-    Then login status is 204
-    But login 'jean.dupond@gmail.com' not exists
+    Then login authorization status is 204
+    And login service status is 204
+    But login authorization 'jean.dupond@gmail.com' not exists
+    But login service 'jean.dupond@gmail.com' not exists
 
   Scenario: create login fails because username already exists
-    When create login for application 'test' and version 'v1'
+    When create authorization login 'jean.dupond@gmail.com' for application 'test'
       """
       {
-          "password": "mdp",
-          "username": "jean.dupond@gmail.com",
-          "id": "607a1829-8972-463e-9a91-bc55688edc13"
+          "password": "mdp"
       }
       """
-    And create login for application 'test' and version 'v1'
+    And create service login for application 'test'
       """
       {
           "username": "jean.dupond@gmail.com",
-          "password": "mdp",
-          "id": "179d5fa8-dabd-4363-9668-cd295fc90a51"
+          "id": "58ee6563-63a1-448a-b845-7369c86e6c19"
       }
       """
-    Then login status is 400
-    And login error is
+    And create authorization login 'jean.dupond@gmail.com' for application 'test'
+      """
+      {
+          "password": "mdp"
+      }
+      """
+    And create service login for application 'test'
+      """
+      {
+          "username": "jean.dupond@gmail.com",
+          "id": "58ee6563-63a1-448a-b845-7369c86e6c19"
+      }
+      """
+    Then login authorization status is 403
+    And login service status is 400
+    And login service error is
       """
       [{
           "path": "/username",
@@ -104,207 +164,255 @@ Feature: api login
       """
 
   Scenario: change password
-    Given create login for application 'test' and version 'v1'
+    Given create authorization login 'jean.dupond@gmail.com' for application 'test'
       """
       {
-          "username": "jean.dupond@gmail.com",
-          "password": "mdp",
-          "id": "11326617-c0a2-49d0-a358-5c5785c7b855"
+          "password": "mdp"
       }
       """
-    And login status is 201
-    And login 'jean.dupond@gmail.com' exists
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_user'
+    And login authorization status is 201
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
     And connection status is 200
-    When patch login 'jean.dupond@gmail.com' for application 'test' and version 'v1'
-      """
-      [
-         {
-           "op": "replace",
-           "path": "/password",
-           "value": "mdp123"
-         }
-      ]
-      """
-    Then login status is 204
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp123' to client 'test_user'
-    And connection status is 200
-    And login 'jean.dupond@gmail.com' is
+    When put login 'jean.dupond@gmail.com' for application 'test'
       """
       {
-          "username": "jean.dupond@gmail.com",
-          "id": "11326617-c0a2-49d0-a358-5c5785c7b855"
+          "password": "mdp123"
       }
       """
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_user'
+    Then login authorization status is 204
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp123' to client 'test_service_user'
+    And connection status is 200
+    And login authorization 'jean.dupond@gmail.com' is
+      """
+      {
+          "disabled": false,
+          "accountLocked": false,
+          "roles": []
+      }
+      """
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
     And connection status is 401
 
   Scenario: disconnection
-    Given create login for application 'test' and version 'v1'
+    Given create authorization login 'jean.dupond@gmail.com' for application 'test'
+      """
+      {
+          "password": "mdp",
+          "roles" : ["ROLE_ACCOUNT"]
+      }
+      """
+    And create service login for application 'test'
       """
       {
           "username": "jean.dupond@gmail.com",
-          "password": "mdp",
           "id": "11326617-c0a2-49d0-a358-5c5785c7b855"
       }
       """
-    And login status is 201
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_user'
+    And login authorization status is 201
+    And login service status is 201
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
     And connection status is 200
-    And get login 'jean.dupond@gmail.com' for application 'test' and version 'v1'
-    And login status is 200
+    And get service login 'jean.dupond@gmail.com' for application 'test'
+    And login service status is 200
+    And get authorization login 'jean.dupond@gmail.com' for application 'test'
+    And login authorization status is 200
     When disconnection from application 'test'
     Then connection status is 204
-    And get login 'jean.dupond@gmail.com' for application 'test' and version 'v1'
-    And login status is 401
+    And get service login 'jean.dupond@gmail.com' for application 'test'
+    And login service status is 401
+    And get authorization login 'jean.dupond@gmail.com' for application 'test'
+    And login authorization status is 401
 
   Scenario: access login is forbidden
-    Given create login for application 'test' and version 'v1'
+    Given create authorization login 'jean.dupond@gmail.com' for application 'test'
+      """
+      {
+          "password": "mdp"
+      }
+      """
+    And create service login for application 'test'
       """
       {
           "username": "jean.dupond@gmail.com",
-          "password": "mdp",
-          "id": "11326617-c0a2-49d0-a358-5c5785c7b855"
+          "id": "71df872d-7b1f-4d14-bc71-79b76e9a6485"
       }
       """
-    And login status is 201
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_user'
+    And login service status is 201
+    And login authorization status is 201
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
     And connection status is 200
-    When get login 'jean.dupont@gmail.com' for application 'test' and version 'v1'
-    Then login status is 403
+    When get service login 'jean.dupont@gmail.com' for application 'test'
+    And get authorization login 'jean.dupont@gmail.com' for application 'test'
+    Then login service status is 403
+    And login authorization status is 403
 
   Scenario: change username
     Given delete username 'jean.dupont@gmail.com'
-    And create login for application 'test' and version 'v1'
+    And create authorization login 'jean.dupond@gmail.com' for application 'test'
+      """
+      {
+          "password": "mdp"
+      }
+      """
+    And login authorization status is 201
+    And create service login for application 'test'
       """
       {
           "username": "jean.dupond@gmail.com",
-          "password": "mdp",
-          "id": "cd171aaa-a74b-41f5-9c31-d04e812c14bd"
+          "id": "6d82b95c-9022-4633-bc24-e4938e5877f5"
       }
       """
-    And login status is 201
-    And login 'jean.dupond@gmail.com' exists
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_user'
+    And login service status is 201
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
     And connection status is 200
-    When patch login by id cd171aaa-a74b-41f5-9c31-d04e812c14bd for application 'test' and version 'v1'
+    When copy authorization login for application 'test'
       """
-      [
-         {
-           "op": "replace",
-           "path": "/0/username",
-           "value": "jean.dupont@gmail.com"
-         }
-      ]
+      {
+          "fromUsername": "jean.dupond@gmail.com",
+          "toUsername": "jean.dupont@gmail.com"
+      }
       """
-    Then login status is 204
-    And connection with username 'jean.dupont@gmail.com' and password 'mdp' to client 'test_user'
-    And connection status is 200
-    And login 'jean.dupont@gmail.com' is
+    And login authorization status is 201
+    And create service login for application 'test'
       """
       {
           "username": "jean.dupont@gmail.com",
-          "id": "cd171aaa-a74b-41f5-9c31-d04e812c14bd"
+          "id": "6d82b95c-9022-4633-bc24-e4938e5877f5"
       }
       """
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_user'
+    And login service status is 201
+    And delete login 'jean.dupond@gmail.com'
+    Then login authorization status is 204
+    And login service status is 204
+    And connection with username 'jean.dupont@gmail.com' and password 'mdp' to client 'test_service_user'
+    And connection status is 200
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
     And connection status is 401
 
   Scenario: forgotten password
-    Given create login for application 'test' and version 'v1'
+    Given create authorization login 'jean.dupond@gmail.com' for application 'test'
       """
       {
-          "username": "jean.dupond@gmail.com",
-          "password": "mdp",
-          "id": "cd171aaa-a74b-41f5-9c31-d04e812c14bd"
+          "password": "mdp"
       }
       """
-    And login status is 201
-    And login 'jean.dupond@gmail.com' exists
-    And connection to client 'admin'
+    And login authorization status is 201
+    And connection to client 'test_admin'
     When new password for 'jean.dupond@gmail.com' from application 'admin'
     Then connection status is 200
-    And patch login 'jean.dupond@gmail.com' for application 'admin' and version 'v1'
+    And put login 'jean.dupond@gmail.com' for application 'admin'
       """
-      [
-         {
-           "op": "replace",
-           "path": "/password",
-           "value": "mdp123"
-         }
-      ]
+      {
+          "password": "mdp123"
+      }
       """
-    And login status is 204
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp123' to client 'test_user'
+    And login authorization status is 204
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp123' to client 'test_service_user'
     And connection status is 200
 
   Scenario: copy username
     Given delete username 'jean.dupont@gmail.com'
-    And create login for application 'test' and version 'v1'
+    And create authorization login 'jean.dupond@gmail.com' for application 'test'
       """
       {
-          "username": "jean.dupond@gmail.com",
-          "password": "mdp",
-          "id": "cd171aaa-a74b-41f5-9c31-d04e812c14bd"
+          "password": "mdp"
       }
       """
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_user'
-    When patch login by id cd171aaa-a74b-41f5-9c31-d04e812c14bd for application 'test' and version 'v1'
-      """
-      [
-         {
-           "op": "copy",
-           "path": "/1",
-           "from": "/0"
-         },
-         {
-           "op": "replace",
-           "path": "/1/username",
-           "value": "jean.dupont@gmail.com"
-         }
-      ]
-      """
-    Then login status is 204
-    And connection with username 'jean.dupont@gmail.com' and password 'mdp' to client 'test_user'
+    And login authorization status is 201
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
     And connection status is 200
-    And logins cd171aaa-a74b-41f5-9c31-d04e812c14bd are
+    When copy authorization login for application 'test'
       """
-      [
-         {
-           "username": "jean.dupond@gmail.com",
-           "id": "cd171aaa-a74b-41f5-9c31-d04e812c14bd"
-         },
-         {
-           "username": "jean.dupont@gmail.com",
-           "id": "cd171aaa-a74b-41f5-9c31-d04e812c14bd"
-         }
-      ]
+      {
+          "fromUsername": "jean.dupond@gmail.com",
+          "toUsername": "jean.dupont@gmail.com"
+      }
+      """
+    Then login authorization status is 201
+    And connection with username 'jean.dupont@gmail.com' and password 'mdp' to client 'test_service_user'
+    And connection status is 200
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
+    And connection status is 200
+
+  Scenario: copy username fails because username already exists
+    Given delete username 'jean.dupont@gmail.com'
+    And create authorization login 'jean.dupond@gmail.com' for application 'test'
+      """
+      {
+          "password": "mdp"
+      }
+      """
+    And create authorization login 'jean.dupont@gmail.com' for application 'test'
+      """
+      {
+          "password": "mdp"
+      }
+      """
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
+    And connection status is 200
+    When copy authorization login for application 'test'
+      """
+      {
+          "fromUsername": "jean.dupond@gmail.com",
+          "toUsername": "jean.dupont@gmail.com"
+      }
+      """
+    Then login authorization status is 400
+    And login authorization error is
+      """
+      [{
+          "path": "/toUsername",
+          "code": "username",
+          "message": "[jean.dupont@gmail.com] already exists"
+      }]
+      """
+
+  Scenario: copy username fails because username not found
+    Given create authorization login 'jean.dupond@gmail.com' for application 'test'
+      """
+      {
+          "password": "mdp"
+      }
+      """
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
+    And connection status is 200
+    And delete username 'jean.dupond@gmail.com'
+    When copy authorization login for application 'test'
+      """
+      {
+          "fromUsername": "jean.dupond@gmail.com",
+          "toUsername": "jean.dupont@gmail.com"
+      }
+      """
+    Then login authorization status is 400
+    And login authorization error is
+      """
+      [{
+          "path": "/fromUsername",
+          "code": "not_found",
+          "message": "[jean.dupond@gmail.com] not found"
+      }]
       """
 
   Scenario: disable login
-    Given create login for application 'test' and version 'v1'
+    Given create authorization login 'jean.dupond@gmail.com' for application 'test'
       """
       {
-          "username": "jean.dupond@gmail.com",
-          "password": "mdp",
-          "id": "11326617-c0a2-49d0-a358-5c5785c7b855"
+          "password": "mdp"
       }
       """
-    And login status is 201
-    And login 'jean.dupond@gmail.com' exists
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_user'
+    And login authorization status is 201
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
     And connection status is 200
-    When put login 'jean.dupond@gmail.com' for application 'test' and version 'v1'
+    When put login 'jean.dupond@gmail.com' for application 'test'
       """
       {
-          "username": "jean.dupond@gmail.com",
           "password": "mdp",
-          "id": "11326617-c0a2-49d0-a358-5c5785c7b855",
           "disabled": true
       }
       """
-    Then login status is 204
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_user'
+    Then login authorization status is 204
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
     And connection status is 400
     And connection error is
       """

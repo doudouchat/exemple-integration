@@ -1,7 +1,7 @@
 Feature: api stock
 
   Background: 
-    Given connection with username 'admin' and password 'admin123' to client 'back_user'
+    Given connection with username 'admin' and password 'admin123' to client 'test_back_user'
 
   Scenario: increase stock
     When increase of 5 for product 'product1' from store 'store'
