@@ -78,7 +78,27 @@ CREATE TABLE IF NOT EXISTS resource_schema (
 	patch set<text>,
 	PRIMARY KEY ((app), resource, version, profile)
 );
-       
+
+CREATE TABLE IF NOT EXISTS account_event (
+	id UUID,
+	date timestamp,
+	data text,
+	event_type text,
+	application text,
+	version text,
+	PRIMARY KEY ((id), date)
+);
+
+CREATE TABLE IF NOT EXISTS subscription_event (
+	email text,
+	date timestamp,
+	data text,
+	event_type text,
+	application text,
+	version text,
+	PRIMARY KEY ((email), date)
+);
+
 CREATE INDEX IF NOT EXISTS account_status
 	ON account ( status );
 
