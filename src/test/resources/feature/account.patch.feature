@@ -157,6 +157,26 @@ Feature: api patch account
       {"path":"/creation_date","code":"readOnly"}
       """
 
+  Scenario: patch account fails because creation_date is readonly
+    When patch account for application 'test' and version 'v1'
+      """
+      [
+         {
+           "op": "replace",
+           "path": "/creation_date",
+           "value": "2019-02-25T19:16:40Z"
+         }
+      ]
+      """
+    Then account status is 400
+    And account error is
+      """
+      [{
+          "path": "/creation_date",
+          "code": "readOnly"
+      }]
+      """
+
   Scenario: patch account fails access is forbidden
     When patch account 5aa2387a-cf87-4163-902e-69a6706708b8 for application 'test' and version 'v1'
       """
