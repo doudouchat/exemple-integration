@@ -135,6 +135,28 @@ Feature: api patch account
       }]
       """
 
+  Scenario: patch account fails because creation_date is incorrect
+    When patch account for application 'test' and version 'v1'
+      """
+      [
+         {
+           "op": "replace",
+           "path": "/creation_date",
+           "value": "2019-02-30T19:16:40Z"
+         }
+      ]
+      """
+    Then account status is 400
+    And account error contains 2 errors
+    And account error contains
+      """
+      {"path":"/creation_date","code":"format"}
+      """
+    And account error contains
+      """
+      {"path":"/creation_date","code":"readOnly"}
+      """
+
   Scenario: patch account fails access is forbidden
     When patch account 5aa2387a-cf87-4163-902e-69a6706708b8 for application 'test' and version 'v1'
       """

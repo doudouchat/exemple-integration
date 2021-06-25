@@ -19,6 +19,7 @@ import com.exemple.integration.authorization.AuthorizationTestContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Streams;
 import com.jayway.jsonpath.DocumentContext;
@@ -176,6 +177,26 @@ public class AccountStepDefinitions {
         }
 
         assertThat(errors, is(body));
+
+    }
+
+    @And("account error contains {int} errors")
+    public void checkCountError(int count) throws JsonProcessingException {
+
+        ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
+
+        assertThat("errors " + errors.toPrettyString() + " not contain expected errors", (int) Streams.stream(errors.elements()).count(), is(count));
+
+    }
+
+    @And("account error contains")
+    public void checkOneError(JsonNode body) throws JsonProcessingException {
+
+        ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
+        Streams.stream(errors.elements()).map(ObjectNode.class::cast).forEach((ObjectNode error) -> error.remove("message"));
+
+        assertThat("errors " + errors.toPrettyString() + " not contain " + body.toPrettyString(),
+                Streams.stream(errors.elements()).filter(error -> error.equals(body)).findAny().isPresent(), is(true));
 
     }
 
