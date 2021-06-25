@@ -1,8 +1,21 @@
 name: build
 on:
-- push
-- pull_request
-- workflow_dispatch
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+  workflow_dispatch:
+    inputs:
+      branch_service:
+        description: 'Service branch'
+        required: true
+        default: 'master'
+      branch_authorization:
+        description: 'Authorization branch'
+        required: true
+        default: 'master'
 env:
    MAVEN_OPTS: -Xmx1g
 jobs:
@@ -20,6 +33,10 @@ jobs:
             path: ~/.m2
             key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
             restore-keys: ${{ runner.os }}-m2
+      - name: maven-settings-xml-action
+        uses: whelk-io/maven-settings-xml-action@v14
+        with:
+           repositories: '[{ "id": "repository.spring.milestone", "url": "https://repo.spring.io/milestone" }]'
       -  name: Cache embedded cassandra
          uses: actions/cache@v2
          with:
@@ -31,6 +48,7 @@ jobs:
         with:
             path: exemple-service
             repository: doudouchat/exemple-service
+            ref: ${{ github.event.inputs.branch_service }}
       -  name: Build exemple service
          run: mvn -f ${{ github.workspace }}/exemple-service clean install -Dmaven.test.skip=true
       -  name: Build exemple service source
@@ -40,6 +58,7 @@ jobs:
         with:
             path: exemple-authorization
             repository: doudouchat/exemple-authorization
+            ref: ${{ github.event.inputs.branch_authorization }}
       -  name: Build exemple authorization
          run: mvn -f ${{ github.workspace }}/exemple-authorization clean install -Dmaven.test.skip=true
       -  name: Build exemple authorization source
