@@ -52,7 +52,7 @@ jobs:
       -  name: Build exemple service
          run: mvn -f ${{ github.workspace }}/exemple-service clean install -Dmaven.test.skip=true
       -  name: Build exemple service source
-         run: mvn -f ${{ github.workspace }}/exemple-service source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-service/target/exemple-service-2.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-service -Dpackaging=jar -Dversion=2.0.0-SNAPSHOT -Dclassifier=sources
+         run: mvn -f ${{ github.workspace }}/exemple-service source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-service/target/exemple-service-3.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-service -Dpackaging=jar -Dversion=3.0.0-SNAPSHOT -Dclassifier=sources
       - name: Checkout exemple authorization
         uses: actions/checkout@v2
         with:
