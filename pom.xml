@@ -468,7 +468,7 @@
 						<container>
 							<containerId>${tomcat.container.id}</containerId>
 							<output>${project.build.directory}/cargo/configurations/${tomcat.container.id}/logs/container.log</output>
-							<timeout>180000</timeout>
+							<timeout>600000</timeout>
 							<artifactInstaller>
 								<groupId>org.apache.tomcat</groupId>
 								<artifactId>tomcat</artifactId>
