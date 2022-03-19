@@ -11,7 +11,6 @@ import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.exemple.integration.authorization.AuthorizationTestContext;
-import com.exemple.service.application.common.model.ApplicationDetail;
 import com.exemple.service.customer.subscription.SubscriptionResource;
 import com.exemple.service.resource.core.ResourceExecutionContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -44,10 +43,7 @@ public class SubscriptionStepDefinitions {
     @Before
     public void initKeyspace() {
 
-        ApplicationDetail detail = new ApplicationDetail();
-        detail.setKeyspace("test_service");
-
-        ResourceExecutionContext.get().setKeyspace(detail.getKeyspace());
+        ResourceExecutionContext.get().setKeyspace("test_service");
 
     }
 
