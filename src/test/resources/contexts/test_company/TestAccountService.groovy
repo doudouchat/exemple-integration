@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.node.TextNode
 import groovy.transform.CompileDynamic
 
 @CompileDynamic
-class AccountServiceTestImpl implements AccountService {
+class TestAccountService implements AccountService {
 
     private static final String ACCOUNT = "account"
 

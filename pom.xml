@@ -792,13 +792,9 @@
 								</goals>
 								<configuration>
 									<excludes>
-										<exclude>com/exemple/service/customer/login/resource/LoginServiceResourceImpl*</exclude>
-										<exclude>com/exemple/service/customer/login/validation/LoginValidationCustomImpl*</exclude>
-										<exclude>com/exemple/service/customer/subscription/resource/SubscriptionServiceResourceImpl*</exclude>
-										<exclude>com/exemple/service/customer/subscription/validation/SubscriptionValidationCustomImpl*</exclude>
-										<exclude>com/exemple/service/customer/account/validation/AccountValidationCustomImpl*</exclude>
-										<exclude>com/exemple/service/customer/account/resource/AccountServiceResourceImpl*</exclude>
-										<exclude>com/exemple/service/customer/account/resource/TestAccountServiceResource*</exclude>
+										<exclude>com/exemple/service/customer/account/AccountService*</exclude>
+										<exclude>com/exemple/service/customer/subscription/SubscriptionService*</exclude>
+										<exclude>com/exemple/service/customer/account/TestAccountService*</exclude>
 										<exclude>com/exemple/service/resource/**/mapper/*MapperBuilder*</exclude>
 										<exclude>com/exemple/authorization/resource/**/mapper/*MapperBuilder*</exclude>
 										<exclude>com/exemple/service/api/integration/**</exclude>
