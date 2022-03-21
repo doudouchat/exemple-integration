@@ -431,7 +431,7 @@
 				</plugin>
 
 				<!-- SPRING BOOT -->
-				<!-- https://docs.spring.io/spring-boot/docs/current/maven-plugin/index.html -->
+				<!-- https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle -->
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
@@ -439,7 +439,8 @@
 					<configuration>
 						<jvmArguments>-Dlogging.config=file:${application.log.file}</jvmArguments>
 						<jmxPort>${embedded.jmx.port}</jmxPort>
-						<wait>3000</wait>
+						<wait>1000</wait>
+						<maxAttempts>360</maxAttempts>
 						<fork>true</fork>
 					</configuration>
 					<executions>
