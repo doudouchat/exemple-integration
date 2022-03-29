@@ -80,6 +80,7 @@ public class InitData {
         accountFilter.add("cgus[code,version]");
 
         Set<String> accountField = new HashSet<>();
+        accountField.add("id");
         accountField.add("lastname");
         accountField.add("firstname");
         accountField.add("email");
