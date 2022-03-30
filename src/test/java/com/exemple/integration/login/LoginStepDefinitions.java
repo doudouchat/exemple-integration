@@ -1,23 +1,22 @@
 package com.exemple.integration.login;
 
 import static com.exemple.integration.core.InitData.TEST_APP;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.exemple.integration.account.AccountTestContext;
 import com.exemple.integration.authorization.AuthorizationTestContext;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 
@@ -26,13 +25,7 @@ public class LoginStepDefinitions {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Autowired
-    private LoginTestContext context;
-
-    @Autowired
-    private LoginServiceTestContext loginContext;;
-
-    @Autowired
-    private AccountTestContext accountContext;
+    private AccountTestContext context;
 
     @Autowired
     private AuthorizationTestContext authorizationContext;
@@ -48,63 +41,21 @@ public class LoginStepDefinitions {
 
     }
 
-    @When("create authorization login {string} for application {string}")
-    public void createLogin(String username, String application, JsonNode body) {
+    @And("create authorization login {string}")
+    public void createLogin(String username, JsonNode body) {
 
-        Response response = LoginApiClient.put(username, body, authorizationContext.lastAccessToken(), application);
+        Response response = LoginApiClient.put(username, body, authorizationContext.lastAccessToken(), TEST_APP);
 
         context.savePut(response);
 
     }
 
-    @When("create service login for application {string} and last id")
-    public void createLoginWithLastId(String application, JsonNode body) {
+    @When("put login {string}")
+    public void putLogin(String username, JsonNode body) {
 
-        ((ObjectNode) body).set("id", TextNode.valueOf(accountContext.lastId().toString()));
+        Response response = LoginApiClient.put(username, body, authorizationContext.lastAccessToken(), TEST_APP);
 
-        Response response = LoginServiceApiClient.post(body, authorizationContext.lastAccessToken(), application);
-
-        loginContext.savePost(response);
-
-    }
-
-    @When("create service login for application {string}")
-    public void createLoginWithId(String application, JsonNode body) {
-
-        Response response = LoginServiceApiClient.post(body, authorizationContext.lastAccessToken(), application);
-
-        loginContext.savePost(response);
-
-    }
-
-    @When("delete login {string}")
-    public void deleteLogin(String username) {
-
-        Response response = LoginApiClient.delete(username, authorizationContext.lastAccessToken(), TEST_APP);
-
-        context.saveDelete(response);
-
-        response = LoginServiceApiClient.delete(username, authorizationContext.lastAccessToken(), TEST_APP);
-
-        loginContext.saveDelete(response);
-
-    }
-
-    @When("get authorization login {string} for application {string}")
-    public void getLogin(String username, String application) {
-
-        Response response = LoginApiClient.get(username, authorizationContext.lastAccessToken(), application);
-
-        context.saveGet(response);
-
-    }
-
-    @When("get service login {string} for application {string}")
-    public void getServiceLogin(String username, String application) {
-
-        Response response = LoginServiceApiClient.get(username, authorizationContext.lastAccessToken(), application);
-
-        loginContext.saveGet(response);
+        context.savePut(response);
 
     }
 
@@ -117,110 +68,53 @@ public class LoginStepDefinitions {
 
     }
 
-    @When("copy authorization login for application {string}")
-    public void copy(String application, JsonNode body) {
+    @And("move authorization login from {string} to {string}")
+    public void copy(String fromUsername, String toUsername) {
 
-        Response response = LoginApiClient.copy(body, authorizationContext.lastAccessToken(), application);
+        ObjectNode body = MAPPER.createObjectNode();
+        body.put("fromUsername", fromUsername);
+        body.put("toUsername", toUsername);
 
-        context.savePost(response);
+        Response responseCopy = LoginApiClient.copy(body, authorizationContext.lastAccessToken(), TEST_APP);
+        LoginApiClient.delete(fromUsername, authorizationContext.lastAccessToken(), TEST_APP);
 
-    }
-
-    @Then("login authorization status is {int}")
-    public void checkStatus(int status) {
-
-        assertThat(context.lastResponse().getStatusCode(), is(status));
+        context.savePost(responseCopy);
 
     }
 
-    @Then("login service status is {int}")
-    public void checkServiceStatus(int status) {
+    @When("get id account {string}")
+    public void getLogin(String username) {
 
-        assertThat(loginContext.lastResponse().getStatusCode(), is(status));
+        Response response = LoginServiceApiClient.get(username, authorizationContext.lastAccessToken(), TEST_APP);
+
+        assertAll(
+                () -> assertThat(response.getStatusCode()).isEqualTo(200),
+                () -> assertThat(response.as(UUID.class)).isEqualTo(context.lastId()));
+
+        context.saveId(response.as(UUID.class));
 
     }
 
-    @And("login authorization {string} exists")
+    @And("account {string} exists")
     public void checkExists(String username) {
 
+        Response responseServiceApi = LoginServiceApiClient.head(username, authorizationContext.lastAccessToken(), TEST_APP);
         Response response = LoginApiClient.head(username, authorizationContext.lastAccessToken(), TEST_APP);
 
-        assertThat(response.getStatusCode(), is(204));
-
+        assertAll(
+                () -> assertThat(response.getStatusCode()).isEqualTo(204),
+                () -> assertThat(responseServiceApi.getStatusCode()).isEqualTo(204));
     }
 
-    @And("login service {string} exists")
-    public void checkLoginExists(String username) {
-
-        Response response = LoginServiceApiClient.head(username, authorizationContext.lastAccessToken(), TEST_APP);
-
-        assertThat(response.getStatusCode(), is(204));
-
-    }
-
-    @And("login authorization {string} not exists")
+    @And("account {string} not exists")
     public void checkNotExists(String username) {
 
+        Response responseServiceApi = LoginServiceApiClient.head(username, authorizationContext.lastAccessToken(), TEST_APP);
         Response response = LoginApiClient.head(username, authorizationContext.lastAccessToken(), TEST_APP);
 
-        assertThat(response.getStatusCode(), is(404));
-
-        getLogin(username, TEST_APP);
-
-        checkStatus(404);
-
-    }
-
-    @And("login service {string} not exists")
-    public void checkLoginNotExists(String username) {
-
-        Response response = LoginServiceApiClient.head(username, authorizationContext.lastAccessToken(), TEST_APP);
-
-        assertThat(response.getStatusCode(), is(404));
-
-        getServiceLogin(username, TEST_APP);
-
-        checkServiceStatus(404);
-
-    }
-
-    @And("login authorization {string} is")
-    public void checkBody(String username, JsonNode body) throws JsonProcessingException {
-
-        getLogin(username, TEST_APP);
-
-        checkStatus(200);
-
-        assertThat(MAPPER.readTree(context.lastGet().asString()), is(body));
-
-    }
-
-    @And("login service {string} is")
-    public void checkLoginBody(String username, JsonNode body) throws JsonProcessingException {
-
-        getServiceLogin(username, TEST_APP);
-
-        checkServiceStatus(200);
-
-        assertThat(MAPPER.readTree(loginContext.lastGet().asString()), is(body));
-
-    }
-
-    @And("login authorization error is")
-    public void checkError(JsonNode body) throws JsonProcessingException {
-
-        JsonNode errors = MAPPER.readTree(context.lastResponse().asString());
-
-        assertThat(errors, is(body));
-
-    }
-
-    @And("login service error is")
-    public void checkLoginError(JsonNode body) throws JsonProcessingException {
-
-        JsonNode errors = MAPPER.readTree(loginContext.lastResponse().asString());
-
-        assertThat(errors, is(body));
+        assertAll(
+                () -> assertThat(response.getStatusCode()).isEqualTo(404),
+                () -> assertThat(responseServiceApi.getStatusCode()).isEqualTo(404));
 
     }
 

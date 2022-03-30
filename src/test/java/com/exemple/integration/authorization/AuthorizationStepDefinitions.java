@@ -1,7 +1,7 @@
 package com.exemple.integration.authorization;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static com.exemple.integration.core.InitData.TEST_APP;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,6 +25,8 @@ public class AuthorizationStepDefinitions {
 
         Response response = AuthorizationApiClient.authorizationByCredentials(client, "secret");
 
+        assertThat(response.getStatusCode()).isEqualTo(200);
+
         String token = response.jsonPath().getString("access_token");
 
         context.saveAccessToken(token);
@@ -32,7 +34,7 @@ public class AuthorizationStepDefinitions {
 
     }
 
-    @Given("connection with username {string} and password {string} to client {string}")
+    @And("connection with username {string} and password {string} to client {string}")
     public void connect(String username, String password, String client) {
 
         Response response = AuthorizationApiClient.authorizationByPassword(username, password, client, "secret");
@@ -44,10 +46,10 @@ public class AuthorizationStepDefinitions {
 
     }
 
-    @Given("disconnection from application {string}")
-    public void disconnect(String application) {
+    @Given("disconnection")
+    public void disconnect() {
 
-        Response response = AuthorizationApiClient.disconnection(context.lastAccessToken(), application);
+        Response response = AuthorizationApiClient.disconnection(context.lastAccessToken(), TEST_APP);
 
         context.save(response);
 
@@ -65,7 +67,7 @@ public class AuthorizationStepDefinitions {
 
     }
 
-    @Given("connection with username {string} and password {string} to client {string} with scopes {string}")
+    @And("connection with username {string} and password {string} to client {string} with scopes {string}")
     public void connect(String username, String password, String client, String scopes) {
 
         Response response = AuthorizationApiClient.authorizationByCode(username, password, client, "secret", scopes, context.lastAccessToken());
@@ -77,17 +79,10 @@ public class AuthorizationStepDefinitions {
 
     }
 
-    @And("connection status is {int}")
-    public void checkStatus(int status) {
-
-        assertThat(context.lastResponse().getStatusCode(), is(status));
-
-    }
-
     @And("connection error is")
     public void checkError(JsonNode body) throws JsonProcessingException {
 
-        assertThat(MAPPER.readTree(context.lastResponse().asString()), is(body));
+        assertThat(MAPPER.readTree(context.lastResponse().asString())).isEqualTo(body);
 
     }
 

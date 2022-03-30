@@ -1,9 +1,10 @@
 package com.exemple.integration.stock;
 
 import static com.exemple.integration.core.InitData.BACK_APP;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
@@ -11,22 +12,13 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.exemple.integration.authorization.AuthorizationTestContext;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Streams;
 
 import io.cucumber.java.Before;
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 
 public class StockStepDefinitions {
-
-    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Autowired
     private StockTestContext context;
@@ -63,37 +55,32 @@ public class StockStepDefinitions {
 
     }
 
-    @Then("stock status is {int}")
-    public void checkStatus(int status) {
-
-        assertThat(context.lastResponse().getStatusCode(), is(status));
-
-    }
-
-    @And("stock of product {string} from store {string} is {long}")
-    public void check(String product, String store, long amount) throws JsonProcessingException {
+    @Then("stock of product {string} from store {string} is {long}")
+    public void check(String product, String store, long amount) throws IOException {
 
         Response response = StockApiClient.get(store + "#" + salt, product, authorizationContext.lastAccessToken(), BACK_APP);
 
-        assertThat(response.jsonPath().getLong("amount"), is(amount));
+        assertAll(
+                () -> assertThat(context.lastResponse().getStatusCode()).isEqualTo(200),
+                () -> assertThat(response.jsonPath().getLong("amount")).isEqualTo(amount));
 
     }
 
-    @And("stock of product {string} from store {string} is {long}, is insufficient for {long}")
-    public void checkError(String product, String store, long stock, long quantity) throws JsonProcessingException {
+    @Then("stock of product {string} from store {string} is unknown")
+    public void checkUnknown(String product, String store) throws IOException {
 
-        assertThat(context.lastResponse().getBody().asString(),
-                is("Stock /test_company/" + store + "#" + salt + "/" + product + ":" + stock + " is insufficient for quantity " + quantity));
+        assertThat(context.lastResponse().getStatusCode()).isEqualTo(404);
 
     }
 
-    @And("stock error is expect {string}")
-    public void checkError(String expect, JsonNode body) throws JsonProcessingException {
+    @Then("stock of product {string} from store {string} is {long}, is insufficient for {long}")
+    public void checkError(String product, String store, long stock, long quantity) throws IOException {
 
-        ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
-        Streams.stream(errors.elements()).map(ObjectNode.class::cast).forEach((ObjectNode error) -> error.remove(expect));
-
-        assertThat(errors, is(body));
+        assertAll(
+                () -> assertThat(context.lastResponse().getStatusCode()).isEqualTo(400),
+                () -> assertThat(context.lastResponse().getBody().asString())
+                        .isEqualTo("Stock /test_company/" + store + "#" + salt + "/" + product + ":" + stock + " is insufficient for quantity "
+                                + quantity));
 
     }
 

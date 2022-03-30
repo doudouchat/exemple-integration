@@ -2,21 +2,22 @@ package com.exemple.integration.account;
 
 import static com.exemple.integration.core.InitData.TEST_APP;
 import static com.exemple.integration.core.InitData.VERSION_V1;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.condition.AnyOf.anyOf;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.assertj.core.api.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.exemple.integration.authorization.AuthorizationTestContext;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -26,6 +27,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
 import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
@@ -54,46 +56,49 @@ public class AccountStepDefinitions {
 
     }
 
-    @When("patch account for application {string} and version {string}")
-    public void patchAccount(String application, String version, JsonNode body) {
+    @When("create account")
+    public void createAccount(JsonNode body) {
 
-        patchAccount(context.lastId(), application, version, body);
-
+        createAccount(TEST_APP, VERSION_V1, body);
     }
 
-    @When("patch account {id} for application {string} and version {string}")
-    public void patchAccount(UUID id, String application, String version, JsonNode body) {
+    @When("patch account")
+    public void patchAccount(JsonNode body) {
 
-        Response response = AccountApiClient.patch(id, body, authorizationContext.lastAccessToken(), application, version);
+        Response response = AccountApiClient.patch(context.lastId(), body, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
 
         context.savePatch(response);
 
     }
 
-    @When("put account for application {string} and version {string}")
-    public void putAccount(String application, String version, JsonNode body) {
+    @When("put account")
+    public void putAccount(JsonNode body) {
 
-        Response responseGet = AccountApiClient.get(context.lastId(), authorizationContext.lastAccessToken(), application, version);
+        Response responseGet = AccountApiClient.get(context.lastId(), authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
 
-        ((ObjectNode) body).put("creation_date", responseGet.jsonPath().getString("creation_date"));
+        if (!body.has("creation_date")) {
+            ((ObjectNode) body).put("creation_date", responseGet.jsonPath().getString("creation_date"));
+        }
 
-        Response response = AccountApiClient.put(context.lastId(), body, authorizationContext.lastAccessToken(), application, version);
+        Response response = AccountApiClient.put(context.lastId(), body, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
 
         context.savePut(response);
 
     }
 
-    @When("create account with {string} and value {int}")
+    @When("create any account with {string} and value {int}")
     public void createAccount(String property, int value) throws IOException {
 
         Resource resource = new ClassPathResource("account/nominal_account.json");
         Map<String, Object> body = JsonPath.parse(resource.getInputStream()).set(property, value).json();
 
-        createAccount(TEST_APP, VERSION_V1, MAPPER.convertValue(body, JsonNode.class));
+        Response response = AccountApiClient.post(body, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+
+        context.savePost(response);
 
     }
 
-    @When("create account with {string} and value {string}")
+    @When("create any account with {string} and value {string}")
     public void createAccount(String property, String value) throws IOException {
 
         Resource resource = new ClassPathResource("account/nominal_account.json");
@@ -101,11 +106,13 @@ public class AccountStepDefinitions {
         DocumentContext account = JsonPath.parse(resource.getInputStream());
         Map<String, Object> body = account.put("$", property, value).json();
 
-        createAccount(TEST_APP, VERSION_V1, MAPPER.convertValue(body, JsonNode.class));
+        Response response = AccountApiClient.post(body, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+
+        context.savePost(response);
 
     }
 
-    @When("create account with {string}")
+    @When("create any account with {string}")
     public void createAccount(String property, JsonNode value) throws IOException {
 
         Resource resource = new ClassPathResource("account/nominal_account.json");
@@ -113,91 +120,131 @@ public class AccountStepDefinitions {
         DocumentContext account = JsonPath.parse(resource.getInputStream());
         Map<String, Object> body = account.put("$", property, value).json();
 
-        createAccount(TEST_APP, VERSION_V1, MAPPER.convertValue(body, JsonNode.class));
+        Response response = AccountApiClient.post(body, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+
+        context.savePost(response);
 
     }
 
-    @When("get account {id} for application {string} and version {string}")
-    public void getAccount(UUID id, String application, String version) {
+    @When("get account for application {string} and version {string}")
+    public void getAccount(String application, String version) throws IOException {
 
-        Response response = AccountApiClient.get(id, authorizationContext.lastAccessToken(), application, version);
+        Response response = AccountApiClient.get(context.lastId(), authorizationContext.lastAccessToken(), application, version);
 
         context.saveGet(response);
 
     }
 
-    @When("get account for application {string} and version {string}")
-    public void getAccount(String application, String version) {
+    @When("get account")
+    public void getAccount() throws IOException {
 
-        getAccount(context.lastId(), application, version);
+        Response response = AccountApiClient.get(context.lastId(), authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
 
-    }
-
-    @Then("account status is {int}")
-    public void checkStatus(int status) {
-
-        assertThat(context.lastResponse().getStatusCode(), is(status));
+        context.saveGet(response);
 
     }
 
-    @And("account exists")
-    public void checkExists() {
+    @When("get account by id {id}")
+    public void getAccount(UUID id) throws IOException {
 
-        getAccount(TEST_APP, VERSION_V1);
+        Response response = AccountApiClient.get(id, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
 
-        checkStatus(200);
+        context.saveGet(response);
 
     }
 
-    @And("account {string} exists")
+    @Given("create any account")
+    public void createAccount() throws IOException {
+
+        Resource resource = new ClassPathResource("account/nominal_account.json");
+
+        Map<String, Object> body = JsonPath.parse(resource.getInputStream()).json();
+
+        createAccount(MAPPER.convertValue(body, JsonNode.class));
+
+    }
+
+    @And("account property {string} exists")
     public void checkProperty(String property) {
 
-        assertThat(context.lastGet().jsonPath().getString(property), is(notNullValue()));
+        assertThat(context.lastGet().jsonPath().getString(property)).isNotNull();
 
     }
 
-    @And("account is")
-    public void checkBody(JsonNode body) throws JsonProcessingException {
+    @Then("account is")
+    public void getAccount(JsonNode body) throws IOException {
 
-        ObjectNode expectedBody = (ObjectNode) MAPPER.readTree(context.lastGet().asString());
+        assertAll(
+                () -> assertThat(context.lastResponse().getStatusCode()).is(anyOf(
+                        new Condition<>(status -> status == 204, "status"),
+                        new Condition<>(status -> status == 201, "status"))),
+                () -> assertThat(context.lastResponse().asString()).isEmpty());
+
+        Response response = AccountApiClient.get(context.lastId(), authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+
+        assertThat(response.getStatusCode()).isEqualTo(200);
+
+        ObjectNode expectedBody = (ObjectNode) MAPPER.readTree(response.asString());
         expectedBody.remove("creation_date");
         expectedBody.remove("update_date");
 
-        assertThat(expectedBody, is(body));
+        assertThat(expectedBody).isEqualTo(body);
+
+        context.saveGet(response);
 
     }
 
-    @And("account error is")
-    public void checkError(JsonNode body) throws JsonProcessingException {
+    @Then("account is unknown")
+    public void checkUnknown() {
 
-        JsonNode errors = MAPPER.readTree(context.lastResponse().asString());
+        assertThat(context.lastResponse().getStatusCode()).isEqualTo(404);
 
-        if (errors.isArray()) {
-            Streams.stream(errors.elements()).map(ObjectNode.class::cast).forEach((ObjectNode error) -> error.remove("message"));
-        }
+    }
 
-        assertThat(errors, is(body));
+    @Then("account is denied")
+    public void checkDenied() {
 
+        assertThat(context.lastResponse().getStatusCode()).isEqualTo(403);
+
+    }
+
+    @Then("account is unauthorized")
+    public void checkUnauthorized() {
+
+        assertThat(context.lastResponse().getStatusCode()).isEqualTo(401);
+
+    }
+
+    @And("account error only contains")
+    public void checkOnlyError(JsonNode body) throws IOException {
+
+        checkCountError(1);
+        checkErrors(body);
     }
 
     @And("account error contains {int} errors")
-    public void checkCountError(int count) throws JsonProcessingException {
+    public void checkCountError(int count) throws IOException {
+
+        assertThat(context.lastResponse().getStatusCode()).isEqualTo(400);
 
         ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
 
-        assertThat("errors " + errors.toPrettyString() + " not contain expected errors", (int) Streams.stream(errors.elements()).count(), is(count));
+        assertThat(Streams.stream(errors.elements())).as("errors {} not contain expected errors", errors.toPrettyString()).hasSize(count);
 
     }
 
     @And("account error contains")
-    public void checkOneError(JsonNode body) throws JsonProcessingException {
+    public void checkErrors(JsonNode body) throws IOException {
 
         ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
-        Streams.stream(errors.elements()).map(ObjectNode.class::cast).forEach((ObjectNode error) -> error.remove("message"));
-
-        assertThat("errors " + errors.toPrettyString() + " not contain " + body.toPrettyString(),
-                Streams.stream(errors.elements()).filter(error -> error.equals(body)).findAny().isPresent(), is(true));
-
+        assertThat(errors).as("errors {} not contain {}", errors.toPrettyString(), body.toPrettyString())
+                .anySatisfy(error -> {
+                    Iterator<Map.Entry<String, JsonNode>> expectedErrors = body.fields();
+                    while (expectedErrors.hasNext()) {
+                        Map.Entry<String, JsonNode> expectedError = expectedErrors.next();
+                        assertThat(error.get(expectedError.getKey())).isEqualTo(expectedError.getValue());
+                    }
+                });
     }
 
 }
