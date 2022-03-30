@@ -3,7 +3,7 @@ Feature: api patch account
   Background: 
     Given connection to client 'test_service'
     And delete username 'jean.dupond@gmail.com'
-    And create account for application 'test' and version 'v1'
+    And create account
       """
       {
           "optin_mobile": true,
@@ -31,26 +31,16 @@ Feature: api patch account
           "lastname": "Dupont"
       }
       """
-    And create authorization login 'jean.dupond@gmail.com' for application 'test'
+    And create authorization login 'jean.dupond@gmail.com'
       """
       {
           "password": "mdp"
       }
       """
-    And account status is 201
-    And login authorization status is 201
-    And create service login for application 'test' and last id
-      """
-      {
-          "username": "jean.dupond@gmail.com"
-      }
-      """
-    And login service status is 201
     And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
-    And connection status is 200
 
   Scenario: patch account
-    When patch account for application 'test' and version 'v1'
+    When patch account
       """
       [
          {
@@ -79,11 +69,7 @@ Feature: api patch account
          }
       ]
       """
-    Then account status is 204
-    And account exists
-    And account 'creation_date' exists
-    And account 'update_date' exists
-    And account is
+    Then account is
       """
       {
           "addresses": {
@@ -114,9 +100,56 @@ Feature: api patch account
           "optin_mobile": true
       }
       """
-
+    And account property 'creation_date' exists
+    And account property 'update_date' exists
+    
+  Scenario: change email
+    Given delete username 'jean.dupont@gmail.com'
+    When patch account
+      """
+      [
+         {
+           "op": "replace",
+           "path": "/email",
+           "value": "jean.dupont@gmail.com"
+         }
+      ]
+      """
+    And move authorization login from 'jean.dupond@gmail.com' to 'jean.dupont@gmail.com'
+    And account 'jean.dupont@gmail.com' exists
+    And connection with username 'jean.dupont@gmail.com' and password 'mdp' to client 'test_service_user'
+    Then account is
+      """
+      {
+          "optin_mobile": true,
+          "birthday": "1967-06-15",
+          "firstname": "Jean",
+          "addresses": {
+             "job": {
+                 "city": "Paris",
+                 "street": "rue de la paix"
+             },
+             "home": {
+                 "city": "Lyon",
+                 "street": "rue de la poste"
+             }
+          },
+          "civility": "Mr",
+          "mobile": "0610203040",
+          "cgus": [
+             {
+               "code": "code_1",
+               "version": "v0"
+             }
+          ],
+          "email": "jean.dupont@gmail.com",
+          "lastname": "Dupont"
+      }
+      """
+    And account 'jean.dupond@gmail.com' not exists
+    
   Scenario: patch account fails because birthday is incorrect
-    When patch account for application 'test' and version 'v1'
+    When patch account
       """
       [
          {
@@ -126,17 +159,16 @@ Feature: api patch account
          }
       ]
       """
-    Then account status is 400
-    And account error is
+    Then account error only contains
       """
-      [{
+      {
           "path": "/birthday",
           "code": "format"
-      }]
+      }
       """
 
   Scenario: patch account fails because creation_date is incorrect
-    When patch account for application 'test' and version 'v1'
+    When patch account
       """
       [
          {
@@ -146,8 +178,7 @@ Feature: api patch account
          }
       ]
       """
-    Then account status is 400
-    And account error contains 2 errors
+    Then account error contains 2 errors
     And account error contains
       """
       {"path":"/creation_date","code":"format"}
@@ -158,7 +189,7 @@ Feature: api patch account
       """
 
   Scenario: patch account fails because creation_date is readonly
-    When patch account for application 'test' and version 'v1'
+    When patch account
       """
       [
          {
@@ -168,24 +199,165 @@ Feature: api patch account
          }
       ]
       """
-    Then account status is 400
-    And account error is
+    Then account error only contains
       """
-      [{
+      {
           "path": "/creation_date",
           "code": "readOnly"
-      }]
+      }
       """
 
-  Scenario: patch account fails access is forbidden
-    When patch account 5aa2387a-cf87-4163-902e-69a6706708b8 for application 'test' and version 'v1'
+  Scenario: patch account fails because a property is unknown
+    When patch account
+      """
+      [
+         {
+           "op": "add",
+           "path": "/unknown",
+           "value": "nc"
+         }
+      ]
+      """
+    Then account error only contains
+      """
+      {
+          "path": "/unknown",
+          "code": "additionalProperties"
+      }
+      """
+
+  Scenario: patch account fails because an address is incomplete
+    When patch account
+      """
+      [
+         {
+           "op": "add",
+           "path": "/addresses/job",
+           "value": {"city": "Paris"}
+         }
+      ]
+      """
+    Then account error only contains
+      """
+      {
+          "path": "/addresses/job/street",
+          "code": "required"
+      }
+      """
+
+  Scenario: patch account fails because two many addresses
+    When patch account
+      """
+      [
+         {
+           "op": "add",
+           "path": "/addresses/holidays_1",
+           "value": {"city": "Paris", "street": "1 rue de la paix"}
+         },
+         {
+           "op": "add",
+           "path": "/addresses/holidays_2",
+           "value": {"city": "Paris", "street": "2 rue de la paix"}
+         },
+         {
+           "op": "add",
+           "path": "/addresses/holidays_3",
+           "value": {"city": "Paris", "street": "3 rue de la paix"}
+         }
+      ]
+      """
+    Then account error only contains
+      """
+      {
+          "path": "/addresses",
+          "code": "maxProperties"
+      }
+      """
+
+  Scenario: patch account fails because username already exists
+    Given connection to client 'test_service'
+    And delete username 'jean.dupont@gmail.com'
+    And create account
+      """
+      {
+          "birthday": "1967-06-15",
+          "firstname": "Jean",
+          "email": "jean.dupont@gmail.com",
+          "lastname": "Dupont"
+      }
+      """
+    And create authorization login 'jean.dupont@gmail.com'
+      """
+      {
+          "password": "mdp"
+      }
+      """
+    And connection with username 'jean.dupont@gmail.com' and password 'mdp' to client 'test_service_user'
+    When patch account
       """
       [
          {
            "op": "replace",
-           "path": "/birthday",
-           "value": "2000-02-01"
+           "path": "/email",
+           "value": "jean.dupond@gmail.com"
          }
       ]
       """
-    Then account status is 403
+    Then account error only contains
+      """
+      {
+          "code": "username",
+          "message": "[jean.dupond@gmail.com] already exists"
+      }
+      """
+
+  Scenario: change email fails because username already exists
+    Given delete username 'jean.dupont@gmail.com'
+    And create authorization login 'jean.dupont@gmail.com'
+      """
+      {
+          "password": "mdp"
+      }
+      """
+    And patch account
+      """
+      [
+         {
+           "op": "replace",
+           "path": "/email",
+           "value": "jean.dupont@gmail.com"
+         }
+      ]
+      """
+    When move authorization login from 'jean.dupond@gmail.com' to 'jean.dupont@gmail.com'
+    Then account error only contains
+      """
+      {
+          "path": "/toUsername",
+          "code": "username",
+          "message": "[jean.dupont@gmail.com] already exists"
+      }
+      """
+
+  Scenario: change email fails because username is not found
+    Given delete username 'jean.dupont@gmail.com'
+    When patch account
+      """
+      [
+         {
+           "op": "replace",
+           "path": "/email",
+           "value": "jean.dupont@gmail.com"
+         }
+      ]
+      """
+    And delete username 'jean.dupond@gmail.com'
+    When move authorization login from 'jean.dupond@gmail.com' to 'jean.dupont@gmail.com'
+    Then account error only contains
+      """
+      {
+         "path":"/fromUsername",
+         "code":"not_found",
+         "message":"[jean.dupond@gmail.com] not found"
+      }      
+      """

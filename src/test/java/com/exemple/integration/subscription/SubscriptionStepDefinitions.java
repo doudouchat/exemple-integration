@@ -2,18 +2,21 @@ package com.exemple.integration.subscription;
 
 import static com.exemple.integration.core.InitData.TEST_APP;
 import static com.exemple.integration.core.InitData.VERSION_V1;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.condition.AnyOf.anyOf;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
 
+import org.assertj.core.api.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.exemple.integration.authorization.AuthorizationTestContext;
 import com.exemple.service.customer.subscription.SubscriptionResource;
 import com.exemple.service.resource.core.ResourceExecutionContext;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -23,7 +26,6 @@ import com.google.common.collect.Streams;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 
@@ -54,60 +56,85 @@ public class SubscriptionStepDefinitions {
 
     }
 
-    @When("create subscription {string} for application {string} and version {string}")
-    public void createSubscription(String email, String application, String version) {
+    @When("create subscription {string}")
+    public void createSubscription(String email) {
 
-        Response response = SubscriptionApiClient.put(email, Collections.emptyMap(), authorizationContext.lastAccessToken(), application, version);
+        Response response = SubscriptionApiClient.put(email, Collections.emptyMap(), authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
 
         context.savePut(response);
 
     }
 
-    @When("get subscription {string} for application {string} and version {string}")
-    public void getSubscription(String email, String application, String version) {
+    @And("subscription {string} is")
+    public void getSubscription(String email, JsonNode body) throws IOException {
 
-        Response response = SubscriptionApiClient.get(email, authorizationContext.lastAccessToken(), application, version);
+        assertAll(
+                () -> assertThat(context.lastResponse().getStatusCode()).is(anyOf(
+                        new Condition<>(status -> status == 204, "status"),
+                        new Condition<>(status -> status == 201, "status"))),
+                () -> assertThat(context.lastResponse().asString()).isEmpty());
+
+        Response response = SubscriptionApiClient.get(email, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+
+        assertThat(response.getStatusCode()).isEqualTo(200);
+
+        ObjectNode expectedBody = (ObjectNode) MAPPER.readTree(response.asString());
+        expectedBody.remove("subscription_date");
+
+        assertThat(expectedBody).isEqualTo(body);
 
         context.saveGet(response);
 
     }
 
-    @Then("subscription status is {int}")
-    public void checkStatus(int status) {
+    @And("subscription {string} is unknown")
+    public void getSubscription(String email) throws IOException {
 
-        assertThat(context.lastResponse().getStatusCode(), is(status));
+        Response response = SubscriptionApiClient.get(email, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
 
-    }
-
-    @And("subscription {string} is")
-    public void checkBody(String email, JsonNode body) throws JsonProcessingException {
-
-        getSubscription(email, TEST_APP, VERSION_V1);
-
-        checkStatus(200);
-
-        ObjectNode expectedBody = (ObjectNode) MAPPER.readTree(context.lastGet().asString());
-        expectedBody.remove("subscription_date");
-
-        assertThat(expectedBody, is(body));
+        assertThat(response.getStatusCode()).isEqualTo(404);
 
     }
 
     @And("subscription contains {string}")
     public void checkProperty(String property) {
 
-        assertThat(context.lastGet().jsonPath().getString(property), is(notNullValue()));
+        assertThat(context.lastGet().jsonPath().getString(property)).isNotNull();
 
     }
 
-    @And("subscription error is")
-    public void checkError(JsonNode body) throws JsonProcessingException {
+    @And("subscription error only contains")
+    public void checkOnlyError(JsonNode body) throws IOException {
 
-        ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastPut().asString());
-        Streams.stream(errors.elements()).map(ObjectNode.class::cast).forEach((ObjectNode error) -> error.remove("message"));
+        checkCountError(1);
+        checkErrors(body);
+    }
 
-        assertThat(errors, is(body));
+    @And("subscription error contains {int} errors")
+    public void checkCountError(int count) throws IOException {
 
+        assertThat(context.lastResponse().getStatusCode()).isEqualTo(400);
+
+        ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
+
+        assertThat(Streams.stream(errors.elements())).as("errors {} not contain expected errors", errors.toPrettyString()).hasSize(count);
+
+    }
+
+    @And("subscription error contains")
+    public void checkErrors(JsonNode body) throws IOException {
+
+        ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
+        assertAll(
+                () -> assertThat(context.lastResponse().getStatusCode()).isEqualTo(400),
+                () -> assertThat(errors).as("errors {} not contain {}", errors.toPrettyString(), body.toPrettyString())
+                        .anySatisfy(error -> {
+                            Iterator<Map.Entry<String, JsonNode>> expectedErrors = body.fields();
+                            while (expectedErrors.hasNext()) {
+                                Map.Entry<String, JsonNode> expectedError = expectedErrors.next();
+                                assertThat(error.get(expectedError.getKey())).isEqualTo(expectedError.getValue());
+                            }
+                        }));
     }
 
 }

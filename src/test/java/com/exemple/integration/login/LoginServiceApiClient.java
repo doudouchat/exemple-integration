@@ -14,18 +14,6 @@ public final class LoginServiceApiClient {
 
     }
 
-    public static Response post(Object body, String token, String application) {
-
-        return JsonRestTemplate.given()
-
-                .header(APP_HEADER, application)
-
-                .header("Authorization", "Bearer " + token)
-
-                .body(body).post(LOGIN_URL);
-
-    }
-
     public static Response get(String username, String token, String application) {
 
         return JsonRestTemplate.given()
@@ -47,18 +35,6 @@ public final class LoginServiceApiClient {
                 .header("Authorization", "Bearer " + token)
 
                 .head(LOGIN_URL + "/{login}", login);
-
-    }
-
-    public static Response delete(Object login, String token, String application) {
-
-        return JsonRestTemplate.given()
-
-                .header(APP_HEADER, application)
-
-                .header("Authorization", "Bearer " + token)
-
-                .delete(LOGIN_URL + "/{login}", login);
 
     }
 

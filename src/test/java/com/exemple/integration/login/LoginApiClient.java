@@ -16,18 +16,6 @@ public final class LoginApiClient {
 
     }
 
-    public static Response put(String username, Object body, String token, String application) {
-
-        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
-
-                .header(APP_HEADER, application)
-
-                .header("Authorization", "Bearer " + token)
-
-                .body(body).put(LOGIN_URL + "/{username}", username);
-
-    }
-
     public static Response get(String username, String token, String application) {
 
         return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
@@ -49,6 +37,18 @@ public final class LoginApiClient {
                 .header("Authorization", "Bearer " + token)
 
                 .head(LOGIN_URL + "/{login}", login);
+
+    }
+
+    public static Response put(String username, Object body, String token, String application) {
+
+        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
+
+                .header(APP_HEADER, application)
+
+                .header("Authorization", "Bearer " + token)
+
+                .body(body).put(LOGIN_URL + "/{username}", username);
 
     }
 

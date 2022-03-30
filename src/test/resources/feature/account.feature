@@ -5,7 +5,7 @@ Feature: api account
     And delete username 'jean.dupond@gmail.com'
 
   Scenario: create account
-    When create account for application 'test' and version 'v1'
+    When create account
       """
       {
           "optin_mobile": true,
@@ -35,25 +35,15 @@ Feature: api account
           "lastname": "Dupond"
       }
       """
-    And create authorization login 'jean.dupond@gmail.com' for application 'test'
+    And create authorization login 'jean.dupond@gmail.com'
       """
       {
           "password": "mdp"
       }
       """
-    Then account status is 201
-    And login authorization status is 201
-    And create service login for application 'test' and last id
-      """
-      {
-          "username": "jean.dupond@gmail.com"
-      }
-      """
-    And login service status is 201
+    Then account 'jean.dupond@gmail.com' exists
     And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
-    And connection status is 200
-    And account exists
-    And account 'creation_date' exists
+    And get id account 'jean.dupond@gmail.com'
     And account is
       """
       {
@@ -82,75 +72,70 @@ Feature: api account
           "optin_mobile": true
       }
       """
+    And account property 'creation_date' exists
 
   Scenario: create account fails because lastname is not an integer
-    When create account with 'lastname' and value 10
-    Then account status is 400
-    And account error is
+    When create any account with 'lastname' and value 10
+    Then account error only contains
       """
-      [{
+      {
           "path": "/lastname",
           "code": "type"
-      }]
+      }
       """
 
   Scenario: create account fails because birthday is incorrect
-    When create account with 'birthday' and value '2019-02-30'
-    Then account status is 400
-    And account error is
+    When create any account with 'birthday' and value '2019-02-30'
+    Then account error only contains
       """
-      [{
+      {
           "path": "/birthday",
           "code": "format"
-      }]
+      }
       """
 
   Scenario: create account fails because optin_mobile is not an integer
-    When create account with 'optin_mobile' and value 10
-    Then account status is 400
-    And account error is
+    When create any account with 'optin_mobile' and value 10
+    Then account error only contains
       """
-      [{
+      {
           "path": "/optin_mobile",
           "code": "type"
-      }]
+      }
       """
 
   Scenario: create account fails because cgus is not an integer
-    When create account with 'cgus' and value 10
-    Then account status is 400
-    And account error is
+    When create any account with 'cgus' and value 10
+    Then account error only contains
       """
-      [{
+      {
           "path": "/cgus",
           "code": "type"
-      }]
+      }
       """
 
   Scenario: create account fails because email is empty
-    When create account with 'email' and value ''
-    Then account status is 400
-    And account error is
+    When create any account with 'email' and value ''
+    Then account error only contains
       """
-      [{
+      {
           "path": "/email",
           "code": "format"
-      }]
+      }
       """
 
   Scenario: create account fails because a property is unknown
-    When create account with 'unknown' and value 'nc'
-    Then account status is 400
-    And account error is
+    When create any account with 'unknown' and value 'nc'
+    Then account error only contains
       """
-      [{
+      {
           "path": "/unknown",
           "code": "additionalProperties"
-      }]
+      }
       """
 
   Scenario: create account fails because an address is incomplete
-    When create account with 'addresses'
+    When create any account with 'addresses'
       """
       {
          "job": {
@@ -158,17 +143,16 @@ Feature: api account
          }
       }
       """
-    Then account status is 400
-    And account error is
+    Then account error only contains
       """
-      [{
+      {
           "path": "/addresses/job/street",
           "code": "required"
-      }]
+      }
       """
 
   Scenario: create account fails because two many addresses
-    When create account with 'addresses'
+    When create any account with 'addresses'
       """
       {
          "holidays_1": {
@@ -185,42 +169,33 @@ Feature: api account
          }
       }
       """
-    Then account status is 400
-    And account error is
+    Then account error only contains
       """
-      [{
+      {
           "path": "/addresses",
           "code": "maxProperties"
-      }]
-      """
-
-  Scenario: create account fails because application not exists
-    When create account for application 'default' and version 'v1'
-      """
-      {
-          "email": "jean.dupond@gmail.com",
-          "lastname": "Dupond"
       }
       """
-    Then account status is 403
+
+  Scenario: create account fails because username already exists
+    Given create account
+      """
+      {
+          "birthday": "1967-06-15",
+          "firstname": "Jean",
+          "email": "jean.dupond@gmail.com",
+          "lastname": "Dupont"
+      }
+      """
+    When create any account with 'email' and value 'jean.dupond@gmail.com'
+    Then account error only contains
+      """
+      {
+          "code": "username",
+          "message": "[jean.dupond@gmail.com] already exists"
+      }
+      """
 
   Scenario: get account fails because account not exists
-    Given create authorization login 'jean.dupond@gmail.com' for application 'test'
-      """
-      {
-          "password": "mdp"
-      }
-      """
-    And login authorization status is 201
-    And create service login for application 'test'
-      """
-      {
-          "username": "jean.dupond@gmail.com",
-          "id": "d6233a2e-64f9-4e92-b894-01244515a18e"
-      }
-      """
-    And login service status is 201
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
-    And connection status is 200
-    When get account d6233a2e-64f9-4e92-b894-01244515a18e for application 'test' and version 'v1'
-    Then account status is 404
+    When get account by id d6233a2e-64f9-4e92-b894-01244515a18e
+    Then account is denied
