@@ -168,7 +168,7 @@ public final class AuthorizationApiClient {
 
     }
 
-    public static Response deleteLogin(Object login, String token, String application) {
+    public static Response moveLogin(Object body, String token, String application) {
 
         return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
 
@@ -176,19 +176,7 @@ public final class AuthorizationApiClient {
 
                 .header("Authorization", "Bearer " + token)
 
-                .delete(LOGIN_URL + "/{login}", login);
-
-    }
-
-    public static Response copyLogin(Object body, String token, String application) {
-
-        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
-
-                .header(APP_HEADER, application)
-
-                .header("Authorization", "Bearer " + token)
-
-                .body(body).post(LOGIN_URL + "/copy");
+                .body(body).post(LOGIN_URL + "/move");
 
     }
 

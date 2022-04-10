@@ -143,10 +143,9 @@ public class AuthorizationStepDefinitions {
         body.put("fromUsername", fromUsername);
         body.put("toUsername", toUsername);
 
-        Response responseCopy = AuthorizationApiClient.copyLogin(body, context.lastAccessToken(), TEST_APP);
-        AuthorizationApiClient.deleteLogin(fromUsername, context.lastAccessToken(), TEST_APP);
+        Response response = AuthorizationApiClient.moveLogin(body, context.lastAccessToken(), TEST_APP);
 
-        context.save(responseCopy);
+        context.save(response);
 
     }
 
