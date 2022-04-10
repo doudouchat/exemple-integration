@@ -41,8 +41,8 @@ Feature: api account
           "password": "mdp"
       }
       """
+    And get access for username 'jean.dupond@gmail.com' and password 'mdp'
     Then account 'jean.dupond@gmail.com' exists
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
     And get id account 'jean.dupond@gmail.com'
     And account is
       """
@@ -178,7 +178,7 @@ Feature: api account
       """
 
   Scenario: create account fails because username already exists
-    Given create account
+    Given account
       """
       {
           "birthday": "1967-06-15",

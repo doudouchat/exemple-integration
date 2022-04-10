@@ -17,7 +17,7 @@ Feature: api account security
     Then account is denied
 
   Scenario: get account fails because application not exists
-    Given create account
+    Given account
       """
       {
           "birthday": "1967-06-15",
@@ -32,12 +32,12 @@ Feature: api account security
           "password": "mdp"
       }
       """
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
+    And get access for username 'jean.dupond@gmail.com' and password 'mdp'
     When get account for application 'default' and version 'v1'
     Then account is denied
-    
-  Scenario: disconnection
-    Given create account
+
+  Scenario: connection fails because password is incorrect
+    Given account
       """
       {
           "birthday": "1967-06-15",
@@ -49,20 +49,8 @@ Feature: api account security
     And create authorization login 'jean.dupond@gmail.com'
       """
       {
-          "password": "mdp",
-          "roles" : ["ROLE_ACCOUNT"]
+          "password": "mdp"
       }
       """
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
-		And account is
-      """
-      {
-          "birthday": "1967-06-15",
-          "firstname": "Jean",
-          "email": "jean.dupond@gmail.com",
-          "lastname": "Dupont"
-      }
-      """
-    When disconnection
-    Then get account
-    And account is unauthorized
+    When connection with username 'jean.dupond@gmail.com' and password 'mdp123'
+    Then connection is unauthorized

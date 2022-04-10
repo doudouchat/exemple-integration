@@ -3,7 +3,7 @@ Feature: api patch account
   Background: 
     Given connection to client 'test_service'
     And delete username 'jean.dupond@gmail.com'
-    And create account
+    And account
       """
       {
           "optin_mobile": true,
@@ -37,7 +37,7 @@ Feature: api patch account
           "password": "mdp"
       }
       """
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
+    And get access for username 'jean.dupond@gmail.com' and password 'mdp'
 
   Scenario: patch account
     When patch account
@@ -117,7 +117,7 @@ Feature: api patch account
       """
     And move authorization login from 'jean.dupond@gmail.com' to 'jean.dupont@gmail.com'
     And account 'jean.dupont@gmail.com' exists
-    And connection with username 'jean.dupont@gmail.com' and password 'mdp' to client 'test_service_user'
+    And get access for username 'jean.dupont@gmail.com' and password 'mdp'
     Then account is
       """
       {
@@ -277,7 +277,7 @@ Feature: api patch account
   Scenario: patch account fails because username already exists
     Given connection to client 'test_service'
     And delete username 'jean.dupont@gmail.com'
-    And create account
+    And account
       """
       {
           "birthday": "1967-06-15",
@@ -292,7 +292,7 @@ Feature: api patch account
           "password": "mdp"
       }
       """
-    And connection with username 'jean.dupont@gmail.com' and password 'mdp' to client 'test_service_user'
+    And get access for username 'jean.dupont@gmail.com' and password 'mdp'
     When patch account
       """
       [
@@ -330,7 +330,7 @@ Feature: api patch account
       ]
       """
     When move authorization login from 'jean.dupond@gmail.com' to 'jean.dupont@gmail.com'
-    Then account error only contains
+    Then authorization error only contains
       """
       {
           "path": "/toUsername",
@@ -341,7 +341,7 @@ Feature: api patch account
 
   Scenario: change email fails because username is not found
     Given delete username 'jean.dupont@gmail.com'
-    When patch account
+    And patch account
       """
       [
          {
@@ -353,7 +353,7 @@ Feature: api patch account
       """
     And delete username 'jean.dupond@gmail.com'
     When move authorization login from 'jean.dupond@gmail.com' to 'jean.dupont@gmail.com'
-    Then account error only contains
+    Then authorization error only contains
       """
       {
          "path":"/fromUsername",

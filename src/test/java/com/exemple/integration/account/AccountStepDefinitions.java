@@ -42,6 +42,18 @@ public class AccountStepDefinitions {
     @Autowired
     private AuthorizationTestContext authorizationContext;
 
+    @Given("account")
+    public void buildAccount(JsonNode body) {
+
+        Response response = AccountApiClient.post(body, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+
+        assertThat(response.getStatusCode()).as("failure account %s", body.toPrettyString()).isEqualTo(201);
+
+        UUID id = UUID.fromString(response.getHeader("Location").substring(response.getHeader("Location").lastIndexOf('/') + 1));
+        context.saveId(id);
+        context.savePost(response);
+    }
+
     @When("create account for application {string} and version {string}")
     public void createAccount(String application, String version, JsonNode body) {
 
@@ -135,15 +147,6 @@ public class AccountStepDefinitions {
 
     }
 
-    @When("get account")
-    public void getAccount() throws IOException {
-
-        Response response = AccountApiClient.get(context.lastId(), authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
-
-        context.saveGet(response);
-
-    }
-
     @When("get account by id {id}")
     public void getAccount(UUID id) throws IOException {
 
@@ -160,14 +163,14 @@ public class AccountStepDefinitions {
 
         Map<String, Object> body = JsonPath.parse(resource.getInputStream()).json();
 
-        createAccount(MAPPER.convertValue(body, JsonNode.class));
+        buildAccount(MAPPER.convertValue(body, JsonNode.class));
 
     }
 
     @And("account property {string} exists")
     public void checkProperty(String property) {
 
-        assertThat(context.lastGet().jsonPath().getString(property)).isNotNull();
+        assertThat(context.lastGet().jsonPath().getString(property)).as("account property %s not exists", property).isNotNull();
 
     }
 
@@ -175,14 +178,15 @@ public class AccountStepDefinitions {
     public void getAccount(JsonNode body) throws IOException {
 
         assertAll(
-                () -> assertThat(context.lastResponse().getStatusCode()).is(anyOf(
-                        new Condition<>(status -> status == 204, "status"),
-                        new Condition<>(status -> status == 201, "status"))),
-                () -> assertThat(context.lastResponse().asString()).isEmpty());
+                () -> assertThat(context.lastResponse().getStatusCode()).as("account is incorrect %s", context.lastResponse().getStatusCode())
+                        .is(anyOf(
+                                new Condition<>(status -> status == 204, "status"),
+                                new Condition<>(status -> status == 201, "status"))),
+                () -> assertThat(context.lastResponse().asString()).as("account is incorrect %s", context.lastResponse().asString()).isEmpty());
 
         Response response = AccountApiClient.get(context.lastId(), authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
 
-        assertThat(response.getStatusCode()).isEqualTo(200);
+        assertThat(response.getStatusCode()).as("account %s not exists", context.lastId()).isEqualTo(200);
 
         ObjectNode expectedBody = (ObjectNode) MAPPER.readTree(response.asString());
         expectedBody.remove("creation_date");
@@ -197,21 +201,23 @@ public class AccountStepDefinitions {
     @Then("account is unknown")
     public void checkUnknown() {
 
-        assertThat(context.lastResponse().getStatusCode()).isEqualTo(404);
+        assertThat(context.lastResponse().getStatusCode()).as("account exists").isEqualTo(404);
 
     }
 
     @Then("account is denied")
     public void checkDenied() {
 
-        assertThat(context.lastResponse().getStatusCode()).isEqualTo(403);
+        assertThat(context.lastResponse().getStatusCode()).as("account is not denied").isEqualTo(403);
 
     }
 
     @Then("account is unauthorized")
     public void checkUnauthorized() {
 
-        assertThat(context.lastResponse().getStatusCode()).isEqualTo(401);
+        Response response = AccountApiClient.get(context.lastId(), authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+
+        assertThat(response.getStatusCode()).as("account is authorized").isEqualTo(401);
 
     }
 
@@ -225,11 +231,11 @@ public class AccountStepDefinitions {
     @And("account error contains {int} errors")
     public void checkCountError(int count) throws IOException {
 
-        assertThat(context.lastResponse().getStatusCode()).isEqualTo(400);
+        assertThat(context.lastResponse().getStatusCode()).as("account has not error").isEqualTo(400);
 
         ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
 
-        assertThat(Streams.stream(errors.elements())).as("errors {} not contain expected errors", errors.toPrettyString()).hasSize(count);
+        assertThat(Streams.stream(errors.elements())).as("errors %s not contain expected errors", errors.toPrettyString()).hasSize(count);
 
     }
 
@@ -237,7 +243,7 @@ public class AccountStepDefinitions {
     public void checkErrors(JsonNode body) throws IOException {
 
         ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
-        assertThat(errors).as("errors {} not contain {}", errors.toPrettyString(), body.toPrettyString())
+        assertThat(errors).as("errors %s not contain %s", errors.toPrettyString(), body.toPrettyString())
                 .anySatisfy(error -> {
                     Iterator<Map.Entry<String, JsonNode>> expectedErrors = body.fields();
                     while (expectedErrors.hasNext()) {

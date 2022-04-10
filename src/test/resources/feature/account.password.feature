@@ -5,7 +5,7 @@ Feature: api password
     And delete username 'jean.dupond@gmail.com'
 
   Scenario: change password
-    Given create account
+    Given account
       """
       {
           "birthday": "1967-06-15",
@@ -20,14 +20,14 @@ Feature: api password
           "password": "mdp"
       }
       """
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
+    And get access for username 'jean.dupond@gmail.com' and password 'mdp'
     When put login 'jean.dupond@gmail.com'
       """
       {
           "password": "mdp123"
       }
       """
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp123' to client 'test_service_user'
+    And get access for username 'jean.dupond@gmail.com' and password 'mdp123'
     And account is
       """
       {
@@ -39,7 +39,7 @@ Feature: api password
       """
 
   Scenario: forgotten password
-    Given create account
+    Given account
       """
       {
           "birthday": "1967-06-15",
@@ -62,7 +62,7 @@ Feature: api password
           "password": "mdp123"
       }
       """
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp123' to client 'test_service_user'
+    And get access for username 'jean.dupond@gmail.com' and password 'mdp123'
     And account is
       """
       {

@@ -21,6 +21,8 @@ import io.restassured.response.Response;
 
 public final class AuthorizationApiClient {
 
+    private static final String LOGIN_URL = "/ws/v1/logins";
+
     private AuthorizationApiClient() {
 
     }
@@ -127,6 +129,66 @@ public final class AuthorizationApiClient {
                 .header("Authorization", "Bearer " + token)
 
                 .body(newPassword).post("/ws/v1/new_password");
+
+    }
+
+    public static Response getLogin(String username, String token, String application) {
+
+        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
+
+                .header(APP_HEADER, application)
+
+                .header("Authorization", "Bearer " + token)
+
+                .get(LOGIN_URL + "/{username}", username);
+
+    }
+
+    public static Response headLogin(Object login, String token, String application) {
+
+        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
+
+                .header(APP_HEADER, application)
+
+                .header("Authorization", "Bearer " + token)
+
+                .head(LOGIN_URL + "/{login}", login);
+
+    }
+
+    public static Response putLogin(String username, Object body, String token, String application) {
+
+        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
+
+                .header(APP_HEADER, application)
+
+                .header("Authorization", "Bearer " + token)
+
+                .body(body).put(LOGIN_URL + "/{username}", username);
+
+    }
+
+    public static Response deleteLogin(Object login, String token, String application) {
+
+        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
+
+                .header(APP_HEADER, application)
+
+                .header("Authorization", "Bearer " + token)
+
+                .delete(LOGIN_URL + "/{login}", login);
+
+    }
+
+    public static Response copyLogin(Object body, String token, String application) {
+
+        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
+
+                .header(APP_HEADER, application)
+
+                .header("Authorization", "Bearer " + token)
+
+                .body(body).post(LOGIN_URL + "/copy");
 
     }
 

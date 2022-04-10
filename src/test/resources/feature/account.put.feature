@@ -3,7 +3,7 @@ Feature: api put account
   Background: 
     Given connection to client 'test_service'
     And delete username 'jean.dupond@gmail.com'
-    And create account
+    And account
       """
       {
           "optin_mobile": true,
@@ -37,7 +37,7 @@ Feature: api put account
           "password": "mdp"
       }
       """
-    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user'
+    And get access for username 'jean.dupond@gmail.com' and password 'mdp'
 
   Scenario: put account
     When put account
@@ -136,8 +136,8 @@ Feature: api put account
       }
       """
     And move authorization login from 'jean.dupond@gmail.com' to 'jean.dupont@gmail.com'
-    And  account 'jean.dupont@gmail.com' exists
-    And connection with username 'jean.dupont@gmail.com' and password 'mdp' to client 'test_service_user'
+    And account 'jean.dupont@gmail.com' exists
+    And get access for username 'jean.dupont@gmail.com' and password 'mdp'
     Then account is
       """
       {
@@ -303,7 +303,7 @@ Feature: api put account
   Scenario: put account fails because username already exists
     Given connection to client 'test_service'
     And delete username 'jean.dupont@gmail.com'
-    And create account
+    And account
       """
       {
           "birthday": "1967-06-15",
@@ -318,7 +318,7 @@ Feature: api put account
           "password": "mdp"
       }
       """
-    And connection with username 'jean.dupont@gmail.com' and password 'mdp' to client 'test_service_user'
+    And get access for username 'jean.dupont@gmail.com' and password 'mdp'
     When put account
       """
       {

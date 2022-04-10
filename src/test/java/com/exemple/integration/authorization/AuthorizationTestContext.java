@@ -1,5 +1,7 @@
 package com.exemple.integration.authorization;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.LinkedList;
 
 import org.springframework.stereotype.Component;
@@ -25,6 +27,7 @@ public class AuthorizationTestContext {
     }
 
     public String lastAccessToken() {
+        assertThat(this.accessTokens).as("no access token").isNotEmpty();
         return this.accessTokens.getLast();
     }
 
