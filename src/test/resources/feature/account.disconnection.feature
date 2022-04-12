@@ -17,8 +17,7 @@ Feature: api account security
     And create authorization login 'jean.dupond@gmail.com'
       """
       {
-          "password": "mdp",
-          "roles" : ["ROLE_ACCOUNT"]
+          "password": "mdp"
       }
       """
     And get access for username 'jean.dupond@gmail.com' and password 'mdp'
