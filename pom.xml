@@ -160,7 +160,7 @@
 		<dependency>
 			<groupId>com.github.nosan</groupId>
 			<artifactId>embedded-cassandra</artifactId>
-			<version>4.0.3</version>
+			<version>4.0.7</version>
 		</dependency>
 
 		<dependency>
