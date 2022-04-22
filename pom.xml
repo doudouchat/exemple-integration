@@ -98,7 +98,7 @@
 			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy-xml</artifactId>
-				<version>3.0.8</version>
+				<version>3.0.10</version>
 			</dependency>
 
 			<!-- REST ASSURED -->
