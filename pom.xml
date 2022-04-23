@@ -2,6 +2,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-dependencies</artifactId>
+		<version>2.5.13</version>
+	</parent>
 	<groupId>exemple</groupId>
 	<artifactId>exemple-integration</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -29,7 +34,6 @@
 
 		<!-- TOMCAT -->
 		<tomcat.container.id>tomcat9x</tomcat.container.id>
-		<tomcat.version>9.0.59</tomcat.version>
 
 		<application.log.file>${project.build.testOutputDirectory}/logback.groovy</application.log.file>
 		<application.contextpath>ExempleService</application.contextpath>
@@ -68,54 +72,6 @@
 	<dependencyManagement>
 
 		<dependencies>
-
-			<!-- SPRING BOOT -->
-
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>2.5.13</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-
-			<!-- HAZELCAST -->
-
-			<dependency>
-				<groupId>com.hazelcast</groupId>
-				<artifactId>hazelcast</artifactId>
-				<version>4.2.4</version>
-			</dependency>
-
-			<!-- GROOVY -->
-
-			<dependency>
-				<groupId>org.codehaus.groovy</groupId>
-				<artifactId>groovy</artifactId>
-				<version>3.0.8</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.codehaus.groovy</groupId>
-				<artifactId>groovy-xml</artifactId>
-				<version>3.0.10</version>
-			</dependency>
-
-			<!-- REST ASSURED -->
-
-			<dependency>
-				<groupId>io.rest-assured</groupId>
-				<artifactId>rest-assured</artifactId>
-				<version>4.4.0</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>io.rest-assured</groupId>
-				<artifactId>rest-assured-all</artifactId>
-				<version>4.4.0</version>
-				<scope>test</scope>
-			</dependency>
 
 			<!-- CUCUMBER -->
 
@@ -271,7 +227,7 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.2.3</version>
+			<version>1.2.8</version>
 			<scope>runtime</scope>
 		</dependency>
 
@@ -352,36 +308,12 @@
 
 			<plugins>
 
-				<!-- HELPER -->
-				<!-- https://www.mojohaus.org/build-helper-maven-plugin/index.html -->
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>3.2.0</version>
-				</plugin>
-
-				<!-- DEPENDENCIES -->
-				<!-- https://maven.apache.org/plugins/maven-dependency-plugin/index.html -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-dependency-plugin</artifactId>
-					<version>3.1.2</version>
-				</plugin>
-
-				<!-- WAR -->
-				<!-- http://maven.apache.org/plugins/maven-war-plugin/ -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-war-plugin</artifactId>
-					<version>3.3.1</version>
-				</plugin>
-
 				<!-- VERSION -->
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>versions-maven-plugin</artifactId>
-					<version>2.8.1</version>
 					<configuration>
+						<processDependencyManagement>false</processDependencyManagement>
 						<outputFile>${project.build.directory}/outdated-dependencies.txt</outputFile>
 						<outputEncoding>${project.build.sourceEncoding}</outputEncoding>
 					</configuration>
@@ -436,7 +368,6 @@
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>2.4.3</version>
 					<configuration>
 						<jvmArguments>-Dlogging.config=file:${application.log.file}</jvmArguments>
 						<jmxPort>${embedded.jmx.port}</jmxPort>
@@ -519,12 +450,11 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>3.0.0-M5</version>
 					<dependencies>
 						<dependency>
 							<groupId>org.apache.maven.surefire</groupId>
 							<artifactId>surefire-junit47</artifactId>
-							<version>3.0.0-M5</version>
+							<version>${maven-surefire-plugin.version}</version>
 						</dependency>
 					</dependencies>
 					<executions>
@@ -543,19 +473,6 @@
 			</plugins>
 
 		</pluginManagement>
-
-		<plugins>
-
-			<!-- VERSION -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>versions-maven-plugin</artifactId>
-				<configuration>
-					<processDependencyManagement>false</processDependencyManagement>
-				</configuration>
-			</plugin>
-
-		</plugins>
 
 	</build>
 
