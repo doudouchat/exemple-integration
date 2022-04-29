@@ -13,8 +13,8 @@ import java.util.regex.Pattern;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
+import com.exemple.integration.JsonRestTemplate;
 import com.exemple.integration.core.IntegrationTestConfiguration;
-import com.exemple.service.api.integration.core.JsonRestTemplate;
 
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
