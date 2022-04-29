@@ -2,7 +2,7 @@ package com.exemple.integration.login;
 
 import static com.exemple.integration.core.InitData.APP_HEADER;
 
-import com.exemple.service.api.integration.core.JsonRestTemplate;
+import com.exemple.integration.JsonRestTemplate;
 
 import io.restassured.response.Response;
 

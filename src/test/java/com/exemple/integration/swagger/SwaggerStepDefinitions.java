@@ -7,7 +7,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.interceptor.SimpleKey;
 
-import com.exemple.service.api.integration.core.JsonRestTemplate;
+import com.exemple.integration.JsonRestTemplate;
 import com.exemple.service.resource.schema.model.SchemaEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

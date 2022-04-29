@@ -5,7 +5,7 @@ import static com.exemple.integration.core.InitData.VERSION_HEADER;
 
 import java.util.Collections;
 
-import com.exemple.service.api.integration.core.JsonRestTemplate;
+import com.exemple.integration.JsonRestTemplate;
 
 import io.restassured.response.Response;
 
