@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $(nodetool statusgossip) = "running" ]
+if [ $(nodetool -Dcom.sun.jndi.rmiURLParsing=legacy statusgossip) = "running" ]
 then
 	exit 0
 fi
