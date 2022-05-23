@@ -66,33 +66,6 @@ public class InitData {
         detail.put("clientIds", Sets.newHashSet("test_service", "test_service_user"));
         detail.put("authorization_clientIds", Sets.newHashSet("test_service", "test_service_user"));
 
-        Set<String> accountFilter = new HashSet<>();
-        accountFilter.add("lastname");
-        accountFilter.add("firstname");
-        accountFilter.add("email");
-        accountFilter.add("optin_mobile");
-        accountFilter.add("civility");
-        accountFilter.add("mobile");
-        accountFilter.add("creation_date");
-        accountFilter.add("update_date");
-        accountFilter.add("birthday");
-        accountFilter.add("addresses[*[city,street]]");
-        accountFilter.add("cgus[code,version]");
-
-        Set<String> accountField = new HashSet<>();
-        accountField.add("id");
-        accountField.add("lastname");
-        accountField.add("firstname");
-        accountField.add("email");
-        accountField.add("optin_mobile");
-        accountField.add("civility");
-        accountField.add("mobile");
-        accountField.add("creation_date");
-        accountField.add("update_date");
-        accountField.add("birthday");
-        accountField.add("addresses[*[city,street]]");
-        accountField.add("cgus[code,version]");
-
         ResourceExecutionContext.get().setKeyspace("test_service");
 
         SchemaEntity accountSchema = new SchemaEntity();
@@ -101,8 +74,15 @@ public class InitData {
         accountSchema.setResource("account");
         accountSchema.setProfile("user");
         accountSchema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("account.json").getInputStream())));
-        accountSchema.setFilters(accountFilter);
-        accountSchema.setFields(accountField);
+
+        ObjectNode patchUpdateDate = MAPPER.createObjectNode();
+        patchUpdateDate.put("op", "add");
+        patchUpdateDate.put("path", "/properties/update_date");
+        patchUpdateDate.set("value", MAPPER.readTree("{\"type\": \"string\",\"format\": \"date-time\",\"readOnly\": true}"));
+
+        Set<JsonNode> accountPatchs = new HashSet<>();
+        accountPatchs.add(patchUpdateDate);
+        accountSchema.setPatchs(accountPatchs);
 
         schemaResource.save(accountSchema);
 
@@ -112,34 +92,8 @@ public class InitData {
         accountV0Schema.setResource("account");
         accountV0Schema.setProfile("user");
         accountV0Schema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("account.v0.json").getInputStream())));
-        accountV0Schema.setFilters(accountFilter);
 
         schemaResource.save(accountV0Schema);
-
-        Set<String> loginFilter = new HashSet<>();
-        loginFilter.add("id");
-        loginFilter.add("disabled");
-        loginFilter.add("username");
-
-        Set<String> loginField = new HashSet<>();
-        loginField.add("id");
-        loginField.add("disabled");
-        loginField.add("username");
-        loginField.add("password");
-
-        ObjectNode patchId = MAPPER.createObjectNode();
-        patchId.put("op", "add");
-        patchId.put("path", "/properties/id/readOnly");
-        patchId.put("value", true);
-
-        ObjectNode patchUsername = MAPPER.createObjectNode();
-        patchUsername.put("op", "add");
-        patchUsername.put("path", "/properties/username/readOnly");
-        patchUsername.put("value", true);
-
-        Set<JsonNode> loginPatchs = new HashSet<>();
-        loginPatchs.add(patchId);
-        loginPatchs.add(patchUsername);
 
         SchemaEntity loginSchema = new SchemaEntity();
         loginSchema.setApplication(TEST_APP);
@@ -147,22 +101,8 @@ public class InitData {
         loginSchema.setResource("login");
         loginSchema.setProfile("user");
         loginSchema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("login.json").getInputStream())));
-        loginSchema.setFilters(loginFilter);
-        loginSchema.setFields(loginField);
-        loginSchema.setPatchs(loginPatchs);
 
         schemaResource.save(loginSchema);
-
-        Set<String> loginIdFilter = new HashSet<>();
-        loginIdFilter.add("id");
-        loginIdFilter.add("disabled");
-        loginIdFilter.add("username");
-
-        Set<String> loginIdField = new HashSet<>();
-        loginIdField.add("id");
-        loginIdField.add("disabled");
-        loginIdField.add("username");
-        loginIdField.add("password");
 
         SchemaEntity loginIdSchema = new SchemaEntity();
         loginIdSchema.setApplication(TEST_APP);
@@ -170,13 +110,8 @@ public class InitData {
         loginIdSchema.setResource("login_id");
         loginIdSchema.setProfile("user");
         loginIdSchema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("login_id.json").getInputStream())));
-        loginIdSchema.setFilters(loginIdFilter);
-        loginIdSchema.setFields(loginIdField);
 
         schemaResource.save(loginIdSchema);
-
-        Set<String> subscriptionFilter = new HashSet<>();
-        subscriptionFilter.add("subscription_date");
 
         SchemaEntity subscriptionSchema = new SchemaEntity();
         subscriptionSchema.setApplication(TEST_APP);
@@ -184,7 +119,6 @@ public class InitData {
         subscriptionSchema.setResource("subscription");
         subscriptionSchema.setProfile("user");
         subscriptionSchema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("subscription.json").getInputStream())));
-        subscriptionSchema.setFilters(subscriptionFilter);
 
         schemaResource.save(subscriptionSchema);
 
@@ -207,9 +141,6 @@ public class InitData {
         loginSchema.setResource("login");
         loginSchema.setProfile("user");
         loginSchema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("login.json").getInputStream())));
-        loginSchema.setFilters(loginFilter);
-        loginSchema.setPatchs(loginPatchs);
-
         schemaResource.save(loginSchema);
 
         Map<String, Object> adminDetail = new HashMap<>();
@@ -238,8 +169,9 @@ public class InitData {
                 .and()
 
                 .withClient("test_service_user").secret(password).authorizedGrantTypes("password", "authorization_code", "refresh_token")
-                .redirectUris("xxx").scopes("account:read", "account:update", "login:create", "login:update", "login:delete", "login:read", "login:head")
-                .autoApprove("account:read", "account:update",  "login:create", "login:update", "login:delete", "login:read").authorities("ROLE_APP")
+                .redirectUris("xxx")
+                .scopes("account:read", "account:update", "login:create", "login:update", "login:delete", "login:read", "login:head")
+                .autoApprove("account:read", "account:update", "login:create", "login:update", "login:delete", "login:read").authorities("ROLE_APP")
                 .additionalInformation("keyspace=test_authorization")
 
                 .and()
