@@ -43,10 +43,6 @@
 		<authorization.host>http://localhost</authorization.host>
 
 		<!-- RESOURCE -->
-		<authorization.name>exemple-authorization-configuration</authorization.name>
-		<authorization.path>file:${project.build.testOutputDirectory}/exemple-test.yml</authorization.path>
-
-		<configuration.name>exemple-service-configuration</configuration.name>
 		<configuration.path>file:${project.build.testOutputDirectory}/exemple-test.yml</configuration.path>
 
 		<!-- API -->
@@ -583,16 +579,6 @@
 										cargo.resource.type=java.lang.String|
 										cargo.resource.parameters=factory=org.glassfish.resources.custom.factory.PrimitivesAndStringFactory;value=${configuration.path}
 									</cargo.resource.resource.spring>
-									<cargo.resource.resource.api>
-										cargo.resource.name=${configuration.name}|
-										cargo.resource.type=java.lang.String|
-										cargo.resource.parameters=factory=org.glassfish.resources.custom.factory.PrimitivesAndStringFactory;value=${configuration.path}
-									</cargo.resource.resource.api>
-									<cargo.resource.resource.authorization>
-										cargo.resource.name=${authorization.name}|
-										cargo.resource.type=java.lang.String|
-										cargo.resource.parameters=factory=org.glassfish.resources.custom.factory.PrimitivesAndStringFactory;value=${authorization.path}
-									</cargo.resource.resource.authorization>
 								</properties>
 							</configuration>
 						</configuration>
