@@ -25,7 +25,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="com.exemple.service" level="DEBUG" />
+	<logger name="com.exemple" level="DEBUG" />
 
 	<logger name="com.datastax.oss.driver" level="INFO" />
 	<logger name="com.hazelcast" level="INFO" />
