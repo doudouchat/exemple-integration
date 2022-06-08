@@ -99,6 +99,18 @@ CREATE TABLE IF NOT EXISTS subscription_event (
 	PRIMARY KEY ((email), date)
 );
 
+CREATE TABLE IF NOT EXISTS subscription_history (
+	email text,
+	field text,
+	date timestamp,
+	value text,
+	application text,
+	version text,
+	user text,
+	previous_value text,
+	PRIMARY KEY ((email), field)
+);
+
 CREATE INDEX IF NOT EXISTS account_status
 	ON account ( status );
 
