@@ -182,7 +182,6 @@
 			<artifactId>exemple-authorization-server</artifactId>
 			<version>1.0.1-SNAPSHOT</version>
 			<scope>test</scope>
-			<classifier>classes</classifier>
 		</dependency>
 
 		<!-- COMMONS APACHE -->
@@ -468,7 +467,7 @@
 
 				<dependency>
 					<groupId>${project.groupId}</groupId>
-					<artifactId>exemple-authorization-server</artifactId>
+					<artifactId>exemple-authorization-launcher</artifactId>
 					<version>1.0.1-SNAPSHOT</version>
 					<type>war</type>
 				</dependency>
@@ -548,7 +547,7 @@
 							<deployables>
 								<deployable>
 									<groupId>${project.groupId}</groupId>
-									<artifactId>exemple-authorization-server</artifactId>
+									<artifactId>exemple-authorization-launcher</artifactId>
 									<type>war</type>
 									<properties>
 										<context>/${authorization.contextpath}</context>
