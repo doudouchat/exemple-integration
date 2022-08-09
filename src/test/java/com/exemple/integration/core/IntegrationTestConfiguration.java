@@ -13,7 +13,6 @@ import org.springframework.core.io.ClassPathResource;
 import com.exemple.authorization.core.client.AuthorizationClientConfiguration;
 import com.exemple.service.application.core.ApplicationConfiguration;
 import com.exemple.service.resource.core.ResourceConfiguration;
-import com.github.nosan.boot.autoconfigure.embedded.cassandra.EmbeddedCassandraAutoConfiguration;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
@@ -21,7 +20,7 @@ import com.hazelcast.core.HazelcastInstance;
 @Configuration
 @Import({ ResourceConfiguration.class, ApplicationConfiguration.class, AuthorizationClientConfiguration.class })
 @ComponentScan(basePackages = "com.exemple.integration")
-@EnableAutoConfiguration(exclude = { CassandraAutoConfiguration.class, EmbeddedCassandraAutoConfiguration.class })
+@EnableAutoConfiguration(exclude = CassandraAutoConfiguration.class)
 public class IntegrationTestConfiguration {
 
     public static final String AUTHORIZATION_URL = System.getProperty("authorization.host", "http://localhost") + ":"
