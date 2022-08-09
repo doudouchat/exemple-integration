@@ -57,9 +57,5 @@ api:
 test:
    hazelcast:
       port: ${hazelcast.port}
-   kafka:
-      port: ${kafka.port}
-      defaultTopic: test
-      dir: ${project.build.directory}/kafka
 cassandra:
    scripts: ${project.build.testOutputDirectory}/cassandra/schema.cql, ${project.build.testOutputDirectory}/cassandra/exec.cql

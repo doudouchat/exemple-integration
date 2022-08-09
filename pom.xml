@@ -110,13 +110,6 @@
 			<artifactId>hazelcast</artifactId>
 		</dependency>
 
-		<!-- SPRING KAFKA -->
-
-		<dependency>
-			<groupId>org.springframework.kafka</groupId>
-			<artifactId>spring-kafka-test</artifactId>
-		</dependency>
-
 		<!-- SPRING BOOT -->
 
 		<dependency>
@@ -559,6 +552,41 @@
 												</ports>
 												<wait>
 													<time>5000</time>
+												</wait>
+												<log>
+													<date>default</date>
+												</log>
+											</run>
+										</image>
+									</images>
+								</configuration>
+							</execution>
+							<execution>
+								<id>start_kafka</id>
+								<goals>
+									<goal>start</goal>
+								</goals>
+								<configuration>
+									<images>
+										<image>
+											<name>bitnami/kafka:3.2.0</name>
+											<alias>kafka</alias>
+											<run>
+												<ports>
+													<port>9092:9092</port>
+													<port>${kafka.port}:9093</port>
+												</ports>
+												<env>
+													<ALLOW_PLAINTEXT_LISTENER>yes</ALLOW_PLAINTEXT_LISTENER>
+													<KAFKA_CFG_ZOOKEEPER_CONNECT>172.17.0.1:${zookeeper.port}</KAFKA_CFG_ZOOKEEPER_CONNECT>
+													<KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP>CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT</KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP>
+													<KAFKA_CFG_LISTENERS>CLIENT://:9092,EXTERNAL://:9093</KAFKA_CFG_LISTENERS>
+													<KAFKA_CFG_ADVERTISED_LISTENERS>CLIENT://localhost:9092,EXTERNAL://localhost:${kafka.port}</KAFKA_CFG_ADVERTISED_LISTENERS>
+													<KAFKA_CFG_INTER_BROKER_LISTENER_NAME>CLIENT</KAFKA_CFG_INTER_BROKER_LISTENER_NAME>
+												</env>
+												<wait>
+													<log>(?s)Startup complete</log>
+													<time>120000</time>
 												</wait>
 												<log>
 													<date>default</date>
