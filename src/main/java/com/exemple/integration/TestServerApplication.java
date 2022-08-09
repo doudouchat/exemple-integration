@@ -2,7 +2,6 @@ package com.exemple.integration;
 
 import java.util.UUID;
 
-import org.apache.curator.test.TestingServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,26 +25,6 @@ public class TestServerApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(TestServerApplication.class, args);
-    }
-
-    @Configuration
-    @ConditionalOnProperty(value = "port", prefix = "test.zookeeper")
-    public static class ZookeeperConfiguration {
-
-        private final int port;
-
-        public ZookeeperConfiguration(@Value("${test.zookeeper.port}") int port) {
-            this.port = port;
-        }
-
-        @Bean(initMethod = "start", destroyMethod = "stop")
-        public TestingServer embeddedZookeeper() throws Exception {
-
-            LOG.info("STARTING EMBEDDED ZOOKEEPER");
-
-            return new TestingServer(port, false);
-        }
-
     }
 
     @Configuration
