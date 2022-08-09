@@ -48,11 +48,8 @@
 		<!-- API -->
 		<cassandra.host>127.0.0.1</cassandra.host>
 		<hazelcast.port>5706</hazelcast.port>
-		<zookeeper.port>10024</zookeeper.port>
 
 		<!-- VERSION -->
-
-		<zookeeper-version>3.5.7</zookeeper-version>
 		<cassandra-version>3.11.13</cassandra-version>
 
 		<!-- SONAR -->
@@ -105,14 +102,6 @@
 	</dependencyManagement>
 
 	<dependencies>
-
-		<!-- CURATOR -->
-
-		<dependency>
-			<groupId>org.apache.curator</groupId>
-			<artifactId>curator-test</artifactId>
-			<version>5.3.0</version>
-		</dependency>
 
 		<!-- HAZELCAST -->
 
@@ -497,7 +486,7 @@
 										<portName>cargo.ajp.port</portName>
 										<portName>cassandra.port</portName>
 										<portName>hazelcast.port</portName>
-										<portName>zookeeeper.port</portName>
+										<portName>zookeeper.port</portName>
 										<portName>kafka.port</portName>
 										<portName>embedded.jmx.port</portName>
 									</portNames>
@@ -545,6 +534,31 @@
 												<wait>
 													<log>(?s)Startup complete</log>
 													<time>60000</time>
+												</wait>
+												<log>
+													<date>default</date>
+												</log>
+											</run>
+										</image>
+									</images>
+								</configuration>
+							</execution>
+							<execution>
+								<id>start_zookeeper</id>
+								<goals>
+									<goal>start</goal>
+								</goals>
+								<configuration>
+									<images>
+										<image>
+											<name>zookeeper:3.8.0</name>
+											<alias>zookeeper</alias>
+											<run>
+												<ports>
+													<port>${zookeeper.port}:2181</port>
+												</ports>
+												<wait>
+													<time>5000</time>
 												</wait>
 												<log>
 													<date>default</date>

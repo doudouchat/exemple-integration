@@ -55,8 +55,6 @@ api:
          clientId: resource
          clientSecret: secret
 test:
-   zookeeper:
-      port: ${zookeeper.port}
    hazelcast:
       port: ${hazelcast.port}
    kafka:
