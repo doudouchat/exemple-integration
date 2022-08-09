@@ -47,7 +47,6 @@
 
 		<!-- API -->
 		<cassandra.host>127.0.0.1</cassandra.host>
-		<hazelcast.port>5706</hazelcast.port>
 
 		<!-- VERSION -->
 		<cassandra-version>3.11.13</cassandra-version>
@@ -102,20 +101,6 @@
 	</dependencyManagement>
 
 	<dependencies>
-
-		<!-- HAZELCAST -->
-
-		<dependency>
-			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast</artifactId>
-		</dependency>
-
-		<!-- SPRING BOOT -->
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
 
 		<!-- GROOVY -->
 
@@ -305,34 +290,6 @@
 					</configuration>
 				</plugin>
 
-				<!-- SPRING BOOT -->
-				<!-- https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle -->
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<configuration>
-						<jvmArguments>-Dlogging.config=file:${application.log.file}</jvmArguments>
-						<jmxPort>${embedded.jmx.port}</jmxPort>
-						<wait>1000</wait>
-						<maxAttempts>360</maxAttempts>
-						<fork>true</fork>
-					</configuration>
-					<executions>
-						<execution>
-							<id>pre-integration-test</id>
-							<goals>
-								<goal>start</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>post-integration-test</id>
-							<goals>
-								<goal>stop</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-
 				<!-- DOCKER -->
 				<!-- http://dmp.fabric8.io/ -->
 				<plugin>
@@ -359,7 +316,6 @@
 							</artifactInstaller>
 							<systemProperties>
 								<spring.profiles.active>etude</spring.profiles.active>
-								<hazelcast.config>${project.build.testOutputDirectory}/hazelcast.yaml</hazelcast.config>
 								<hazelcast.client.config>${project.build.testOutputDirectory}/hazelcast-client.yaml</hazelcast.client.config>
 							</systemProperties>
 						</container>
@@ -481,7 +437,6 @@
 										<portName>hazelcast.port</portName>
 										<portName>zookeeper.port</portName>
 										<portName>kafka.port</portName>
-										<portName>embedded.jmx.port</portName>
 									</portNames>
 								</configuration>
 							</execution>
@@ -492,17 +447,6 @@
 					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
-					</plugin>
-
-					<!-- SPRING BOOT -->
-					<plugin>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-maven-plugin</artifactId>
-						<configuration>
-							<arguments>
-								<argument>--spring.config.location=${configuration.path}</argument>
-							</arguments>
-						</configuration>
 					</plugin>
 
 					<!-- DOCKER -->
@@ -587,6 +531,32 @@
 												<wait>
 													<log>(?s)Startup complete</log>
 													<time>120000</time>
+												</wait>
+												<log>
+													<date>default</date>
+												</log>
+											</run>
+										</image>
+									</images>
+								</configuration>
+							</execution>
+							<execution>
+								<id>start_hazelcast</id>
+								<goals>
+									<goal>start</goal>
+								</goals>
+								<configuration>
+									<images>
+										<image>
+											<name>hazelcast/hazelcast:4.2.5</name>
+											<alias>hazelcast</alias>
+											<run>
+												<ports>
+													<port>${hazelcast.port}:5701</port>
+												</ports>
+												<wait>
+													<log>(?s)is STARTED</log>
+													<time>60000</time>
 												</wait>
 												<log>
 													<date>default</date>
