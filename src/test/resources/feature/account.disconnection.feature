@@ -31,4 +31,5 @@ Feature: api account security
       }
       """
     When disconnection
-    Then account is unauthorized
+    And get account
+    Then account is denied

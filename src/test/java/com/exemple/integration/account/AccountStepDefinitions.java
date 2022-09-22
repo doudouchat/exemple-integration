@@ -147,6 +147,13 @@ public class AccountStepDefinitions {
 
     }
 
+    @When("get account")
+    public void getAccount() throws IOException {
+
+        getAccount(TEST_APP, VERSION_V1);
+
+    }
+
     @When("get account by id {id}")
     public void getAccount(UUID id) throws IOException {
 
@@ -209,15 +216,6 @@ public class AccountStepDefinitions {
     public void checkDenied() {
 
         assertThat(context.lastResponse().getStatusCode()).as("account is not denied").isEqualTo(403);
-
-    }
-
-    @Then("account is unauthorized")
-    public void checkUnauthorized() {
-
-        Response response = AccountApiClient.get(context.lastId(), authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
-
-        assertThat(response.getStatusCode()).as("account is authorized").isEqualTo(401);
 
     }
 
