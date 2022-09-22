@@ -50,9 +50,6 @@ event:
    timeout: 10000
 api:
    authorization:
-      path: ${authorization.host}:${application.port}/${authorization.contextpath}
-      client:
-         clientId: resource
-         clientSecret: secret
+      jwkSetUri: ${authorization.host}:${application.port}/${authorization.contextpath}/.well-known/jwks.json
 cassandra:
    scripts: ${project.build.testOutputDirectory}/cassandra/schema.cql, ${project.build.testOutputDirectory}/cassandra/exec.cql
