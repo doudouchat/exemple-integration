@@ -1,0 +1,38 @@
+resource:
+   cassandra:
+      resource_configuration: file:/usr/local/tomcat/etc/cassandra.conf
+management:
+   endpoints:
+      web:
+         exposure:
+            include:
+             - info
+             - health
+   endpoint:
+      info:
+         enabled: true
+      health:
+         enabled: true
+   info:
+      env: 
+         enabled: true
+customer:
+   contexts:
+      path: /usr/local/tomcat/etc/contexts
+store:
+   zookeeper:
+      host: 172.17.0.1:${zookeeper.port}
+application:
+   zookeeper:
+      host: 172.17.0.1:${zookeeper.port}
+event:
+   kafka:
+      bootstrap-servers: 172.17.0.1:${kafka.port}
+   topic: test
+   timeout: 10000
+api:
+   authorization:
+      jwkSetUri: http://172.17.0.1:${authorization.port}/ExempleAuthorization/.well-known/jwks.json
+   swagger:
+      authorization:
+         path: http://localhost:${authorization.port}/ExempleAuthorization

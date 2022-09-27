@@ -32,27 +32,14 @@
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
 
-		<!-- TOMCAT -->
-		<tomcat.container.id>tomcat9x</tomcat.container.id>
-
-		<application.log.file>${project.build.testOutputDirectory}/logback.xml</application.log.file>
-		<application.contextpath>ExempleService</application.contextpath>
-		<application.host>http://localhost</application.host>
-
-		<authorization.contextpath>ExempleAuthorization</authorization.contextpath>
-		<authorization.host>http://localhost</authorization.host>
-
 		<!-- RESOURCE -->
 		<configuration.path>file:${project.build.testOutputDirectory}/exemple-test.yml</configuration.path>
 
-		<!-- API -->
-		<cassandra.host>127.0.0.1</cassandra.host>
-
 		<!-- VERSION -->
 		<cassandra-version>3.11.13</cassandra-version>
+		<jacoco-version>0.8.8</jacoco-version>
 
 		<!-- SONAR -->
-
 		<sonar.coverage.exclusions>**/integration/**/*.java</sonar.coverage.exclusions>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.sources>${project.build.directory}/exemple-service,${project.build.directory}/exemple-authorization</sonar.sources>
@@ -84,16 +71,6 @@
 				<artifactId>cucumber-junit</artifactId>
 				<version>7.4.1</version>
 				<scope>test</scope>
-			</dependency>
-
-			<!-- TOMCAT -->
-
-			<dependency>
-				<groupId>org.apache.tomcat</groupId>
-				<artifactId>tomcat</artifactId>
-				<version>${tomcat.version}</version>
-				<type>pom</type>
-				<scope>provided</scope>
 			</dependency>
 
 		</dependencies>
@@ -251,29 +228,7 @@
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.8</version>
-					<executions>
-						<execution>
-							<id>prepare-jacoco-integration-agent</id>
-							<goals>
-								<goal>prepare-agent-integration</goal>
-							</goals>
-							<phase>pre-integration-test</phase>
-							<configuration>
-								<propertyName>jacoco.it.agent.argLine</propertyName>
-								<includes>
-									<include>com.exemple.service.*</include>
-									<include>com.exemple.authorization.*</include>
-								</includes>
-								<excludes>
-									<exclude>*EnhancerBySpringCGLIB*</exclude>
-									<exclude>*FastClassBySpringCGLIB*</exclude>
-									<exclude>*__MapperGenerated*</exclude>
-								</excludes>
-								<classDumpDir>${project.build.outputDirectory}</classDumpDir>
-							</configuration>
-						</execution>
-					</executions>
+					<version>${jacoco-version}</version>
 				</plugin>
 
 				<!-- COVERALLS -->
@@ -303,59 +258,6 @@
 					<groupId>io.fabric8</groupId>
 					<artifactId>docker-maven-plugin</artifactId>
 					<version>0.40.2</version>
-				</plugin>
-
-				<!-- CARGO -->
-				<!-- https://codehaus-cargo.github.io/cargo/Maven2+plugin.html -->
-				<plugin>
-					<groupId>org.codehaus.cargo</groupId>
-					<artifactId>cargo-maven3-plugin</artifactId>
-					<version>1.9.3</version>
-					<configuration>
-						<container>
-							<containerId>${tomcat.container.id}</containerId>
-							<output>${project.build.directory}/cargo/configurations/${tomcat.container.id}/logs/container.log</output>
-							<timeout>600000</timeout>
-							<artifactInstaller>
-								<groupId>org.apache.tomcat</groupId>
-								<artifactId>tomcat</artifactId>
-								<version>${tomcat.version}</version>
-							</artifactInstaller>
-							<systemProperties>
-								<spring.profiles.active>etude</spring.profiles.active>
-								<hazelcast.client.config>${project.build.testOutputDirectory}/hazelcast-client.yaml</hazelcast.client.config>
-							</systemProperties>
-						</container>
-						<configuration>
-							<properties>
-								<!-- le choix du port permet d'arrêter proprement le tomcat sans 
-									être conflit avec un autre tomcat en cours d'exécution -->
-								<cargo.servlet.port>${application.port}</cargo.servlet.port>
-								<cargo.rmi.port>${cargo.rmi.port}</cargo.rmi.port>
-								<cargo.tomcat.ajp.port>${cargo.ajp.port}</cargo.tomcat.ajp.port>
-								<cargo.jvmargs>${jacoco.it.agent.argLine}
-									-Dlogging.config=file:${application.log.file} -Xmx1g</cargo.jvmargs>
-							</properties>
-						</configuration>
-					</configuration>
-					<executions>
-						<!-- start server before integration tests -->
-						<execution>
-							<id>start-container</id>
-							<phase>pre-integration-test</phase>
-							<goals>
-								<goal>start</goal>
-							</goals>
-						</execution>
-						<!-- stop server after integration tests -->
-						<execution>
-							<id>stop-container</id>
-							<phase>post-integration-test</phase>
-							<goals>
-								<goal>stop</goal>
-							</goals>
-						</execution>
-					</executions>
 				</plugin>
 
 				<!-- TEST INTEGRATION -->
@@ -394,32 +296,6 @@
 		<profile>
 			<id>webservice</id>
 
-			<dependencies>
-
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>exemple-service-api-launcher</artifactId>
-					<version>3.0.0-SNAPSHOT</version>
-					<type>war</type>
-				</dependency>
-
-				<dependency>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>exemple-authorization-launcher</artifactId>
-					<version>1.0.1-SNAPSHOT</version>
-					<type>war</type>
-				</dependency>
-
-				<!-- RESOURCE CONNECTOR -->
-				<dependency>
-					<groupId>org.glassfish.main.resources</groupId>
-					<artifactId>resources-connector</artifactId>
-					<version>5.1.0</version>
-					<scope>test</scope>
-				</dependency>
-
-			</dependencies>
-
 			<build>
 
 				<plugins>
@@ -437,9 +313,8 @@
 								<phase>process-resources</phase>
 								<configuration>
 									<portNames>
-										<portName>application.port</portName>
-										<portName>cargo.rmi.port</portName>
-										<portName>cargo.ajp.port</portName>
+										<portName>authorization.port</portName>
+										<portName>service.port</portName>
 										<portName>cassandra.port</portName>
 										<portName>hazelcast.port</portName>
 										<portName>zookeeper.port</portName>
@@ -454,6 +329,66 @@
 					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>report-integration</id>
+								<goals>
+									<goal>report-integration</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>dump-authorization</id>
+								<goals>
+									<goal>dump</goal>
+								</goals>
+								<configuration>
+									<address>127.0.0.1</address>
+									<port>6300</port>
+									<destFile>${project.build.directory}/jacoco-it.exec</destFile>
+								</configuration>
+							</execution>
+							<execution>
+								<id>dump-service</id>
+								<goals>
+									<goal>dump</goal>
+								</goals>
+								<configuration>
+									<address>127.0.0.1</address>
+									<port>6301</port>
+									<destFile>${project.build.directory}/jacoco-it.exec</destFile>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!-- COPY JACOCO JAR AGENT -->
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.jacoco</groupId>
+									<artifactId>org.jacoco.agent</artifactId>
+									<version>${jacoco-version}</version>
+									<classifier>runtime</classifier>
+									<type>jar</type>
+									<overWrite>false</overWrite>
+									<outputDirectory>${project.build.directory}/lib</outputDirectory>
+									<destFileName>jacocoagent.jar</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
 					</plugin>
 
 					<!-- DOCKER -->
@@ -532,7 +467,7 @@
 													<KAFKA_CFG_ZOOKEEPER_CONNECT>172.17.0.1:${zookeeper.port}</KAFKA_CFG_ZOOKEEPER_CONNECT>
 													<KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP>CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT</KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP>
 													<KAFKA_CFG_LISTENERS>CLIENT://:9092,EXTERNAL://:9093</KAFKA_CFG_LISTENERS>
-													<KAFKA_CFG_ADVERTISED_LISTENERS>CLIENT://localhost:9092,EXTERNAL://localhost:${kafka.port}</KAFKA_CFG_ADVERTISED_LISTENERS>
+													<KAFKA_CFG_ADVERTISED_LISTENERS>CLIENT://localhost:9092,EXTERNAL://172.17.0.1:${kafka.port}</KAFKA_CFG_ADVERTISED_LISTENERS>
 													<KAFKA_CFG_INTER_BROKER_LISTENER_NAME>CLIENT</KAFKA_CFG_INTER_BROKER_LISTENER_NAME>
 												</env>
 												<wait>
@@ -574,58 +509,121 @@
 								</configuration>
 							</execution>
 							<execution>
+								<id>start_exemple_authorization</id>
+								<goals>
+									<goal>start</goal>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<images>
+										<image>
+											<name>exemple-authorization</name>
+											<alias>exemple-authorization</alias>
+											<run>
+												<ports>
+													<port>${authorization.port}:8080</port>
+													<port>6300:6300</port>
+												</ports>
+												<env>
+													<CATALINA_OPTS>-Dlogging.config=file:/usr/local/tomcat/etc/logback.xml -Dhazelcast.config=/usr/local/tomcat/etc/hazelcast.yaml -Dhazelcast.client.config=/usr/local/tomcat/etc/hazelcast-client.yaml</CATALINA_OPTS>
+													<JAVA_TOOL_OPTIONS>-javaagent:/usr/local/tomcat/etc/lib/jacocoagent.jar=includes=com.exemple.authorization.*,excludes=*EnhancerBySpringCGLIB*:*FastClassBySpringCGLIB*:*__MapperGenerated*,output=tcpserver,address=*,classdumpdir=/usr/local/tomcat/etc/source</JAVA_TOOL_OPTIONS>
+												</env>
+												<volumes>
+													<bind>
+														<volume>${project.build.testOutputDirectory}/conf/authorization:/usr/local/tomcat/etc</volume>
+														<volume>${project.basedir}/src/main/resources:/usr/local/tomcat/etc/certificat</volume>
+														<volume>${project.build.directory}/lib:/usr/local/tomcat/etc/lib</volume>
+													</bind>
+												</volumes>
+												<wait>
+													<http>
+														<url>http://localhost:${authorization.port}/ExempleAuthorization/actuator/health</url>
+														<method>GET</method>
+														<status>200</status>
+													</http>
+													<time>60000</time>
+												</wait>
+												<log>
+													<date>default</date>
+												</log>
+											</run>
+											<copy>
+												<entries>
+													<entry>
+														<containerPath>/usr/local/tomcat/logs</containerPath>
+														<hostDirectory>${project.build.directory}/logs/authorization</hostDirectory>
+													</entry>
+													<entry>
+														<containerPath>/usr/local/tomcat/etc/source/com</containerPath>
+														<hostDirectory>${project.build.outputDirectory}</hostDirectory>
+													</entry>
+												</entries>
+											</copy>
+										</image>
+									</images>
+								</configuration>
+							</execution>
+							<execution>
+								<id>start_exemple_service</id>
+								<goals>
+									<goal>start</goal>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<images>
+										<image>
+											<name>exemple-service</name>
+											<alias>exemple-service</alias>
+											<run>
+												<ports>
+													<port>${service.port}:8080</port>
+													<port>6301:6301</port>
+												</ports>
+												<env>
+													<CATALINA_OPTS>-Dlogging.config=file:/usr/local/tomcat/etc/logback.xml -Dhazelcast.client.config=/usr/local/tomcat/etc/hazelcast.yaml</CATALINA_OPTS>
+													<JAVA_TOOL_OPTIONS>-javaagent:/usr/local/tomcat/etc/lib/jacocoagent.jar=includes=com.exemple.service.*,excludes=*EnhancerBySpringCGLIB*:*FastClassBySpringCGLIB*:*__MapperGenerated*,output=tcpserver,address=*,port=6301,classdumpdir=/usr/local/tomcat/etc/source</JAVA_TOOL_OPTIONS>
+												</env>
+												<volumes>
+													<bind>
+														<volume>${project.build.testOutputDirectory}/conf/service:/usr/local/tomcat/etc</volume>
+														<volume>${project.build.directory}/lib:/usr/local/tomcat/etc/lib</volume>
+													</bind>
+												</volumes>
+												<wait>
+													<http>
+														<url>http://localhost:${service.port}/ExempleService/actuator/health</url>
+														<method>GET</method>
+														<status>200</status>
+													</http>
+													<time>60000</time>
+												</wait>
+												<log>
+													<date>default</date>
+												</log>
+											</run>
+											<copy>
+												<entries>
+													<entry>
+														<containerPath>/usr/local/tomcat/logs</containerPath>
+														<hostDirectory>${project.build.directory}/logs/service</hostDirectory>
+													</entry>
+													<entry>
+														<containerPath>/usr/local/tomcat/etc/source/com</containerPath>
+														<hostDirectory>${project.build.outputDirectory}</hostDirectory>
+													</entry>
+												</entries>
+											</copy>
+										</image>
+									</images>
+								</configuration>
+							</execution>
+							<execution>
 								<id>stop_all</id>
 								<goals>
 									<goal>stop</goal>
 								</goals>
 							</execution>
 						</executions>
-					</plugin>
-
-					<!-- CARGO -->
-					<plugin>
-						<groupId>org.codehaus.cargo</groupId>
-						<artifactId>cargo-maven3-plugin</artifactId>
-						<configuration>
-							<container>
-								<dependencies>
-									<dependency>
-										<groupId>org.glassfish.main.resources</groupId>
-										<artifactId>resources-connector</artifactId>
-									</dependency>
-								</dependencies>
-							</container>
-							<ignoreFailures>true</ignoreFailures>
-							<deployables>
-								<deployable>
-									<groupId>${project.groupId}</groupId>
-									<artifactId>exemple-authorization-launcher</artifactId>
-									<type>war</type>
-									<properties>
-										<context>/${authorization.contextpath}</context>
-									</properties>
-									<pingUrlPath>/${authorization.contextpath}/actuator/health</pingUrlPath>
-								</deployable>
-								<deployable>
-									<groupId>${project.groupId}</groupId>
-									<artifactId>exemple-service-api-launcher</artifactId>
-									<type>war</type>
-									<properties>
-										<context>/${application.contextpath}</context>
-									</properties>
-									<pingUrlPath>/${application.contextpath}/actuator/health</pingUrlPath>
-								</deployable>
-							</deployables>
-							<configuration>
-								<properties>
-									<cargo.resource.resource.spring>
-										cargo.resource.name=spring.config.location|
-										cargo.resource.type=java.lang.String|
-										cargo.resource.parameters=factory=org.glassfish.resources.custom.factory.PrimitivesAndStringFactory;value=${configuration.path}
-									</cargo.resource.resource.spring>
-								</properties>
-							</configuration>
-						</configuration>
 					</plugin>
 
 				</plugins>
@@ -644,14 +642,9 @@
 						<artifactId>maven-failsafe-plugin</artifactId>
 						<configuration>
 							<systemPropertyVariables>
-								<application.host>${application.host}</application.host>
-								<application.port>${application.port}</application.port>
-								<application.contextpath>${application.contextpath}</application.contextpath>
-								<authorization.host>${authorization.host}</authorization.host>
-								<authorization.port>${application.port}</authorization.port>
-								<authorization.contextpath>${authorization.contextpath}</authorization.contextpath>
+								<service.port>${service.port}</service.port>
+								<authorization.port>${authorization.port}</authorization.port>
 							</systemPropertyVariables>
-							<argLine>${jacoco.it.agent.argLine}</argLine>
 						</configuration>
 					</plugin>
 
@@ -714,7 +707,6 @@
 											<type>jar</type>
 											<classifier>sources</classifier>
 											<outputDirectory>${project.build.directory}/exemple-authorization</outputDirectory>
-											<excludes>com/exemple/authorization/integration/**</excludes>
 										</artifactItem>
 									</artifactItems>
 								</configuration>
@@ -737,11 +729,9 @@
 									<excludes>
 										<exclude>com/exemple/service/customer/account/AccountService*</exclude>
 										<exclude>com/exemple/service/customer/subscription/SubscriptionService*</exclude>
-										<exclude>com/exemple/service/customer/account/TestAccountService*</exclude>
 										<exclude>com/exemple/service/resource/**/mapper/*MapperBuilder*</exclude>
 										<exclude>com/exemple/authorization/resource/**/mapper/*MapperBuilder*</exclude>
 										<exclude>com/exemple/integration/**</exclude>
-										<exclude>com/exemple/authorization/application/**</exclude>
 									</excludes>
 								</configuration>
 							</execution>

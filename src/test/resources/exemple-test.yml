@@ -1,27 +1,6 @@
-spring:
-   hazelcast:
-      config: file:${project.build.testOutputDirectory}/hazelcast-client.yaml
-management:
-   endpoints:
-      web:
-         exposure:
-            include:
-             - info
-             - health
-   endpoint:
-      info:
-         enabled: true
-      health:
-         enabled: true
-   info:
-      env: 
-         enabled: true
 resource:
    cassandra:
       resource_configuration: file:${project.build.testOutputDirectory}/cassandra.conf
-customer:
-   contexts:
-      path: ${project.build.testOutputDirectory}/contexts
 authorization:
    resource:
       cassandra:
@@ -29,27 +8,9 @@ authorization:
    zookeeper:
       host: 127.0.0.1:${zookeeper.port}
       sleepMsBetweenRetries: 10000
-   certificat:
-      location: file:${project.build.outputDirectory}/mytest.jks
-      alias: mytest
-      password: mypass
-   kafka:
-      bootstrap-servers: localhost:${kafka.port}
-store:
-   zookeeper:
-      host: 127.0.0.1:${zookeeper.port}
-      sleepMsBetweenRetries: 10000
 application:
    zookeeper:
       host: 127.0.0.1:${zookeeper.port}
       sleepMsBetweenRetries: 10000
-event:
-   kafka:
-      bootstrap-servers: localhost:${kafka.port}
-   topic: test
-   timeout: 10000
-api:
-   authorization:
-      jwkSetUri: ${authorization.host}:${application.port}/${authorization.contextpath}/.well-known/jwks.json
 cassandra:
    scripts: ${project.build.testOutputDirectory}/cassandra/schema.cql, ${project.build.testOutputDirectory}/cassandra/exec.cql

@@ -33,8 +33,8 @@ public final class JsonRestTemplate {
 
     public static final int TIMEOUT_SOCKET = 3_000_000;
 
-    public static final String APPLICATION_URL = System.getProperty("application.host", "http://localhost") + ":"
-            + System.getProperty("application.port", "8080") + "/" + System.getProperty("application.contextpath", "ExempleService");
+    public static final String SERVICE_URL = System.getProperty("service.host", "http://localhost") + ":"
+            + System.getProperty("service.port", "8080") + "/" + System.getProperty("service.contextpath", "ExempleService");
 
     private static final Logger LOG = LoggerFactory.getLogger(JsonRestTemplate.class);
 
@@ -56,7 +56,7 @@ public final class JsonRestTemplate {
 
     public static RequestSpecification given() {
 
-        return given(APPLICATION_URL, ContentType.JSON);
+        return given(SERVICE_URL, ContentType.JSON);
     }
 
     public static RequestSpecification given(String path, ContentType contentType) {

@@ -31,18 +31,12 @@ jobs:
          uses: actions/cache@v2
          with:
             path: ~/.m2
-            key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+            key: ${{ runner.os }}-m2-${{ hashFiles('/pom.xml') }}
             restore-keys: ${{ runner.os }}-m2
       - name: maven-settings-xml-action
         uses: whelk-io/maven-settings-xml-action@v14
         with:
            repositories: '[{ "id": "repository.spring.milestone", "url": "https://repo.spring.io/milestone" }]'
-      -  name: Cache embedded cassandra
-         uses: actions/cache@v2
-         with:
-            path: ~/.embedded-cassandra
-            key: ${{ runner.os }}-embedded-cassandra-${{ hashFiles('**/CHANGES.txt') }}
-            restore-keys: ${{ runner.os }}-embedded-cassandra
       - name: Checkout exemple service
         uses: actions/checkout@v2
         with:
@@ -53,6 +47,8 @@ jobs:
          run: mvn -f ${{ github.workspace }}/exemple-service clean install -Dmaven.test.skip=true
       -  name: Build exemple service source
          run: mvn -f ${{ github.workspace }}/exemple-service source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-service/target/exemple-service-3.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-service -Dpackaging=jar -Dversion=3.0.0-SNAPSHOT -Dclassifier=sources
+      -  name: build docker exemple service
+         run: docker build -t exemple-service --build-arg VERSION_TOMCAT=9.0.65-jdk17 ${{ github.workspace }}/exemple-service
       - name: Checkout exemple authorization
         uses: actions/checkout@v2
         with:
@@ -63,11 +59,16 @@ jobs:
          run: mvn -f ${{ github.workspace }}/exemple-authorization clean install -Dmaven.test.skip=true
       -  name: Build exemple authorization source
          run: mvn -f ${{ github.workspace }}/exemple-authorization source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-authorization/target/exemple-authorization-1.0.1-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-authorization -Dpackaging=jar -Dversion=1.0.1-SNAPSHOT -Dclassifier=sources
+      -  name: build docker exemple authorization
+         run: docker build -t exemple-authorization --build-arg VERSION_TOMCAT=9.0.65-jdk17 ${{ github.workspace }}/exemple-authorization
       -  name: Build with Maven
          run: mvn clean verify -Pwebservice,it,report
-      -  name: display logs cargo
-         if: ${{ failure() }}
-         run: cat target/cargo/configurations/tomcat9x/logs/container.log
+      -  name: display logs service
+         if: ${{ always() }}
+         run: cat target/logs/service/logs/archive/*.log
+      -  name: display logs authorization
+         if: ${{ always() }}
+         run: cat target/logs/authorization/logs/archive/*.log
       -  name: Coveralls Maven plugin
          env:
            CI_NAME: Github
