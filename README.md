@@ -5,6 +5,6 @@
 
 ## maven
 
-<p>execute with cargo and cassandra <code>mvn clean verify -Pwebservice,it</code></p>
+<p>execute with docker and cassandra <code>mvn clean verify -Pwebservice,it</code></p>
 
-<p>execute without cargo and cassandra <code>mvn clean verify -Pit -Dauthorization.port=8086 -Dapplication.port=8086</code></p>
+<p>execute without docker and cassandra <code>mvn clean verify -Pit -Dauthorization.port=8086 -Dservice.port=8086</code></p>
