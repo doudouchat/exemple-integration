@@ -1,5 +1,5 @@
 [![build](https://github.com/doudouchat/exemple-integration/workflows/build/badge.svg)](https://github.com/doudouchat/exemple-integration/actions)
-[![Coverage Status](https://coveralls.io/repos/github/doudouchat/exemple-integration/badge.svg?branch=master)](https://coveralls.io/github/doudouchat/exemple-integration?branch=master)
+[![codecov](https://codecov.io/gh/doudouchat/exemple-integration/graph/badge.svg)](https://codecov.io/gh/doudouchat/exemple-integration)
 
 # exemple-integration
 

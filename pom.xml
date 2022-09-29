@@ -39,12 +39,12 @@
 
 		<!-- SONAR -->
 		<sonar.coverage.exclusions>**/integration/**/*.java</sonar.coverage.exclusions>
+		<sonar.sources>src/main/java,${project.build.directory}/sources</sonar.sources>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-		<sonar.sources>src/main/java,${project.build.directory}/exemple-service,${project.build.directory}/exemple-authorization,${project.build.directory}/exemple-gateway</sonar.sources>
-		<sonar.cpd.exclusions>target/exemple-service/**,target/exemple-authorization/**,target/exemple-gateway/**</sonar.cpd.exclusions>
+		<sonar.cpd.exclusions>**</sonar.cpd.exclusions>
 		<sonar.issue.ignore.multicriteria>target</sonar.issue.ignore.multicriteria>
 		<sonar.issue.ignore.multicriteria.target.ruleKey>*</sonar.issue.ignore.multicriteria.target.ruleKey>
-		<sonar.issue.ignore.multicriteria.target.resourceKey>target/**</sonar.issue.ignore.multicriteria.target.resourceKey>
+		<sonar.issue.ignore.multicriteria.target.resourceKey>**</sonar.issue.ignore.multicriteria.target.resourceKey>
 		<sonar.scm.disabled>true</sonar.scm.disabled>
 
 	</properties>
@@ -316,28 +316,6 @@
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>${jacoco-version}</version>
-				</plugin>
-
-				<!-- COVERALLS -->
-				<!-- https://github.com/trautonen/coveralls-maven-plugin -->
-				<plugin>
-					<groupId>org.eluder.coveralls</groupId>
-					<artifactId>coveralls-maven-plugin</artifactId>
-					<version>4.3.0</version>
-					<dependencies>
-						<dependency>
-							<groupId>javax.xml.bind</groupId>
-							<artifactId>jaxb-api</artifactId>
-							<version>2.4.0-b180830.0359</version>
-						</dependency>
-					</dependencies>
-					<configuration>
-						<sourceDirectories>
-							<sourceDirectory>${project.build.directory}/exemple-service</sourceDirectory>
-							<sourceDirectory>${project.build.directory}/exemple-authorization</sourceDirectory>
-							<sourceDirectory>${project.build.directory}/exemple-gateway</sourceDirectory>
-						</sourceDirectories>
-					</configuration>
 				</plugin>
 
 				<!-- DOCKER -->
@@ -853,9 +831,7 @@
 								<phase>pre-integration-test</phase>
 								<configuration>
 									<sources>
-										<source>${project.build.directory}/exemple-service</source>
-										<source>${project.build.directory}/exemple-authorization</source>
-										<source>${project.build.directory}/exemple-gateway</source>
+										<source>${project.build.directory}/sources</source>
 									</sources>
 								</configuration>
 							</execution>
@@ -881,7 +857,7 @@
 											<version>4.0.0-SNAPSHOT</version>
 											<type>jar</type>
 											<classifier>sources</classifier>
-											<outputDirectory>${project.build.directory}/exemple-service</outputDirectory>
+											<outputDirectory>${project.build.directory}/sources</outputDirectory>
 											<includes>**/*.java</includes>
 											<excludes>**/integration/**/*</excludes>
 										</artifactItem>
@@ -891,7 +867,7 @@
 											<version>3.0.0-SNAPSHOT</version>
 											<type>jar</type>
 											<classifier>sources</classifier>
-											<outputDirectory>${project.build.directory}/exemple-authorization</outputDirectory>
+											<outputDirectory>${project.build.directory}/sources</outputDirectory>
 											<includes>**/*.java</includes>
 											<excludes>**/integration/**/*</excludes>
 										</artifactItem>
@@ -901,7 +877,7 @@
 											<version>3.0.0-SNAPSHOT</version>
 											<type>jar</type>
 											<classifier>sources</classifier>
-											<outputDirectory>${project.build.directory}/exemple-gateway</outputDirectory>
+											<outputDirectory>${project.build.directory}/sources</outputDirectory>
 											<includes>**/*.java</includes>
 											<excludes>**/integration/**/*</excludes>
 										</artifactItem>
