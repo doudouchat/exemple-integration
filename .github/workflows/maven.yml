@@ -37,13 +37,13 @@ jobs:
             path: ~/.m2
             key: ${{ runner.os }}-m2-${{ hashFiles('/pom.xml') }}
             restore-keys: ${{ runner.os }}-m2
-      - name: maven-settings-xml-action
-        uses: whelk-io/maven-settings-xml-action@v14
-        with:
+      -  name: maven-settings-xml-action
+         uses: whelk-io/maven-settings-xml-action@v14
+         with:
            repositories: '[{ "id": "repository.spring.milestone", "url": "https://repo.spring.io/milestone" }]'
-      - name: Checkout exemple service
-        uses: actions/checkout@v2
-        with:
+      -  name: Checkout exemple service
+         uses: actions/checkout@v2
+         with:
             path: exemple-service
             repository: doudouchat/exemple-service
             ref: ${{ github.event.inputs.branch_service }}
@@ -53,9 +53,9 @@ jobs:
          run: mvn -f ${{ github.workspace }}/exemple-service source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-service/target/exemple-service-4.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-service -Dpackaging=jar -Dversion=4.0.0-SNAPSHOT -Dclassifier=sources
       -  name: build docker exemple service
          run: docker build -t exemple-service --build-arg VERSION_TOMCAT=10.1.5-jdk17 ${{ github.workspace }}/exemple-service
-      - name: Checkout exemple authorization
-        uses: actions/checkout@v2
-        with:
+      -  name: Checkout exemple authorization
+         uses: actions/checkout@v2
+         with:
             path: exemple-authorization
             repository: doudouchat/exemple-authorization
             ref: ${{ github.event.inputs.branch_authorization }}
@@ -88,11 +88,8 @@ jobs:
       -  name: display logs gateway
          if: ${{ always() }}
          run: cat target/logs/gateway/logs/archive/*.log
-      -  name: Coveralls Maven plugin
-         env:
-           CI_NAME: Github
-           CI_BUILD_NUMBER: ${{ github.run_id }}
-           CI_BUILD_URL: https://github.com/${{ github.repository }}/commit/${{ github.event.after }}/checks
-           CI_BRANCH: ${{ steps.refs.outputs.branch_name }}
-           CI_PULL_REQUEST: ${{ steps.refs.outputs.pr_number }}
-         run: mvn coveralls:report --no-transfer-progress -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
+      -  uses: codecov/codecov-action@v3
+         with:
+            verbose: true
+            files: ${{ github.workspace}}/target/site/jacoco-it/jacoco.xml
+            root_dir: ${{ github.workspace }}/target/sources
