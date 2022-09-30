@@ -277,6 +277,7 @@
 						<sourceDirectories>
 							<sourceDirectory>${project.build.directory}/exemple-service</sourceDirectory>
 							<sourceDirectory>${project.build.directory}/exemple-authorization</sourceDirectory>
+							<sourceDirectory>${project.build.directory}/exemple-gateway</sourceDirectory>
 						</sourceDirectories>
 					</configuration>
 				</plugin>
@@ -294,17 +295,9 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
-					<executions>
-						<execution>
-							<goals>
-								<goal>integration-test</goal>
-								<goal>verify</goal>
-							</goals>
-							<configuration>
-								<encoding>${project.build.sourceEncoding}</encoding>
-							</configuration>
-						</execution>
-					</executions>
+					<configuration>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
 				</plugin>
 
 			</plugins>
@@ -337,6 +330,7 @@
 									<portNames>
 										<portName>authorization.port</portName>
 										<portName>service.port</portName>
+										<portName>gateway.port</portName>
 										<portName>cassandra.port</portName>
 										<portName>hazelcast.port</portName>
 										<portName>zookeeper.port</portName>
@@ -377,6 +371,17 @@
 								<configuration>
 									<address>127.0.0.1</address>
 									<port>6301</port>
+									<destFile>${project.build.directory}/jacoco-it.exec</destFile>
+								</configuration>
+							</execution>
+							<execution>
+								<id>dump-gateway</id>
+								<goals>
+									<goal>dump</goal>
+								</goals>
+								<configuration>
+									<address>127.0.0.1</address>
+									<port>6302</port>
 									<destFile>${project.build.directory}/jacoco-it.exec</destFile>
 								</configuration>
 							</execution>
@@ -640,6 +645,61 @@
 								</configuration>
 							</execution>
 							<execution>
+								<id>start_exemple_gateway</id>
+								<goals>
+									<goal>start</goal>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<images>
+										<image>
+											<name>exemple-gateway</name>
+											<alias>exemple-gateway</alias>
+											<run>
+												<ports>
+													<port>${gateway.port}:8080</port>
+													<port>6302:6302</port>
+												</ports>
+												<env>
+													<spring.config.location>/usr/local/etc/gateway/exemple-gateway.yml</spring.config.location>
+													<server.servlet.context-path>/</server.servlet.context-path>
+													<JAVA_TOOL_OPTIONS>-javaagent:/usr/local/etc/gateway/lib/jacocoagent.jar=includes=com.exemple.gateway.*,excludes=*EnhancerBySpringCGLIB*:*FastClassBySpringCGLIB*,output=tcpserver,address=*,port=6302,classdumpdir=/usr/local/tomcat/etc/source</JAVA_TOOL_OPTIONS>
+												</env>
+												<volumes>
+													<bind>
+														<volume>${project.build.testOutputDirectory}/conf/gateway:/usr/local/etc/gateway</volume>
+														<volume>${project.build.directory}/lib:/usr/local/etc/gateway/lib</volume>
+													</bind>
+												</volumes>
+												<wait>
+													<http>
+														<url>http://localhost:${gateway.port}/actuator/health</url>
+														<method>GET</method>
+														<status>200</status>
+													</http>
+													<time>30000</time>
+												</wait>
+												<log>
+													<enabled>false</enabled>
+												</log>
+											</run>
+											<copy>
+												<entries>
+													<entry>
+														<containerPath>tmp/logs</containerPath>
+														<hostDirectory>${project.build.directory}/logs/gateway</hostDirectory>
+													</entry>
+													<entry>
+														<containerPath>/usr/local/tomcat/etc/source/com</containerPath>
+														<hostDirectory>${project.build.outputDirectory}</hostDirectory>
+													</entry>
+												</entries>
+											</copy>
+										</image>
+									</images>
+								</configuration>
+							</execution>
+							<execution>
 								<id>stop_all</id>
 								<goals>
 									<goal>stop</goal>
@@ -668,6 +728,47 @@
 								<authorization.port>${authorization.port}</authorization.port>
 							</systemPropertyVariables>
 						</configuration>
+						<executions>
+							<execution>
+								<id>direct</id>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<systemPropertyVariables>
+										<service.port>${service.port}</service.port>
+										<authorization.port>${authorization.port}</authorization.port>
+									</systemPropertyVariables>
+									<summaryFile>target/failsafe-reports/failsafe-summary-direct.xml</summaryFile>
+								</configuration>
+							</execution>
+							<execution>
+								<id>by-gateway</id>
+								<goals>
+									<goal>integration-test</goal>
+								</goals>
+								<configuration>
+									<systemPropertyVariables>
+										<service.port>${gateway.port}</service.port>
+										<authorization.port>${gateway.port}</authorization.port>
+									</systemPropertyVariables>
+									<summaryFile>target/failsafe-reports/failsafe-summary-by-gateway.xml</summaryFile>
+								</configuration>
+							</execution>
+							<execution>
+								<id>verify</id>
+								<goals>
+									<goal>verify</goal>
+								</goals>
+								<configuration>
+									<summaryFiles>
+										<summaryFile>target/failsafe-reports/failsafe-summary-direct.xml</summaryFile>
+										<summaryFile>target/failsafe-reports/failsafe-summary-by-gateway.xml</summaryFile>
+									</summaryFiles>
+								</configuration>
+							</execution>
+
+						</executions>
 					</plugin>
 
 				</plugins>
@@ -695,6 +796,7 @@
 									<sources>
 										<source>${project.build.directory}/exemple-service</source>
 										<source>${project.build.directory}/exemple-authorization</source>
+										<source>${project.build.directory}/exemple-gateway</source>
 									</sources>
 								</configuration>
 							</execution>
@@ -729,6 +831,14 @@
 											<type>jar</type>
 											<classifier>sources</classifier>
 											<outputDirectory>${project.build.directory}/exemple-authorization</outputDirectory>
+										</artifactItem>
+										<artifactItem>
+											<groupId>exemple</groupId>
+											<artifactId>exemple-gateway</artifactId>
+											<version>2.0.0-SNAPSHOT</version>
+											<type>jar</type>
+											<classifier>sources</classifier>
+											<outputDirectory>${project.build.directory}/exemple-gateway</outputDirectory>
 										</artifactItem>
 									</artifactItems>
 								</configuration>
