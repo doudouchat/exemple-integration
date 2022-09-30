@@ -1,12 +1,16 @@
 package com.exemple.integration;
 
-import org.junit.runner.RunWith;
+import org.junit.platform.suite.api.ConfigurationParameter;
+import org.junit.platform.suite.api.IncludeEngines;
+import org.junit.platform.suite.api.SelectClasspathResource;
+import org.junit.platform.suite.api.Suite;
 
-import io.cucumber.junit.Cucumber;
-import io.cucumber.junit.CucumberOptions;
+import io.cucumber.junit.platform.engine.Constants;
 
-@RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources/feature")
+@Suite
+@IncludeEngines("cucumber")
+@SelectClasspathResource("feature")
+@ConfigurationParameter(key = Constants.GLUE_PROPERTY_NAME, value = "com.exemple.integration")
 public class ServiceIntegrationIT {
 
 }
