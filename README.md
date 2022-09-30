@@ -5,6 +5,6 @@
 
 ## maven
 
-<p>execute with docker and cassandra <code>mvn clean verify -Pwebservice,it</code></p>
+<p>execute with docker<code>mvn clean verify -Pwebservice,it</code></p>
 
-<p>execute without docker and cassandra <code>mvn clean verify -Pit -Dauthorization.port=8086 -Dservice.port=8086</code></p>
+<p>execute without docker<code>mvn clean verify -Pit -Dauthorization.port=8090 -Dservice.port=8080 -Dgateway.port=8086 -Dzookeeper.port=10024 -Dhazelcast.port=5706</code></p>
