@@ -42,8 +42,12 @@
 		<!-- SONAR -->
 		<sonar.coverage.exclusions>**/integration/**/*.java</sonar.coverage.exclusions>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-		<sonar.sources>${project.build.directory}/exemple-service,${project.build.directory}/exemple-authorization</sonar.sources>
-		<sonar.cpd.exclusions>target/exemple-service/**,target/exemple-authorization/**</sonar.cpd.exclusions>
+		<sonar.sources>src/main/java,${project.build.directory}/exemple-service,${project.build.directory}/exemple-authorization,${project.build.directory}/exemple-gateway</sonar.sources>
+		<sonar.cpd.exclusions>target/exemple-service/**,target/exemple-authorization/**,target/exemple-gateway/**</sonar.cpd.exclusions>
+		<sonar.issue.ignore.multicriteria>target</sonar.issue.ignore.multicriteria>
+		<sonar.issue.ignore.multicriteria.target.ruleKey>*</sonar.issue.ignore.multicriteria.target.ruleKey>
+		<sonar.issue.ignore.multicriteria.target.resourceKey>target/**</sonar.issue.ignore.multicriteria.target.resourceKey>
+		<sonar.scm.disabled>true</sonar.scm.disabled>
 
 	</properties>
 
@@ -823,6 +827,8 @@
 											<type>jar</type>
 											<classifier>sources</classifier>
 											<outputDirectory>${project.build.directory}/exemple-service</outputDirectory>
+											<includes>**/*.java</includes>
+											<excludes>**/integration/**/*</excludes>
 										</artifactItem>
 										<artifactItem>
 											<groupId>exemple</groupId>
@@ -831,6 +837,8 @@
 											<type>jar</type>
 											<classifier>sources</classifier>
 											<outputDirectory>${project.build.directory}/exemple-authorization</outputDirectory>
+											<includes>**/*.java</includes>
+											<excludes>**/integration/**/*</excludes>
 										</artifactItem>
 										<artifactItem>
 											<groupId>exemple</groupId>
@@ -839,6 +847,8 @@
 											<type>jar</type>
 											<classifier>sources</classifier>
 											<outputDirectory>${project.build.directory}/exemple-gateway</outputDirectory>
+											<includes>**/*.java</includes>
+											<excludes>**/integration/**/*</excludes>
 										</artifactItem>
 									</artifactItems>
 								</configuration>
