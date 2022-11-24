@@ -10,9 +10,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-
 import com.exemple.integration.JsonRestTemplate;
 import com.exemple.integration.core.IntegrationTestConfiguration;
 
@@ -59,7 +56,7 @@ public final class AuthorizationApiClient {
 
                 .post("/login");
 
-        assertThat(response.getStatusCode(), is(HttpStatus.FOUND.value()));
+        assertThat(response.getStatusCode(), is(302));
 
         String xAuthToken = response.getHeader("X-Auth-Token");
         assertThat(xAuthToken, is(notNullValue()));
@@ -78,9 +75,9 @@ public final class AuthorizationApiClient {
 
                 .get("/oauth/authorize");
 
-        assertThat(response.getStatusCode(), is(HttpStatus.SEE_OTHER.value()));
+        assertThat(response.getStatusCode(), is(303));
 
-        String location = response.getHeader(HttpHeaders.LOCATION);
+        String location = response.getHeader("Location");
         assertThat(location, is(notNullValue()));
 
         Matcher locationMatcher = Pattern.compile(".*code=(\\w*)(&state=)?(.*)?", Pattern.DOTALL).matcher(location);

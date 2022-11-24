@@ -1,8 +1,6 @@
 package com.exemple.integration.core;
 
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +18,6 @@ import com.hazelcast.core.HazelcastInstance;
 @Configuration
 @Import({ ResourceConfiguration.class, ApplicationConfiguration.class, AuthorizationClientConfiguration.class })
 @ComponentScan(basePackages = "com.exemple.integration")
-@EnableAutoConfiguration(exclude = CassandraAutoConfiguration.class)
 public class IntegrationTestConfiguration {
 
     public static final String AUTHORIZATION_URL = System.getProperty("authorization.host", "http://localhost") + ":"
