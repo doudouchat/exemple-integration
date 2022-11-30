@@ -111,7 +111,7 @@
 		<dependency>
 			<groupId>exemple</groupId>
 			<artifactId>exemple-service-resource</artifactId>
-			<version>3.0.0-SNAPSHOT</version>
+			<version>4.0.0-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -120,7 +120,7 @@
 		<dependency>
 			<groupId>exemple</groupId>
 			<artifactId>exemple-service-application</artifactId>
-			<version>3.0.0-SNAPSHOT</version>
+			<version>4.0.0-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -129,7 +129,7 @@
 		<dependency>
 			<groupId>exemple</groupId>
 			<artifactId>exemple-authorization-server</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>3.0.0-SNAPSHOT</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
@@ -858,7 +858,7 @@
 										<artifactItem>
 											<groupId>exemple</groupId>
 											<artifactId>exemple-service</artifactId>
-											<version>3.0.0-SNAPSHOT</version>
+											<version>4.0.0-SNAPSHOT</version>
 											<type>jar</type>
 											<classifier>sources</classifier>
 											<outputDirectory>${project.build.directory}/exemple-service</outputDirectory>
@@ -868,7 +868,7 @@
 										<artifactItem>
 											<groupId>exemple</groupId>
 											<artifactId>exemple-authorization</artifactId>
-											<version>1.0.1-SNAPSHOT</version>
+											<version>3.0.0-SNAPSHOT</version>
 											<type>jar</type>
 											<classifier>sources</classifier>
 											<outputDirectory>${project.build.directory}/exemple-authorization</outputDirectory>
