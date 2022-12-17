@@ -74,7 +74,7 @@ jobs:
       -  name: Build exemple gateway
          run: mvn -f ${{ github.workspace }}/exemple-gateway clean install -Dmaven.test.skip=true
       -  name: Build exemple gateway source
-         run: mvn -f ${{ github.workspace }}/exemple-gateway source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-gateway/target/exemple-gateway-2.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-gateway -Dpackaging=jar -Dversion=2.0.0-SNAPSHOT -Dclassifier=sources
+         run: mvn -f ${{ github.workspace }}/exemple-gateway source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-gateway/target/exemple-gateway-3.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-gateway -Dpackaging=jar -Dversion=3.0.0-SNAPSHOT -Dclassifier=sources
       -  name: build docker exemple gateway
          run: docker build -t exemple-gateway --build-arg VERSION_OPENJDK=17-jdk-buster ${{ github.workspace }}/exemple-gateway
       -  name: Build with Maven
