@@ -702,7 +702,7 @@
 												<env>
 													<spring.config.location>/usr/local/etc/gateway/exemple-gateway.yml</spring.config.location>
 													<server.servlet.context-path>/</server.servlet.context-path>
-													<JAVA_TOOL_OPTIONS>-javaagent:/usr/local/etc/gateway/lib/jacocoagent.jar=includes=com.exemple.gateway.*,excludes=*EnhancerBySpringCGLIB*:*FastClassBySpringCGLIB*,output=tcpserver,address=*,port=6302,classdumpdir=/usr/local/tomcat/etc/source</JAVA_TOOL_OPTIONS>
+													<JAVA_TOOL_OPTIONS>-javaagent:/usr/local/etc/gateway/lib/jacocoagent.jar=includes=com.exemple.gateway.*,excludes=*SpringCGLIB*,output=tcpserver,address=*,port=6302,classdumpdir=/usr/local/tomcat/etc/source</JAVA_TOOL_OPTIONS>
 												</env>
 												<volumes>
 													<bind>
@@ -878,7 +878,7 @@
 										<artifactItem>
 											<groupId>exemple</groupId>
 											<artifactId>exemple-gateway</artifactId>
-											<version>2.0.0-SNAPSHOT</version>
+											<version>3.0.0-SNAPSHOT</version>
 											<type>jar</type>
 											<classifier>sources</classifier>
 											<outputDirectory>${project.build.directory}/exemple-gateway</outputDirectory>
