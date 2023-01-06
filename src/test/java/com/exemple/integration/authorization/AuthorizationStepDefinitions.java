@@ -15,6 +15,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Streams;
 
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.Transpose;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
@@ -27,10 +29,10 @@ public class AuthorizationStepDefinitions {
     @Autowired
     private AuthorizationTestContext context;
 
-    @Given("connection to client {string}")
-    public void connect(String client) {
+    @Given("connection to client {string} and scopes")
+    public void tokenByClientCredentials(String client, @Transpose DataTable scopes) {
 
-        Response response = AuthorizationApiClient.authorizationByCredentials(client, "secret");
+        Response response = AuthorizationApiClient.authorizationByCredentials(client, "secret", scopes.column(0));
 
         assertThat(response.getStatusCode()).as("connection to client %s fails", client).isEqualTo(200);
 
@@ -41,10 +43,16 @@ public class AuthorizationStepDefinitions {
 
     }
 
-    @When("connection with username {string} and password {string}")
-    public void connect(String username, String password) {
+    @When("connection with username {string} and password {string} to client {string} and scopes")
+    public void connect(String username, String password, String client, @Transpose DataTable scopes) {
 
-        Response response = AuthorizationApiClient.authorizationByPassword(username, password, "test_service_user", "secret");
+        Response response = AuthorizationApiClient.authorizationByCode(
+                username,
+                password,
+                client,
+                "secret",
+                scopes.column(0),
+                context.lastAccessToken());
 
         String token = response.jsonPath().getString("access_token");
 
@@ -53,24 +61,35 @@ public class AuthorizationStepDefinitions {
 
     }
 
-    @And("get access for username {string} and password {string} to client {string}")
-    public void getAccessToken(String username, String password, String client) {
+    @When("connection with username {string} and password {string} to client {string} and application {string} and scopes")
+    public void connect(String username, String password, String client, String application, @Transpose DataTable scopes) {
 
-        Response response = AuthorizationApiClient.authorizationByPassword(username, password, client, "secret");
-
-        assertThat(response.getStatusCode()).as("connection with username %s and password %s to client %s fails", username, password, client)
-                .isEqualTo(200);
+        Response response = AuthorizationApiClient.authorizationByCode(
+                username,
+                password,
+                client,
+                "secret",
+                scopes.column(0),
+                context.lastAccessToken(),
+                application);
 
         String token = response.jsonPath().getString("access_token");
 
         context.saveAccessToken(token);
+        context.save(response);
 
     }
 
-    @And("get access for username {string} and password {string}")
-    public void getAccessToken(String username, String password) {
+    @And("login with username {string} and password {string} to application {string}")
+    public void login(String username, String password, String application) {
 
-        getAccessToken(username, password, "test_service_user");
+        Response response = AuthorizationApiClient.login(
+                username,
+                password,
+                context.lastAccessToken(),
+                application);
+
+        context.save(response);
 
     }
 
@@ -102,7 +121,7 @@ public class AuthorizationStepDefinitions {
 
     }
 
-    @And("connection is unauthorized")
+    @And("login is unauthorized")
     public void checkUnauthorized() {
 
         assertThat(context.lastResponse().getStatusCode()).as("connection is authorized").isEqualTo(401);

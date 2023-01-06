@@ -1,7 +1,8 @@
 Feature: api patch account
 
   Background: 
-    Given connection to client 'test_service'
+    Given connection to client 'test_service' and scopes
+      |account:create|login:create|ROLE_APP|
     And delete username 'jean.dupond@gmail.com'
     And account
       """
@@ -37,7 +38,8 @@ Feature: api patch account
           "password": "mdp"
       }
       """
-    And get access for username 'jean.dupond@gmail.com' and password 'mdp'
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user' and application 'test' and scopes
+      |account:read|account:update|login:head|login:create|login:update|
 
   Scenario: patch account
     When patch account
@@ -117,7 +119,10 @@ Feature: api patch account
       """
     And move authorization login from 'jean.dupond@gmail.com' to 'jean.dupont@gmail.com'
     And account 'jean.dupont@gmail.com' exists
-    And get access for username 'jean.dupont@gmail.com' and password 'mdp'
+    And connection to client 'test_service' and scopes
+      |ROLE_APP|
+    And connection with username 'jean.dupont@gmail.com' and password 'mdp' to client 'test_service_user' and application 'test' and scopes
+      |account:read|login:head|
     Then account is
       """
       {
@@ -293,7 +298,8 @@ Feature: api patch account
       """
 
   Scenario: patch account fails because username already exists
-    Given connection to client 'test_service'
+    Given connection to client 'test_service' and scopes
+      |account:create|login:create|ROLE_APP|
     And delete username 'jean.dupont@gmail.com'
     And account
       """
@@ -310,7 +316,8 @@ Feature: api patch account
           "password": "mdp"
       }
       """
-    And get access for username 'jean.dupont@gmail.com' and password 'mdp'
+    And connection with username 'jean.dupont@gmail.com' and password 'mdp' to client 'test_service_user' and application 'test' and scopes
+      |account:update|
     When patch account
       """
       [

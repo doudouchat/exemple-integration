@@ -32,7 +32,7 @@ event:
    timeout: 10000
 api:
    authorization:
-      jwkSetUri: http://172.17.0.1:${authorization.port}/ExempleAuthorization/.well-known/jwks.json
+      jwkSetUri: http://172.17.0.1:${authorization.port}/ExempleAuthorization/oauth/jwks
    swagger:
       authorization:
          path: http://localhost:${authorization.port}/ExempleAuthorization

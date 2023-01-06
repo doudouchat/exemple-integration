@@ -1,7 +1,8 @@
 Feature: api account security
 
   Background: 
-    Given connection to client 'test_service'
+    Given connection to client 'test_service' and scopes
+      |account:create|login:create|ROLE_APP|
     And delete username 'jean.dupond@gmail.com'
 
   Scenario: create account fails because application not exists
@@ -32,7 +33,8 @@ Feature: api account security
           "password": "mdp"
       }
       """
-    And get access for username 'jean.dupond@gmail.com' and password 'mdp'
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user' and application 'test' and scopes
+      |account:read|
     When get account for application 'default' and version 'v1'
     Then account is denied
 
@@ -52,5 +54,5 @@ Feature: api account security
           "password": "mdp"
       }
       """
-    When connection with username 'jean.dupond@gmail.com' and password 'mdp123'
-    Then connection is unauthorized
+    When login with username 'jean.dupond@gmail.com' and password 'mdp123' to application 'test'
+    Then login is unauthorized

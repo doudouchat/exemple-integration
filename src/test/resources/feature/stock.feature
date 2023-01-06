@@ -1,7 +1,10 @@
 Feature: api stock
 
-  Background: 
-    Given get access for username 'admin' and password 'admin123' to client 'test_back_user'
+  Background:
+    Given connection to client 'test_back' and scopes
+      |ROLE_BACK|
+    And connection with username 'admin' and password 'admin123' to client 'test_back_user' and scopes
+      |stock:read|stock:update|
 
   Scenario: increase stock
     When increase of 5 for product 'product1' from store 'store'

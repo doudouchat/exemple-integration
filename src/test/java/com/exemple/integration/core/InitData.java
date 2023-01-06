@@ -5,15 +5,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.stereotype.Component;
 
-import com.exemple.authorization.core.client.AuthorizationClientBuilder;
+import com.exemple.authorization.core.client.AuthorizationClient;
+import com.exemple.authorization.core.client.resource.AuthorizationClientResource;
 import com.exemple.service.application.detail.ApplicationDetailService;
 import com.exemple.service.resource.core.ResourceExecutionContext;
 import com.exemple.service.resource.schema.SchemaResource;
@@ -52,7 +56,7 @@ public class InitData {
     private ApplicationDetailService applicationDetailService;
 
     @Autowired
-    private AuthorizationClientBuilder authorizationClientBuilder;
+    private AuthorizationClientResource authorizationClientResource;
 
     @PostConstruct
     public void initSchema() throws IOException {
@@ -166,43 +170,96 @@ public class InitData {
     @PostConstruct
     public void initAuthorization() throws Exception {
 
-        String password = "{bcrypt}" + BCrypt.hashpw("secret", BCrypt.gensalt());
+        var secret = "{bcrypt}" + BCrypt.hashpw("secret", BCrypt.gensalt());
 
-        authorizationClientBuilder
+        var testService = AuthorizationClient.builder()
+                .id(UUID.randomUUID().toString())
+                .clientId("test_service")
+                .clientSecret(secret)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC.getValue())
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
+                .redirectUri("http://xxx")
+                .scope("account:create")
+                .scope("login:head")
+                .scope("login:create")
+                .scope("subscription:update")
+                .scope("subscription:read")
+                .scope("ROLE_APP")
+                .requireAuthorizationConsent(false)
+                .build();
 
-                .withClient("test_service").secret(password).authorizedGrantTypes("client_credentials").redirectUris("xxx")
-                .scopes("account:create", "login:head", "login:create", "subscription:update", "subscription:read")
-                .autoApprove("account:create", "login:create", "subscription:update", "subscription:read").authorities("ROLE_APP")
-                .additionalInformation("keyspace=test_authorization")
+        authorizationClientResource.save(testService);
 
-                .and()
+        var testServiceUser = AuthorizationClient.builder()
+                .id(UUID.randomUUID().toString())
+                .clientId("test_service_user")
+                .clientSecret(secret)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE.getValue())
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN.getValue())
+                .redirectUri("http://xxx")
+                .scope("account:read")
+                .scope("account:update")
+                .scope("login:head")
+                .scope("login:create")
+                .scope("login:update")
+                .scope("login:read")
+                .requireAuthorizationConsent(false)
+                .build();
 
-                .withClient("test_service_user").secret(password).authorizedGrantTypes("password", "authorization_code", "refresh_token")
-                .redirectUris("xxx")
-                .scopes("account:read", "account:update", "login:create", "login:update", "login:delete", "login:read", "login:head")
-                .autoApprove("account:read", "account:update", "login:create", "login:update", "login:delete", "login:read").authorities("ROLE_APP")
-                .additionalInformation("keyspace=test_authorization")
+        authorizationClientResource.save(testServiceUser);
 
-                .and()
+        var testBack = AuthorizationClient.builder()
+                .id(UUID.randomUUID().toString())
+                .clientId("test_back")
+                .clientSecret(secret)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC.getValue())
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
+                .redirectUri("http://xxx")
+                .scope("ROLE_BACK")
+                .requireAuthorizationConsent(false)
+                .build();
 
-                .withClient("test_back").secret(password).authorizedGrantTypes("client_credentials").scopes("stock").autoApprove("stock")
-                .authorities("ROLE_BACK")
+        authorizationClientResource.save(testBack);
 
-                .and()
+        var testBackUser = AuthorizationClient.builder()
+                .id(UUID.randomUUID().toString())
+                .clientId("test_back_user")
+                .clientSecret(secret)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE.getValue())
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN.getValue())
+                .redirectUri("http://xxx")
+                .scope("stock:read")
+                .scope("stock:update")
+                .requireAuthorizationConsent(false)
+                .build();
 
-                .withClient("test_back_user").secret(password).authorizedGrantTypes("password").scopes("stock:read", "stock:update")
-                .autoApprove("stock:read", "stock:update").authorities("ROLE_BACK")
+        authorizationClientResource.save(testBackUser);
 
-                .and()
+        var resourceClient = AuthorizationClient.builder()
+                .id(UUID.randomUUID().toString())
+                .clientId("resource")
+                .clientSecret(secret)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC.getValue())
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
+                .authorizationGrantType(AuthorizationGrantType.JWT_BEARER.getValue())
+                .scope("ROLE_TRUSTED_CLIENT")
+                .requireAuthorizationConsent(false)
+                .build();
 
-                .withClient("resource").secret(password).authorizedGrantTypes("client_credentials").authorities("ROLE_TRUSTED_CLIENT")
+        authorizationClientResource.save(resourceClient);
 
-                .and()
+        var adminClient = AuthorizationClient.builder()
+                .id(UUID.randomUUID().toString())
+                .clientId("test_admin")
+                .clientSecret(secret)
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
+                .redirectUri("http://xxx")
+                .scope("ROLE_TRUSTED_CLIENT")
+                .requireAuthorizationConsent(false)
+                .build();
 
-                .withClient("test_admin").secret(password).authorizedGrantTypes("client_credentials").scopes("xxx").autoApprove("xxx")
-                .authorities("ROLE_TRUSTED_CLIENT")
+        authorizationClientResource.save(adminClient);
 
-                .and().build();
     }
 
 }

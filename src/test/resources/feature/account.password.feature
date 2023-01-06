@@ -1,7 +1,8 @@
 Feature: api password
 
   Background: 
-    Given connection to client 'test_service'
+    Given connection to client 'test_service' and scopes
+      |account:create|login:create|ROLE_APP|
     And delete username 'jean.dupond@gmail.com'
 
   Scenario: change password
@@ -20,14 +21,18 @@ Feature: api password
           "password": "mdp"
       }
       """
-    And get access for username 'jean.dupond@gmail.com' and password 'mdp'
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp' to client 'test_service_user' and application 'test' and scopes
+      |login:create|
     When put login 'jean.dupond@gmail.com'
       """
       {
           "password": "mdp123"
       }
       """
-    And get access for username 'jean.dupond@gmail.com' and password 'mdp123'
+    And connection to client 'test_service' and scopes
+      |ROLE_APP|
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp123' to client 'test_service_user' and application 'test' and scopes
+      |account:read|
     And account is
       """
       {
@@ -54,7 +59,8 @@ Feature: api password
           "password": "mdp"
       }
       """
-    And connection to client 'test_admin'
+    And connection to client 'test_admin' and scopes
+      |ROLE_TRUSTED_CLIENT|
     When new password for 'jean.dupond@gmail.com' from application 'admin'
     And put login 'jean.dupond@gmail.com' for application 'admin'
       """
@@ -62,7 +68,10 @@ Feature: api password
           "password": "mdp123"
       }
       """
-    And get access for username 'jean.dupond@gmail.com' and password 'mdp123'
+    And connection to client 'test_service' and scopes
+      |ROLE_APP|
+    And connection with username 'jean.dupond@gmail.com' and password 'mdp123' to client 'test_service_user' and application 'test' and scopes
+      |account:read|
     And account is
       """
       {
