@@ -4,12 +4,6 @@ CREATE KEYSPACE IF NOT EXISTS test_service
    'datacenter1' : 1
 };
 
-CREATE KEYSPACE IF NOT EXISTS test_authorization 
-  WITH REPLICATION = { 
-   'class' : 'NetworkTopologyStrategy', 
-   'datacenter1' : 1
-};
-
 USE test_service;
 
 CREATE TYPE IF NOT EXISTS address (
@@ -128,13 +122,4 @@ CREATE TABLE IF NOT EXISTS stock (
 	product text,
 	quantity counter,
 	PRIMARY KEY ((store, product))
-);
-
-USE test_authorization;
-
-CREATE TABLE IF NOT EXISTS login (
-	username text PRIMARY KEY,
-	password text,
-	disabled boolean,
-	account_locked boolean
 );

@@ -1,7 +1,8 @@
 Feature: api subscription
 
   Background: 
-    Given connection to client 'test_service'
+    Given connection to client 'test_service' and scopes
+      |subscription:update|subscription:read|ROLE_APP|
 
   Scenario: create subscription
     Given delete subscription 'jean.dupond@gmail.com'

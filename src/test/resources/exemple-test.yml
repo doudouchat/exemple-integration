@@ -13,4 +13,4 @@ application:
       host: 127.0.0.1:${zookeeper.port}
       sleepMsBetweenRetries: 10000
 cassandra:
-   scripts: ${project.build.testOutputDirectory}/cassandra/schema.cql, ${project.build.testOutputDirectory}/cassandra/exec.cql
+   scripts: ${project.build.testOutputDirectory}/cassandra/service.cql, ${project.build.testOutputDirectory}/cassandra/authorization.cql, ${project.build.testOutputDirectory}/cassandra/exec.cql
