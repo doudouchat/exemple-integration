@@ -592,7 +592,7 @@
 												</ports>
 												<env>
 													<CATALINA_OPTS>-Dlogging.config=file:/usr/local/tomcat/etc/logback.xml -Dhazelcast.config=/usr/local/tomcat/etc/hazelcast.yaml -Dhazelcast.client.config=/usr/local/tomcat/etc/hazelcast-client.yaml</CATALINA_OPTS>
-													<JAVA_TOOL_OPTIONS>-javaagent:/usr/local/tomcat/etc/lib/jacocoagent.jar=includes=com.exemple.authorization.*,excludes=*EnhancerBySpringCGLIB*:*FastClassBySpringCGLIB*:*__MapperGenerated*,output=tcpserver,address=*,classdumpdir=/usr/local/tomcat/etc/source</JAVA_TOOL_OPTIONS>
+													<JAVA_TOOL_OPTIONS>-javaagent:/usr/local/tomcat/etc/lib/jacocoagent.jar=includes=com.exemple.authorization.*,excludes=*SpringCGLIB*:*__MapperGenerated*,output=tcpserver,address=*,classdumpdir=/usr/local/tomcat/etc/source</JAVA_TOOL_OPTIONS>
 												</env>
 												<volumes>
 													<bind>
