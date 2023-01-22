@@ -52,7 +52,7 @@ jobs:
       -  name: Build exemple service source
          run: mvn -f ${{ github.workspace }}/exemple-service source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-service/target/exemple-service-4.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-service -Dpackaging=jar -Dversion=4.0.0-SNAPSHOT -Dclassifier=sources
       -  name: build docker exemple service
-         run: docker build -t exemple-service --build-arg VERSION_TOMCAT=10.1.1-jdk17 ${{ github.workspace }}/exemple-service
+         run: docker build -t exemple-service --build-arg VERSION_TOMCAT=10.1.4-jdk17 ${{ github.workspace }}/exemple-service
       - name: Checkout exemple authorization
         uses: actions/checkout@v2
         with:
@@ -64,7 +64,7 @@ jobs:
       -  name: Build exemple authorization source
          run: mvn -f ${{ github.workspace }}/exemple-authorization source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-authorization/target/exemple-authorization-3.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-authorization -Dpackaging=jar -Dversion=3.0.0-SNAPSHOT -Dclassifier=sources
       -  name: build docker exemple authorization
-         run: docker build -t exemple-authorization --build-arg VERSION_TOMCAT=9.0.65-jdk17 ${{ github.workspace }}/exemple-authorization
+         run: docker build -t exemple-authorization --build-arg VERSION_TOMCAT=10.1.4-jdk17 ${{ github.workspace }}/exemple-authorization
       -  name: Checkout exemple gateway
          uses: actions/checkout@v2
          with:
