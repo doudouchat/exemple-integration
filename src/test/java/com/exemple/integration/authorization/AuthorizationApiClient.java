@@ -116,10 +116,11 @@ public final class AuthorizationApiClient {
 
     public static Response disconnection(String token, String application) {
 
-        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
-                .header(APP_HEADER, application)
-                .header("Authorization", "Bearer " + token)
-                .post("/ws/v1/disconnection");
+        Map<String, String> params = Map.of("token", token);
+
+        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC)
+                .formParams(params)
+                .post("/oauth/revoke_token");
 
     }
 
