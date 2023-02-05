@@ -1,6 +1,8 @@
 resource:
    cassandra:
       resource_configuration: file:/usr/local/tomcat/etc/cassandra.conf
+   zookeeper:
+      host: 172.17.0.1:${zookeeper.port}
 management:
    endpoints:
       web:

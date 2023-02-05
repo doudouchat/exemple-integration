@@ -39,11 +39,6 @@ CREATE TABLE IF NOT EXISTS account (
 	preferences list<frozen<map<text, text>>>
 );
 
-CREATE TABLE IF NOT EXISTS login (
-	id UUID,
-	username text PRIMARY KEY
-);
-
 CREATE TABLE IF NOT EXISTS subscription (
 	email text PRIMARY KEY,
 	subscription_date timestamp,
@@ -105,11 +100,8 @@ CREATE TABLE IF NOT EXISTS subscription_history (
 	PRIMARY KEY ((email), field)
 );
 
-CREATE INDEX IF NOT EXISTS account_status
-	ON account ( status );
-
-CREATE INDEX IF NOT EXISTS login_id
-	ON login ( id );
+CREATE INDEX IF NOT EXISTS account_email
+	ON account ( email );
 	
 CREATE INDEX IF NOT EXISTS account_event_local_date
 	ON account_event ( local_date );
