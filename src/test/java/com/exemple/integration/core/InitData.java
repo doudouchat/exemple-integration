@@ -69,6 +69,7 @@ public class InitData {
         detail.put("company", "test_company");
         detail.put("clientIds", Sets.newHashSet("test_service", "test_service_user"));
         detail.put("authorization_clientIds", Sets.newHashSet("test_service", "test_service_user"));
+        detail.put("account", Map.of("uniqueProperties", Sets.newHashSet("email")));
 
         ResourceExecutionContext.get().setKeyspace("test_service");
 

@@ -905,6 +905,7 @@
 								<configuration>
 									<excludes>
 										<exclude>com/exemple/service/customer/account/AccountService*</exclude>
+										<exclude>com/exemple/service/customer/login/LoginService*</exclude>
 										<exclude>com/exemple/service/customer/subscription/SubscriptionService*</exclude>
 										<exclude>com/exemple/service/resource/**/mapper/*MapperBuilder*</exclude>
 										<exclude>com/exemple/authorization/resource/**/mapper/*MapperBuilder*</exclude>

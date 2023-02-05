@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.cql.Row;
 import com.exemple.integration.account.AccountTestContext;
 import com.exemple.integration.authorization.AuthorizationApiClient;
 import com.exemple.integration.authorization.AuthorizationTestContext;
@@ -32,7 +33,11 @@ public class LoginStepDefinitions {
     public void remove(String username) {
 
         session.execute("delete from test_authorization.login where username = ?", username);
-        session.execute("delete from test_service.login where username = ?", username);
+        Row row = session.execute("select id from test_service.account where email = ?", username).one();
+        if (row != null) {
+            Object id = row.getObject(0);
+            session.execute("delete from test_service.account where id = ?", id);
+        }
 
     }
 
