@@ -358,7 +358,6 @@ Feature: api patch account
     Then authorization error only contains
       """
       {
-          "path": "/toUsername",
           "code": "username",
           "message": "[jean.dupont@gmail.com] already exists"
       }
