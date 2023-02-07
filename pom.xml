@@ -36,7 +36,7 @@
 		<configuration.path>file:${project.build.testOutputDirectory}/exemple-test.yml</configuration.path>
 
 		<!-- VERSION -->
-		<cassandra-version>3.11.14</cassandra-version>
+		<cassandra-version>4.1.0</cassandra-version>
 		<jacoco-version>0.8.8</jacoco-version>
 
 		<!-- SONAR -->
@@ -478,7 +478,7 @@
 												</ports>
 												<wait>
 													<log>(?s)Startup complete</log>
-													<time>60000</time>
+													<time>120000</time>
 												</wait>
 												<log>
 													<date>default</date>
