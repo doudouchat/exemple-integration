@@ -10,6 +10,8 @@ authorization:
    zookeeper:
       host: 127.0.0.1:${zookeeper.port}
       sleepMsBetweenRetries: 10000
+   kafka:
+      bootstrap-servers: 127.0.0.1:${kafka.client_port}
 application:
    zookeeper:
       host: 127.0.0.1:${zookeeper.port}
