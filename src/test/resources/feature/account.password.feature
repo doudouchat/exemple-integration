@@ -59,10 +59,8 @@ Feature: api password
           "password": "mdp"
       }
       """
-    And connection to client 'test_admin' and scopes
-      |ROLE_TRUSTED_CLIENT|
-    When new password for 'jean.dupond@gmail.com' from application 'admin'
-    And put login 'jean.dupond@gmail.com' for application 'admin'
+    When new password for 'jean.dupond@gmail.com'
+    And put login 'jean.dupond@gmail.com'
       """
       {
           "password": "mdp123"

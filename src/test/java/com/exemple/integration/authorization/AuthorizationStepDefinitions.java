@@ -2,11 +2,16 @@ package com.exemple.integration.authorization;
 
 import static com.exemple.integration.core.InitData.TEST_APP;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,6 +33,9 @@ public class AuthorizationStepDefinitions {
 
     @Autowired
     private AuthorizationTestContext context;
+
+    @Autowired
+    private KafkaConsumer<String, Map<String, Object>> consumerNewPassword;
 
     @Given("connection to client {string} and scopes")
     public void tokenByClientCredentials(String client, @Transpose DataTable scopes) {
@@ -102,12 +110,17 @@ public class AuthorizationStepDefinitions {
 
     }
 
-    @When("new password for {string} from application {string}")
-    public void forgottenPassword(String username, String application) {
+    @When("new password for {string}")
+    public void forgottenPassword(String username) {
 
-        Response response = AuthorizationApiClient.password(username, context.lastAccessToken(), application);
+        Response response = AuthorizationApiClient.password(username, context.lastAccessToken(), TEST_APP);
 
-        String token = response.jsonPath().getString("token");
+        ConsumerRecords<String, Map<String, Object>> records = consumerNewPassword.poll(Duration.ofSeconds(5));
+
+        await().atMost(Duration.ofSeconds(10))
+                .untilAsserted(() -> assertThat(records).extracting(ConsumerRecord::value).anyMatch(value -> value.containsKey("token")));
+
+        String token = records.iterator().next().value().get("token").toString();
 
         context.saveAccessToken(token);
         context.save(response);
@@ -141,15 +154,6 @@ public class AuthorizationStepDefinitions {
     public void putLogin(String username, JsonNode body) {
 
         Response response = AuthorizationApiClient.putLogin(username, body, context.lastAccessToken(), TEST_APP);
-
-        context.save(response);
-
-    }
-
-    @When("put login {string} for application {string}")
-    public void putLogin(String username, String application, JsonNode body) {
-
-        Response response = AuthorizationApiClient.putLogin(username, body, context.lastAccessToken(), application);
 
         context.save(response);
 

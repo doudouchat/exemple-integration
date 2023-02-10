@@ -9,12 +9,12 @@ import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.stereotype.Component;
 
 import com.exemple.authorization.core.client.AuthorizationClient;
 import com.exemple.authorization.core.client.resource.AuthorizationClientResource;
@@ -29,7 +29,7 @@ import com.google.common.collect.Sets;
 
 import jakarta.annotation.PostConstruct;
 
-@Component
+@Configuration
 @DependsOn("initCassandra")
 public class InitData {
 
@@ -38,8 +38,6 @@ public class InitData {
     public static final String BACK_APP = "back";
 
     public static final String TEST_APP = "test";
-
-    public static final String ADMIN_APP = "admin";
 
     public static final String VERSION_HEADER = "version";
 
@@ -147,25 +145,6 @@ public class InitData {
 
         applicationDetailService.put(BACK_APP, MAPPER.convertValue(backDetail, JsonNode.class));
 
-        // ADMIN
-
-        loginSchema = new SchemaEntity();
-        loginSchema.setApplication(ADMIN_APP);
-        loginSchema.setVersion(VERSION_V1);
-        loginSchema.setResource("login");
-        loginSchema.setProfile("user");
-        loginSchema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("login.json").getInputStream())));
-        schemaResource.save(loginSchema);
-
-        Map<String, Object> adminDetail = new HashMap<>();
-        adminDetail.put("keyspace", "test_service");
-        adminDetail.put("authorization_keyspace", "test_authorization");
-        adminDetail.put("company", "test_company");
-        adminDetail.put("clientIds", Sets.newHashSet("test_admin"));
-        adminDetail.put("authorization_clientIds", Sets.newHashSet("test_admin"));
-
-        applicationDetailService.put(ADMIN_APP, MAPPER.convertValue(adminDetail, JsonNode.class));
-
     }
 
     @PostConstruct
@@ -243,23 +222,10 @@ public class InitData {
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC.getValue())
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
                 .authorizationGrantType(AuthorizationGrantType.JWT_BEARER.getValue())
-                .scope("ROLE_TRUSTED_CLIENT")
                 .requireAuthorizationConsent(false)
                 .build();
 
         authorizationClientResource.save(resourceClient);
-
-        var adminClient = AuthorizationClient.builder()
-                .id(UUID.randomUUID().toString())
-                .clientId("test_admin")
-                .clientSecret(secret)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
-                .redirectUri("http://xxx")
-                .scope("ROLE_TRUSTED_CLIENT")
-                .requireAuthorizationConsent(false)
-                .build();
-
-        authorizationClientResource.save(adminClient);
 
     }
 
