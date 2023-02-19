@@ -4,13 +4,17 @@ import static com.exemple.integration.core.InitData.TEST_APP;
 import static com.exemple.integration.core.InitData.VERSION_V1;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.condition.AnyOf.anyOf;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.assertj.core.api.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,6 +39,9 @@ public class SubscriptionStepDefinitions {
 
     @Autowired
     private SubscriptionTestContext context;
+
+    @Autowired
+    private KafkaConsumer<String, JsonNode> consumerEvent;
 
     @Autowired
     private SubscriptionResource subscriptionResource;
@@ -84,6 +91,22 @@ public class SubscriptionStepDefinitions {
         assertThat(expectedBody).isEqualTo(body);
 
         context.saveGet(response);
+
+    }
+
+    @And("subscription event is")
+    public void getSubscriptionEvent(JsonNode body) {
+
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
+            ConsumerRecords<String, JsonNode> records = consumerEvent.poll(Duration.ofSeconds(5));
+            assertThat(records.iterator()).toIterable().last().satisfies(record -> {
+
+                ObjectNode expectedBody = (ObjectNode) record.value();
+                expectedBody.remove("subscription_date");
+
+                assertThat(expectedBody).isEqualTo(body);
+            });
+        });
 
     }
 

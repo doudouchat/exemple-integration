@@ -4,14 +4,18 @@ import static com.exemple.integration.core.InitData.TEST_APP;
 import static com.exemple.integration.core.InitData.VERSION_V1;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.condition.AnyOf.anyOf;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.assertj.core.api.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -38,6 +42,9 @@ public class AccountStepDefinitions {
 
     @Autowired
     private AccountTestContext context;
+    
+    @Autowired
+    private KafkaConsumer<String, JsonNode> consumerEvent;
 
     @Autowired
     private AuthorizationTestContext authorizationContext;
@@ -195,6 +202,24 @@ public class AccountStepDefinitions {
         assertThat(expectedBody).isEqualTo(body);
 
         context.saveGet(response);
+
+    }
+    
+    @And("account event is")
+    public void getAccountEvent(JsonNode body) {
+
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
+            ConsumerRecords<String, JsonNode> records = consumerEvent.poll(Duration.ofSeconds(5));
+            assertThat(records.iterator()).toIterable().last().satisfies(record -> {
+
+                ObjectNode expectedBody = (ObjectNode) record.value();
+                expectedBody.remove("creation_date");
+                expectedBody.remove("update_date");
+                expectedBody.remove("id");
+
+                assertThat(expectedBody).isEqualTo(body);
+            });
+        });
 
     }
 
