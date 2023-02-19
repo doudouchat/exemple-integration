@@ -104,6 +104,37 @@ Feature: api put account
           "optin_mobile": true
       }
       """
+    And account event is
+      """
+      {
+          "addresses": {
+              "home": {
+                  "street": "rue de la poste",
+                  "city": "Paris"
+              },
+              "job": {
+                  "street": "5th avenue",
+                  "city": "New-York"
+              }
+          },
+          "birthday": "1967-06-15",
+          "cgus": [
+              {
+                  "code": "code_1",
+                  "version": "v0"
+              },
+              {
+                  "code": "code_1",
+                  "version": "v1"
+              }
+          ],
+          "email": "jean.dupond@gmail.com",
+          "firstname": "Jean",
+          "lastname": "Dupond",
+          "mobile": "0610203040",
+          "optin_mobile": true
+      }
+      """
     And account property 'creation_date' exists
     And account property 'update_date' exists
     
@@ -144,6 +175,34 @@ Feature: api put account
     And connection with username 'jean.dupont@gmail.com' and password 'mdp' to client 'test_service_user' and application 'test' and scopes
       |account:read|login:head|
     Then account is
+      """
+      {
+          "optin_mobile": true,
+          "birthday": "1967-06-15",
+          "firstname": "Jean",
+          "addresses": {
+             "job": {
+                 "city": "Paris",
+                 "street": "rue de la paix"
+             },
+             "home": {
+                 "city": "Lyon",
+                 "street": "rue de la poste"
+             }
+          },
+          "civility": "Mr",
+          "mobile": "0610203040",
+          "cgus": [
+             {
+               "code": "code_1",
+               "version": "v0"
+             }
+          ],
+          "email": "jean.dupont@gmail.com",
+          "lastname": "Dupont"
+      }
+      """
+    And account event is
       """
       {
           "optin_mobile": true,
