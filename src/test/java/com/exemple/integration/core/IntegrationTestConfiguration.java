@@ -30,8 +30,11 @@ public class IntegrationTestConfiguration {
     public static final String AUTHORIZATION_URL = System.getProperty("authorization.host", "http://localhost") + ":"
             + System.getProperty("authorization.port", "8090") + "/" + System.getProperty("authorization.contextpath", "ExempleAuthorization");
 
-    @Value("${event.topic}")
-    private String topic;
+    @Value("${event.topics.account}")
+    private String accountTopic;
+
+    @Value("${event.topics.subscription}")
+    private String subscriptionTopic;
 
     @Autowired
     private KafkaConsumer<?, ?> consumerEvent;
@@ -49,7 +52,7 @@ public class IntegrationTestConfiguration {
     @PostConstruct
     public void suscribeConsumerEvent() throws Exception {
 
-        consumerEvent.subscribe(List.of(topic), new ConsumerRebalanceListener() {
+        consumerEvent.subscribe(List.of(accountTopic, subscriptionTopic).stream().distinct().toList(), new ConsumerRebalanceListener() {
 
             @Override
             public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
