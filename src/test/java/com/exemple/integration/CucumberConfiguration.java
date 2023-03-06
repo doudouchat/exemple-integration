@@ -2,6 +2,8 @@ package com.exemple.integration;
 
 import java.util.UUID;
 
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.exemple.integration.core.IntegrationTestConfiguration;
@@ -13,8 +15,10 @@ import io.cucumber.java.DocStringType;
 import io.cucumber.java.ParameterType;
 import io.cucumber.spring.CucumberContextConfiguration;
 
+@SpringBootTest
 @CucumberContextConfiguration
 @ContextConfiguration(classes = IntegrationTestConfiguration.class)
+@ActiveProfiles("test")
 public class CucumberConfiguration {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
