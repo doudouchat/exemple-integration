@@ -50,7 +50,7 @@ jobs:
             repository: doudouchat/exemple-service
             ref: ${{ github.event.inputs.branch_service }}
       -  name: Build exemple service
-         run: mvn -f ${{ github.workspace }}/exemple-service clean install -Dmaven.test.skip=true
+         run: mvn -f ${{ github.workspace }}/exemple-service --batch-mode clean install -Dmaven.test.skip=true
       -  name: Build exemple service source
          run: mvn -f ${{ github.workspace }}/exemple-service source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-service/target/exemple-service-4.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-service -Dpackaging=jar -Dversion=4.0.0-SNAPSHOT -Dclassifier=sources
       -  name: build docker exemple service
@@ -62,7 +62,7 @@ jobs:
             repository: doudouchat/exemple-authorization
             ref: ${{ github.event.inputs.branch_authorization }}
       -  name: Build exemple authorization
-         run: mvn -f ${{ github.workspace }}/exemple-authorization clean install -Dmaven.test.skip=true
+         run: mvn -f ${{ github.workspace }}/exemple-authorization  --batch-mode clean install -Dmaven.test.skip=true
       -  name: Build exemple authorization source
          run: mvn -f ${{ github.workspace }}/exemple-authorization source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-authorization/target/exemple-authorization-3.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-authorization -Dpackaging=jar -Dversion=3.0.0-SNAPSHOT -Dclassifier=sources
       -  name: build docker exemple authorization
@@ -74,13 +74,13 @@ jobs:
             repository: doudouchat/exemple-gateway
             ref: ${{ github.event.inputs.branch_gateway }}
       -  name: Build exemple gateway
-         run: mvn -f ${{ github.workspace }}/exemple-gateway clean install -Dmaven.test.skip=true
+         run: mvn -f ${{ github.workspace }}/exemple-gateway --batch-mode clean install -Dmaven.test.skip=true
       -  name: Build exemple gateway source
          run: mvn -f ${{ github.workspace }}/exemple-gateway source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-gateway/target/exemple-gateway-3.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-gateway -Dpackaging=jar -Dversion=3.0.0-SNAPSHOT -Dclassifier=sources
       -  name: build docker exemple gateway
          run: docker build -t exemple-gateway --build-arg VERSION_OPENJDK=17-jdk-buster ${{ github.workspace }}/exemple-gateway
       -  name: Build with Maven
-         run: mvn clean verify -Pwebservice,it,report
+         run: mvn  --batch-mode clean verify -Pwebservice,it,report
       -  name: display logs service
          if: ${{ always() }}
          run: cat target/logs/service/logs/archive/*.log
