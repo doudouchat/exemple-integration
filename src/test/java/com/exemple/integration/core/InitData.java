@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -76,7 +75,7 @@ public class InitData {
         accountSchema.setVersion(VERSION_V1);
         accountSchema.setResource("account");
         accountSchema.setProfile("user");
-        accountSchema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("account.json").getInputStream())));
+        accountSchema.setContent(MAPPER.readTree(new ClassPathResource("account.json").getContentAsByteArray()));
 
         ObjectNode patchUpdateDate = MAPPER.createObjectNode();
         patchUpdateDate.put("op", "add");
@@ -103,7 +102,7 @@ public class InitData {
         accountV0Schema.setVersion(VERSION_V0);
         accountV0Schema.setResource("account");
         accountV0Schema.setProfile("user");
-        accountV0Schema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("account.v0.json").getInputStream())));
+        accountV0Schema.setContent(MAPPER.readTree(new ClassPathResource("account.v0.json").getContentAsByteArray()));
 
         schemaResource.save(accountV0Schema);
 
@@ -112,7 +111,7 @@ public class InitData {
         loginSchema.setVersion(VERSION_V1);
         loginSchema.setResource("login");
         loginSchema.setProfile("user");
-        loginSchema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("login.json").getInputStream())));
+        loginSchema.setContent(MAPPER.readTree(new ClassPathResource("login.json").getContentAsByteArray()));
 
         schemaResource.save(loginSchema);
 
@@ -121,7 +120,7 @@ public class InitData {
         loginIdSchema.setVersion(VERSION_V1);
         loginIdSchema.setResource("login_id");
         loginIdSchema.setProfile("user");
-        loginIdSchema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("login_id.json").getInputStream())));
+        loginIdSchema.setContent(MAPPER.readTree(new ClassPathResource("login_id.json").getContentAsByteArray()));
 
         schemaResource.save(loginIdSchema);
 
@@ -130,7 +129,7 @@ public class InitData {
         subscriptionSchema.setVersion(VERSION_V1);
         subscriptionSchema.setResource("subscription");
         subscriptionSchema.setProfile("user");
-        subscriptionSchema.setContent(MAPPER.readTree(IOUtils.toByteArray(new ClassPathResource("subscription.json").getInputStream())));
+        subscriptionSchema.setContent(MAPPER.readTree(new ClassPathResource("subscription.json").getContentAsByteArray()));
 
         schemaResource.save(subscriptionSchema);
 
