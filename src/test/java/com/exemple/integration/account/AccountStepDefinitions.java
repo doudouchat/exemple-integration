@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Streams;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
@@ -42,7 +41,7 @@ public class AccountStepDefinitions {
 
     @Autowired
     private AccountTestContext context;
-    
+
     @Autowired
     private KafkaConsumer<String, JsonNode> consumerEvent;
 
@@ -204,7 +203,7 @@ public class AccountStepDefinitions {
         context.saveGet(response);
 
     }
-    
+
     @And("account event is")
     public void getAccountEvent(JsonNode body) {
 
@@ -260,7 +259,7 @@ public class AccountStepDefinitions {
 
         ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
 
-        assertThat(Streams.stream(errors.elements())).as("errors %s not contain expected errors", errors.toPrettyString()).hasSize(count);
+        assertThat(errors.elements()).as("errors %s not contain expected errors", errors.toPrettyString()).toIterable().hasSize(count);
 
     }
 

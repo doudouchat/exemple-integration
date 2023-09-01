@@ -24,7 +24,6 @@ import com.exemple.service.resource.schema.model.SchemaEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Sets;
 
 import jakarta.annotation.PostConstruct;
 
@@ -64,9 +63,9 @@ public class InitData {
         detail.put("keyspace", "test_service");
         detail.put("authorization_keyspace", "test_authorization");
         detail.put("company", "test_company");
-        detail.put("clientIds", Sets.newHashSet("test_service", "test_service_user"));
-        detail.put("authorization_clientIds", Sets.newHashSet("test_service", "test_service_user"));
-        detail.put("account", Map.of("uniqueProperties", Sets.newHashSet("email")));
+        detail.put("clientIds", Set.of("test_service", "test_service_user"));
+        detail.put("authorization_clientIds", Set.of("test_service", "test_service_user"));
+        detail.put("account", Map.of("uniqueProperties", Set.of("email")));
 
         ResourceExecutionContext.get().setKeyspace("test_service");
 
@@ -140,7 +139,7 @@ public class InitData {
         Map<String, Object> backDetail = new HashMap<>();
         backDetail.put("keyspace", "test_service");
         backDetail.put("company", "test_company");
-        backDetail.put("clientIds", Sets.newHashSet("test_back", "test_back_user"));
+        backDetail.put("clientIds", Set.of("test_back", "test_back_user"));
 
         applicationDetailService.put(BACK_APP, MAPPER.convertValue(backDetail, JsonNode.class));
 
