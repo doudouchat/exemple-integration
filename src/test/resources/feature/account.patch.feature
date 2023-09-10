@@ -245,7 +245,7 @@ Feature: api patch account
     Then account error contains 2 errors
     And account error contains
       """
-      {"path":"/creation_date","code":"format"}
+      {"path":"/creation_date","code":"dateTime"}
       """
     And account error contains
       """
