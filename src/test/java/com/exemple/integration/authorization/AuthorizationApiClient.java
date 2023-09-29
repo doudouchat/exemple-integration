@@ -6,7 +6,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +37,7 @@ public final class AuthorizationApiClient {
                 "scope", scopes.stream().collect(Collectors.joining(" ")));
 
         return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC)
-                .header("Authorization", "Basic " + Base64.encodeBase64String((client + ":" + secret).getBytes(StandardCharsets.UTF_8)))
+                .header("Authorization", "Basic " + Base64.encodeBase64String((client + ":" + secret).getBytes()))
                 .formParams(params)
                 .post("/oauth/token");
 
@@ -97,7 +96,7 @@ public final class AuthorizationApiClient {
         params.put("redirect_uri", "http://xxx");
 
         return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC)
-                .header("Authorization", "Basic " + Base64.encodeBase64String((client + ":" + secret).getBytes(StandardCharsets.UTF_8)))
+                .header("Authorization", "Basic " + Base64.encodeBase64String((client + ":" + secret).getBytes()))
                 .formParams(params)
                 .post("/oauth/token");
 
