@@ -40,7 +40,7 @@ public class StockStepDefinitions {
 
         Map<String, Object> body = Collections.singletonMap("increment", increment);
 
-        Response response = StockApiClient.post(store + "#" + salt, product, body, authorizationContext.lastAccessToken(), BACK_APP);
+        Response response = StockApiClient.post(store + "#" + salt, product, body, authorizationContext, BACK_APP);
 
         context.savePost(response);
 
@@ -49,7 +49,7 @@ public class StockStepDefinitions {
     @When("get stock of product {string} from store {string}")
     public void getLogin(String product, String store) {
 
-        Response response = StockApiClient.get(store + "#" + salt, product, authorizationContext.lastAccessToken(), BACK_APP);
+        Response response = StockApiClient.get(store + "#" + salt, product, authorizationContext, BACK_APP);
 
         context.saveGet(response);
 
@@ -58,7 +58,7 @@ public class StockStepDefinitions {
     @Then("stock of product {string} from store {string} is {long}")
     public void check(String product, String store, long amount) throws IOException {
 
-        Response response = StockApiClient.get(store + "#" + salt, product, authorizationContext.lastAccessToken(), BACK_APP);
+        Response response = StockApiClient.get(store + "#" + salt, product, authorizationContext, BACK_APP);
 
         assertAll(
                 () -> assertThat(context.lastResponse().getStatusCode()).as("stock %s %s not found", product, store).isEqualTo(200),

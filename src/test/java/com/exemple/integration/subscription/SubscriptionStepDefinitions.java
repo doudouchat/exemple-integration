@@ -65,7 +65,7 @@ public class SubscriptionStepDefinitions {
     @When("create subscription {string}")
     public void createSubscription(String email) {
 
-        Response response = SubscriptionApiClient.put(email, Collections.emptyMap(), authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+        Response response = SubscriptionApiClient.put(email, Collections.emptyMap(), authorizationContext, TEST_APP, VERSION_V1);
 
         context.savePut(response);
 
@@ -80,7 +80,7 @@ public class SubscriptionStepDefinitions {
                         new Condition<>(status -> status == 201, "status"))),
                 () -> assertThat(context.lastResponse().asString()).isEmpty());
 
-        Response response = SubscriptionApiClient.get(email, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+        Response response = SubscriptionApiClient.get(email, authorizationContext, TEST_APP, VERSION_V1);
 
         assertThat(response.getStatusCode()).as("subscription %s not found", email).isEqualTo(200);
 
@@ -112,7 +112,7 @@ public class SubscriptionStepDefinitions {
     @And("subscription {string} is unknown")
     public void getSubscription(String email) throws IOException {
 
-        Response response = SubscriptionApiClient.get(email, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+        Response response = SubscriptionApiClient.get(email, authorizationContext, TEST_APP, VERSION_V1);
 
         assertThat(response.getStatusCode()).as("subscription %s exists", email).isEqualTo(404);
 

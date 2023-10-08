@@ -43,9 +43,13 @@ public class AuthorizationStepDefinitions {
 
         assertThat(response.getStatusCode()).as("connection to client %s fails", client).isEqualTo(200);
 
-        String token = response.jsonPath().getString("access_token");
+        var accessToken = response.jsonPath().getString("access_token");
+        var session = response.getDetailedCookie("JSESSIONID");
+        var xsrfToken = response.getDetailedCookie("XSRF-TOKEN");
 
-        context.saveAccessToken(token);
+        context.saveAccessToken(accessToken);
+        context.saveSession(session);
+        context.saveXsrfToken(xsrfToken);
         context.save(response);
 
     }
@@ -59,11 +63,15 @@ public class AuthorizationStepDefinitions {
                 client,
                 "secret",
                 scopes.column(0),
-                context.lastAccessToken());
+                context);
 
-        String token = response.jsonPath().getString("access_token");
+        var accessToken = response.jsonPath().getString("access_token");
+        var session = response.getDetailedCookie("JSESSIONID");
+        var xsrfToken = response.getDetailedCookie("XSRF-TOKEN");
 
-        context.saveAccessToken(token);
+        context.saveAccessToken(accessToken);
+        context.saveSession(session);
+        context.saveXsrfToken(xsrfToken);
         context.save(response);
 
     }
@@ -77,12 +85,16 @@ public class AuthorizationStepDefinitions {
                 client,
                 "secret",
                 scopes.column(0),
-                context.lastAccessToken(),
+                context,
                 application);
 
-        String token = response.jsonPath().getString("access_token");
+        var accessToken = response.jsonPath().getString("access_token");
+        var session = response.getDetailedCookie("JSESSIONID");
+        var xsrfToken = response.getDetailedCookie("XSRF-TOKEN");
 
-        context.saveAccessToken(token);
+        context.saveAccessToken(accessToken);
+        context.saveSession(session);
+        context.saveXsrfToken(xsrfToken);
         context.save(response);
 
     }
@@ -93,7 +105,7 @@ public class AuthorizationStepDefinitions {
         Response response = AuthorizationApiClient.login(
                 username,
                 password,
-                context.lastAccessToken(),
+                context,
                 application);
 
         context.save(response);
@@ -103,7 +115,7 @@ public class AuthorizationStepDefinitions {
     @When("disconnection")
     public void disconnect() {
 
-        Response response = AuthorizationApiClient.disconnection(context.lastAccessToken(), TEST_APP);
+        Response response = AuthorizationApiClient.disconnection(context, TEST_APP);
 
         context.save(response);
 
@@ -112,7 +124,7 @@ public class AuthorizationStepDefinitions {
     @When("new password for {string}")
     public void forgottenPassword(String username) {
 
-        Response response = AuthorizationApiClient.password(username, context.lastAccessToken(), TEST_APP);
+        Response response = AuthorizationApiClient.password(username, context, TEST_APP);
 
         ConsumerRecords<String, Map<String, Object>> records = consumerNewPassword.poll(Duration.ofSeconds(5));
 
@@ -143,7 +155,7 @@ public class AuthorizationStepDefinitions {
     @And("create authorization login {string}")
     public void createLogin(String username, JsonNode body) {
 
-        Response response = AuthorizationApiClient.putLogin(username, body, context.lastAccessToken(), TEST_APP);
+        Response response = AuthorizationApiClient.putLogin(username, body, context, TEST_APP);
 
         assertThat(response.getStatusCode()).as("failure authorization %s", body.toPrettyString()).isEqualTo(201);
 
@@ -152,7 +164,7 @@ public class AuthorizationStepDefinitions {
     @When("put login {string}")
     public void putLogin(String username, JsonNode body) {
 
-        Response response = AuthorizationApiClient.putLogin(username, body, context.lastAccessToken(), TEST_APP);
+        Response response = AuthorizationApiClient.putLogin(username, body, context, TEST_APP);
 
         context.save(response);
 
@@ -165,7 +177,7 @@ public class AuthorizationStepDefinitions {
         body.put("fromUsername", fromUsername);
         body.put("toUsername", toUsername);
 
-        Response response = AuthorizationApiClient.moveLogin(body, context.lastAccessToken(), TEST_APP);
+        Response response = AuthorizationApiClient.moveLogin(body, context, TEST_APP);
 
         context.save(response);
 

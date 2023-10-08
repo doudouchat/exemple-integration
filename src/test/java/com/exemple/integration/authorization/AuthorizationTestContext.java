@@ -1,42 +1,55 @@
 package com.exemple.integration.authorization;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.LinkedList;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
 import io.cucumber.spring.ScenarioScope;
+import io.restassured.http.Cookie;
 import io.restassured.response.Response;
 
 @Component
 @ScenarioScope
 public class AuthorizationTestContext {
 
-    private final LinkedList<String> accessTokens;
+    private String accessToken;
 
-    private final LinkedList<Response> responses;
+    private Cookie session;
 
-    public AuthorizationTestContext() {
-        this.accessTokens = new LinkedList<>();
-        this.responses = new LinkedList<>();
-    }
+    private Cookie xsrfToken;
+
+    private Response response;
 
     public void saveAccessToken(String token) {
-        this.accessTokens.add(token);
+        this.accessToken = token;
     }
 
-    public String lastAccessToken() {
-        assertThat(this.accessTokens).as("no access token").isNotEmpty();
-        return this.accessTokens.getLast();
+    public Optional<String> lastAccessToken() {
+        return Optional.ofNullable(this.accessToken);
+    }
+
+    public void saveSession(Cookie session) {
+        this.session = session;
+    }
+
+    public Optional<Cookie> lastSession() {
+        return Optional.ofNullable(this.session);
+    }
+
+    public void saveXsrfToken(Cookie xsrfToken) {
+        this.xsrfToken = xsrfToken;
+    }
+
+    public Optional<Cookie> lastXsrfToken() {
+        return Optional.ofNullable(this.xsrfToken);
     }
 
     public void save(Response response) {
-        this.responses.add(response);
+        this.response = response;
     }
 
     public Response lastResponse() {
-        return this.responses.getLast();
+        return this.response;
     }
 
 }

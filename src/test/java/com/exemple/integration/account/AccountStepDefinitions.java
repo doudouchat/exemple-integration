@@ -51,7 +51,7 @@ public class AccountStepDefinitions {
     @Given("account")
     public void buildAccount(JsonNode body) {
 
-        Response response = AccountApiClient.post(body, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+        Response response = AccountApiClient.post(body, authorizationContext, TEST_APP, VERSION_V1);
 
         assertThat(response.getStatusCode()).as("failure account %s", body.toPrettyString()).isEqualTo(201);
 
@@ -63,7 +63,7 @@ public class AccountStepDefinitions {
     @When("create account for application {string} and version {string}")
     public void createAccount(String application, String version, JsonNode body) {
 
-        Response response = AccountApiClient.post(body, authorizationContext.lastAccessToken(), application, version);
+        Response response = AccountApiClient.post(body, authorizationContext, application, version);
 
         context.savePost(response);
 
@@ -83,7 +83,7 @@ public class AccountStepDefinitions {
     @When("patch account")
     public void patchAccount(JsonNode body) {
 
-        Response response = AccountApiClient.patch(context.lastId(), body, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+        Response response = AccountApiClient.patch(context.lastId(), body, authorizationContext, TEST_APP, VERSION_V1);
 
         context.savePatch(response);
 
@@ -92,13 +92,13 @@ public class AccountStepDefinitions {
     @When("put account")
     public void putAccount(JsonNode body) {
 
-        Response responseGet = AccountApiClient.get(context.lastId(), authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+        Response responseGet = AccountApiClient.get(context.lastId(), authorizationContext, TEST_APP, VERSION_V1);
 
         if (!body.has("creation_date")) {
             ((ObjectNode) body).put("creation_date", responseGet.jsonPath().getString("creation_date"));
         }
 
-        Response response = AccountApiClient.put(context.lastId(), body, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+        Response response = AccountApiClient.put(context.lastId(), body, authorizationContext, TEST_APP, VERSION_V1);
 
         context.savePut(response);
 
@@ -110,7 +110,7 @@ public class AccountStepDefinitions {
         Resource resource = new ClassPathResource("account/nominal_account.json");
         Map<String, Object> body = JsonPath.parse(resource.getInputStream()).set(property, value).json();
 
-        Response response = AccountApiClient.post(body, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+        Response response = AccountApiClient.post(body, authorizationContext, TEST_APP, VERSION_V1);
 
         context.savePost(response);
 
@@ -124,7 +124,7 @@ public class AccountStepDefinitions {
         DocumentContext account = JsonPath.parse(resource.getInputStream());
         Map<String, Object> body = account.put("$", property, value).json();
 
-        Response response = AccountApiClient.post(body, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+        Response response = AccountApiClient.post(body, authorizationContext, TEST_APP, VERSION_V1);
 
         context.savePost(response);
 
@@ -138,7 +138,7 @@ public class AccountStepDefinitions {
         DocumentContext account = JsonPath.parse(resource.getInputStream());
         Map<String, Object> body = account.put("$", property, value).json();
 
-        Response response = AccountApiClient.post(body, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+        Response response = AccountApiClient.post(body, authorizationContext, TEST_APP, VERSION_V1);
 
         context.savePost(response);
 
@@ -147,7 +147,7 @@ public class AccountStepDefinitions {
     @When("get account for application {string} and version {string}")
     public void getAccount(String application, String version) throws IOException {
 
-        Response response = AccountApiClient.get(context.lastId(), authorizationContext.lastAccessToken(), application, version);
+        Response response = AccountApiClient.get(context.lastId(), authorizationContext, application, version);
 
         context.saveGet(response);
 
@@ -156,7 +156,7 @@ public class AccountStepDefinitions {
     @When("get account by id {id}")
     public void getAccount(UUID id) throws IOException {
 
-        Response response = AccountApiClient.get(id, authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+        Response response = AccountApiClient.get(id, authorizationContext, TEST_APP, VERSION_V1);
 
         context.saveGet(response);
 
@@ -190,7 +190,7 @@ public class AccountStepDefinitions {
                                 new Condition<>(status -> status == 201, "status"))),
                 () -> assertThat(context.lastResponse().asString()).as("account is incorrect %s", context.lastResponse().asString()).isEmpty());
 
-        Response response = AccountApiClient.get(context.lastId(), authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+        Response response = AccountApiClient.get(context.lastId(), authorizationContext, TEST_APP, VERSION_V1);
 
         assertThat(response.getStatusCode()).as("account %s not exists", context.lastId()).isEqualTo(200);
 
@@ -239,7 +239,7 @@ public class AccountStepDefinitions {
     @Then("account is unauthorized")
     public void checkUnauthorized() {
 
-        Response response = AccountApiClient.get(context.lastId(), authorizationContext.lastAccessToken(), TEST_APP, VERSION_V1);
+        Response response = AccountApiClient.get(context.lastId(), authorizationContext, TEST_APP, VERSION_V1);
 
         assertThat(response.getStatusCode()).as("account is authorized").isEqualTo(401);
 
