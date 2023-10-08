@@ -44,7 +44,7 @@ public class LoginStepDefinitions {
     @And("get id account {string}")
     public void getLogin(String username) {
 
-        Response response = LoginApiClient.get(username, authorizationContext.lastAccessToken(), TEST_APP);
+        Response response = LoginApiClient.get(username, authorizationContext, TEST_APP);
 
         assertAll(
                 () -> assertThat(response.getStatusCode()).as("login %s not found", username).isEqualTo(200),
@@ -57,8 +57,8 @@ public class LoginStepDefinitions {
     @And("account {string} exists")
     public void checkExists(String username) {
 
-        Response response = LoginApiClient.head(username, authorizationContext.lastAccessToken(), TEST_APP);
-        Response responseAuthorization = AuthorizationApiClient.headLogin(username, authorizationContext.lastAccessToken(), TEST_APP);
+        Response response = LoginApiClient.head(username, authorizationContext, TEST_APP);
+        Response responseAuthorization = AuthorizationApiClient.headLogin(username, authorizationContext, TEST_APP);
 
         assertAll(
                 () -> assertThat(response.getStatusCode()).as("login %s not exists", username).isEqualTo(204),
@@ -68,8 +68,8 @@ public class LoginStepDefinitions {
     @And("account {string} not exists")
     public void checkNotExists(String username) {
 
-        Response response = LoginApiClient.head(username, authorizationContext.lastAccessToken(), TEST_APP);
-        Response responseAuthorization = AuthorizationApiClient.headLogin(username, authorizationContext.lastAccessToken(), TEST_APP);
+        Response response = LoginApiClient.head(username, authorizationContext, TEST_APP);
+        Response responseAuthorization = AuthorizationApiClient.headLogin(username, authorizationContext, TEST_APP);
 
         assertAll(
                 () -> assertThat(response.getStatusCode()).as("login %s exists", username).isEqualTo(404),

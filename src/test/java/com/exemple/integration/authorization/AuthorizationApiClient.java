@@ -20,7 +20,6 @@ import com.exemple.integration.core.IntegrationTestConfiguration;
 
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 
 public final class AuthorizationApiClient {
 
@@ -43,24 +42,33 @@ public final class AuthorizationApiClient {
 
     }
 
-    public static Response authorizationByCode(String username, String password, String client, String secret, List<String> scopes, String token) {
+    public static Response authorizationByCode(String username, String password, String client, String secret, List<String> scopes,
+            AuthorizationTestContext authorizationContext) {
 
-        return authorizationByCode(username, password, client, secret, scopes, token, null);
+        return authorizationByCode(username, password, client, secret, scopes, authorizationContext, null);
 
     }
 
-    public static Response authorizationByCode(String username, String password, String client, String secret, List<String> scopes, String token,
+    public static Response authorizationByCode(String username, String password, String client, String secret, List<String> scopes,
+            AuthorizationTestContext authorizationContext,
             String application) {
 
-        RequestSpecification requestSpecification = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC)
-                .header("Authorization", "Bearer " + token)
-                .formParams("username", username, "password", password);
+        var request = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC);
+
+        authorizationContext.lastAccessToken().ifPresent(token -> request.header("Authorization", "Bearer " + token));
+        authorizationContext.lastSession().ifPresent(session -> request.cookie("JSESSIONID", session.getValue()));
+        authorizationContext.lastXsrfToken().ifPresent(token -> {
+            request.header("X-XSRF-TOKEN", token.getValue());
+            request.cookie("XSRF-TOKEN", token.getValue());
+        });
 
         if (application != null) {
-            requestSpecification.header(APP_HEADER, application);
+            request.header(APP_HEADER, application);
         }
 
-        Response response = requestSpecification.post("/login");
+        Response response = request
+                .formParams("username", username, "password", password)
+                .post("/login");
 
         assertThat(response.getStatusCode(), is(302));
 
@@ -102,73 +110,122 @@ public final class AuthorizationApiClient {
 
     }
 
-    public static Response login(String username, String password, String token, String application) {
+    public static Response login(String username, String password, AuthorizationTestContext authorizationContext, String application) {
 
-        RequestSpecification requestSpecification = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC)
-                .header("Authorization", "Bearer " + token)
+        var request = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC);
+
+        authorizationContext.lastAccessToken().ifPresent(token -> request.header("Authorization", "Bearer " + token));
+        authorizationContext.lastSession().ifPresent(session -> request.cookie("JSESSIONID", session.getValue()));
+        authorizationContext.lastXsrfToken().ifPresent(token -> {
+            request.header("X-XSRF-TOKEN", token.getValue());
+            request.cookie("XSRF-TOKEN", token.getValue());
+        });
+
+        return request
                 .header(APP_HEADER, application)
-                .formParams("username", username, "password", password);
-
-        return requestSpecification.post("/login");
+                .formParams("username", username, "password", password)
+                .post("/login");
 
     }
 
-    public static Response disconnection(String token, String application) {
+    public static Response disconnection(AuthorizationTestContext authorizationContext, String application) {
 
-        Map<String, String> params = Map.of("token", token);
+        var request = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC);
 
-        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC)
-                .formParams(params)
-                .post("/oauth/revoke_token");
+        authorizationContext.lastAccessToken().ifPresent(token -> request.formParams(Map.of("token", token)));
+        authorizationContext.lastSession().ifPresent(session -> request.cookie("JSESSIONID", session.getValue()));
+        authorizationContext.lastXsrfToken().ifPresent(token -> {
+            request.header("X-XSRF-TOKEN", token.getValue());
+            request.cookie("XSRF-TOKEN", token.getValue());
+        });
+
+        return request.post("/oauth/revoke_token");
 
     }
 
-    public static Response password(String username, String token, String application) {
+    public static Response password(String username, AuthorizationTestContext authorizationContext, String application) {
 
-        Map<String, Object> newPassword = new HashMap<>();
-        newPassword.put("login", username);
+        var request = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON);
 
-        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
+        authorizationContext.lastAccessToken().ifPresent(token -> request.header("Authorization", "Bearer " + token));
+        authorizationContext.lastSession().ifPresent(session -> request.cookie("JSESSIONID", session.getValue()));
+        authorizationContext.lastXsrfToken().ifPresent(token -> {
+            request.header("X-XSRF-TOKEN", token.getValue());
+            request.cookie("XSRF-TOKEN", token.getValue());
+        });
+
+        return request
                 .header(APP_HEADER, application)
-                .header("Authorization", "Bearer " + token)
-                .body(newPassword)
+                .body(Map.of("login", username))
                 .post("/ws/v1/new_password");
 
     }
 
-    public static Response getLogin(String username, String token, String application) {
+    public static Response getLogin(String username, AuthorizationTestContext authorizationContext, String application) {
 
-        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
+        var request = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON);
+
+        authorizationContext.lastAccessToken().ifPresent(token -> request.header("Authorization", "Bearer " + token));
+        authorizationContext.lastSession().ifPresent(session -> request.cookie("JSESSIONID", session.getValue()));
+        authorizationContext.lastXsrfToken().ifPresent(token -> {
+            request.header("X-XSRF-TOKEN", token.getValue());
+            request.cookie("XSRF-TOKEN", token.getValue());
+        });
+
+        return request
                 .header(APP_HEADER, application)
-                .header("Authorization", "Bearer " + token)
                 .get(LOGIN_URL + "/{username}", username);
 
     }
 
-    public static Response headLogin(Object login, String token, String application) {
+    public static Response headLogin(Object login, AuthorizationTestContext authorizationContext, String application) {
 
-        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
+        var request = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON);
+
+        authorizationContext.lastAccessToken().ifPresent(token -> request.header("Authorization", "Bearer " + token));
+        authorizationContext.lastSession().ifPresent(session -> request.cookie("JSESSIONID", session.getValue()));
+        authorizationContext.lastXsrfToken().ifPresent(token -> {
+            request.header("X-XSRF-TOKEN", token.getValue());
+            request.cookie("XSRF-TOKEN", token.getValue());
+        });
+
+        return request
                 .header(APP_HEADER, application)
-                .header("Authorization", "Bearer " + token)
                 .head(LOGIN_URL + "/{login}", login);
 
     }
 
-    public static Response putLogin(String username, Object body, String token, String application) {
+    public static Response putLogin(String username, Object body, AuthorizationTestContext authorizationContext, String application) {
 
-        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
+        var request = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON);
+
+        authorizationContext.lastAccessToken().ifPresent(token -> request.header("Authorization", "Bearer " + token));
+        authorizationContext.lastSession().ifPresent(session -> request.cookie("JSESSIONID", session.getValue()));
+        authorizationContext.lastXsrfToken().ifPresent(token -> {
+            request.header("X-XSRF-TOKEN", token.getValue());
+            request.cookie("XSRF-TOKEN", token.getValue());
+        });
+
+        return request
                 .header(APP_HEADER, application)
-                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .put(LOGIN_URL + "/{username}", username);
 
     }
 
-    public static Response moveLogin(Object body, String token, String application) {
+    public static Response moveLogin(Object body, AuthorizationTestContext authorizationContext, String application) {
 
-        return JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON)
+        var request = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.JSON);
+
+        authorizationContext.lastAccessToken().ifPresent(token -> request.header("Authorization", "Bearer " + token));
+        authorizationContext.lastSession().ifPresent(session -> request.cookie("JSESSIONID", session.getValue()));
+        authorizationContext.lastXsrfToken().ifPresent(token -> {
+            request.header("X-XSRF-TOKEN", token.getValue());
+            request.cookie("XSRF-TOKEN", token.getValue());
+        });
+
+        return request
                 .header(APP_HEADER, application)
-                .header("Authorization", "Bearer " + token)
                 .body(body)
                 .post(LOGIN_URL + "/move");
 
