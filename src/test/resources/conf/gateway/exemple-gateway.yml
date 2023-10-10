@@ -34,7 +34,7 @@ spring:
             - Path=/ExempleAuthorization/oauth/token
             filters:
             - RewriteLocationResponseHeader=NEVER_STRIP, Location, ,
-            - OAuthAccessTokenFilter=
+            - OAuthAccessToken=
             - AddCsrfToken=
          -  id: authorization-revoke-token
             uri: http://172.17.0.1:${authorization.port}/ExempleAuthorization
