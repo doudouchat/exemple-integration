@@ -20,6 +20,10 @@ on:
         description: 'Gateway branch'
         required: true
         default: 'master'
+      branch_cdc:
+        description: 'Cdc branch'
+        required: true
+        default: 'master'
 env:
    MAVEN_OPTS: -Xmx2g
 jobs:
@@ -43,6 +47,14 @@ jobs:
          with:
             repositories: '[{ "id": "repository.spring.milestone", "url": "https://repo.spring.io/milestone" }]'
             plugin_repositories: '[{ "id": "repository.spring.milestone", "url": "https://repo.spring.io/milestone" }]'
+      -  name: Checkout exemple cdc
+         uses: actions/checkout@v3
+         with:
+            path: exemple-cdc
+            repository: doudouchat/exemple-cdc
+            ref: ${{ github.event.inputs.branch_cdc }}
+      -  name: Build exemple cdc
+         run: mvn -f ${{ github.workspace }}/exemple-cdc --batch-mode clean install -Dmaven.test.skip=true
       -  name: Checkout exemple service
          uses: actions/checkout@v3
          with:
@@ -51,6 +63,8 @@ jobs:
             ref: ${{ github.event.inputs.branch_service }}
       -  name: Build exemple service
          run: mvn -f ${{ github.workspace }}/exemple-service --batch-mode clean install -Dmaven.test.skip=true
+      -  name: Build exemple cdc source
+         run: mvn -f ${{ github.workspace }}/exemple-cdc source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-cdc/target/exemple-cdc-1.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-cdc -Dpackaging=jar -Dversion=1.0.0-SNAPSHOT -Dclassifier=sources
       -  name: Build exemple service source
          run: mvn -f ${{ github.workspace }}/exemple-service source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-service/target/exemple-service-4.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-service -Dpackaging=jar -Dversion=4.0.0-SNAPSHOT -Dclassifier=sources
       -  name: build docker exemple service
@@ -90,6 +104,9 @@ jobs:
       -  name: display logs gateway
          if: ${{ always() }}
          run: cat target/logs/gateway/logs/archive/*.log
+      -  name: display logs cdc
+         if: ${{ always() }}
+         run: cat target/logs/cassandra/archive/*.log
       -  uses: codecov/codecov-action@v3
          with:
             verbose: true

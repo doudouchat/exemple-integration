@@ -382,7 +382,7 @@
 								</goals>
 							</execution>
 							<execution>
-								<id>dump-authorization</id>
+								<id>dump-cassandra</id>
 								<goals>
 									<goal>dump</goal>
 								</goals>
@@ -393,7 +393,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>dump-service</id>
+								<id>dump-authorization</id>
 								<goals>
 									<goal>dump</goal>
 								</goals>
@@ -404,7 +404,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>dump-gateway</id>
+								<id>dump-service</id>
 								<goals>
 									<goal>dump</goal>
 								</goals>
@@ -414,10 +414,19 @@
 									<destFile>${project.build.directory}/jacoco-it.exec</destFile>
 								</configuration>
 							</execution>
+							<execution>
+								<id>dump-gateway</id>
+								<goals>
+									<goal>dump</goal>
+								</goals>
+								<configuration>
+									<address>127.0.0.1</address>
+									<port>6303</port>
+									<destFile>${project.build.directory}/jacoco-it.exec</destFile>
+								</configuration>
+							</execution>
 						</executions>
 					</plugin>
-
-					<!-- COPY JACOCO JAR AGENT -->
 
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -443,6 +452,16 @@
 									<outputDirectory>${project.build.directory}/lib</outputDirectory>
 									<destFileName>jacocoagent.jar</destFileName>
 								</artifactItem>
+								<artifactItem>
+									<groupId>exemple</groupId>
+									<artifactId>exemple-cdc-agent</artifactId>
+									<version>1.0.0-SNAPSHOT</version>
+									<classifier>exec</classifier>
+									<type>jar</type>
+									<overWrite>false</overWrite>
+									<outputDirectory>${project.build.directory}/cdc</outputDirectory>
+									<destFileName>exemple-cdc-agent.jar</destFileName>
+								</artifactItem>
 							</artifactItems>
 						</configuration>
 					</plugin>
@@ -452,35 +471,6 @@
 						<groupId>io.fabric8</groupId>
 						<artifactId>docker-maven-plugin</artifactId>
 						<executions>
-							<execution>
-								<id>start_cassandra</id>
-								<goals>
-									<goal>start</goal>
-								</goals>
-								<configuration>
-									<images>
-										<image>
-											<name>cassandra:${cassandra-version}</name>
-											<alias>cassandra</alias>
-											<run>
-												<ports>
-													<port>${cassandra.port}:9042</port>
-												</ports>
-												<env>
-													<JVM_OPTS>-Dcassandra.skip_wait_for_gossip_to_settle=0 -Dcassandra.initial_token=0</JVM_OPTS>
-												</env>
-												<wait>
-													<log>(?s)Startup complete</log>
-													<time>60000</time>
-												</wait>
-												<log>
-													<date>default</date>
-												</log>
-											</run>
-										</image>
-									</images>
-								</configuration>
-							</execution>
 							<execution>
 								<id>start_zookeeper</id>
 								<goals>
@@ -543,6 +533,58 @@
 								</configuration>
 							</execution>
 							<execution>
+								<id>start_cassandra</id>
+								<goals>
+									<goal>start</goal>
+								</goals>
+								<configuration>
+									<images>
+										<image>
+											<name>cassandra:${cassandra-version}</name>
+											<alias>cassandra</alias>
+											<run>
+												<ports>
+													<port>${cassandra.port}:9042</port>
+													<port>6300:6300</port>
+												</ports>
+												<env>
+													<JVM_OPTS>-Dcassandra.skip_wait_for_gossip_to_settle=0 -Dcassandra.initial_token=0</JVM_OPTS>
+													<JVM_EXTRA_OPTS>-javaagent:/tmp/lib/jacocoagent.jar=includes=com.exemple.cdc.*,output=tcpserver,address=*,classdumpdir=/tmp/agent/source -javaagent:/exemple-cdc-agent.jar</JVM_EXTRA_OPTS>
+												</env>
+												<volumes>
+													<bind>
+														<volume>${project.build.directory}/cdc/exemple-cdc-agent.jar:/exemple-cdc-agent.jar</volume>
+														<volume>${project.build.testOutputDirectory}/conf/cdc:/tmp/conf</volume>
+														<volume>${project.build.testOutputDirectory}/conf/cassandra/cassandra.yaml:/etc/cassandra/cassandra.yaml</volume>
+														<volume>${project.build.testOutputDirectory}/conf/cassandra/logback.xml:/etc/cassandra/logback.xml</volume>
+														<volume>${project.build.directory}/lib:/tmp/lib</volume>
+													</bind>
+												</volumes>
+												<wait>
+													<log>(?s)Startup complete</log>
+													<time>60000</time>
+												</wait>
+												<log>
+													<date>default</date>
+												</log>
+											</run>
+											<copy>
+												<entries>
+													<entry>
+														<containerPath>/tmp/agent/source/com</containerPath>
+														<hostDirectory>${project.build.outputDirectory}</hostDirectory>
+													</entry>
+													<entry>
+														<containerPath>/tmp/logs/archive</containerPath>
+														<hostDirectory>${project.build.directory}/logs/cassandra</hostDirectory>
+													</entry>
+												</entries>
+											</copy>
+										</image>
+									</images>
+								</configuration>
+							</execution>
+							<execution>
 								<id>start_hazelcast</id>
 								<goals>
 									<goal>start</goal>
@@ -582,7 +624,7 @@
 											<run>
 												<ports>
 													<port>${authorization.port}:8080</port>
-													<port>6300:6300</port>
+													<port>6301:6300</port>
 												</ports>
 												<env>
 													<CATALINA_OPTS>-Dlogging.config=file:/usr/local/tomcat/etc/logback.xml -Dhazelcast.config=/usr/local/tomcat/etc/hazelcast.yaml -Dhazelcast.client.config=/usr/local/tomcat/etc/hazelcast-client.yaml</CATALINA_OPTS>
@@ -637,11 +679,11 @@
 											<run>
 												<ports>
 													<port>${service.port}:8080</port>
-													<port>6301:6301</port>
+													<port>6302:6300</port>
 												</ports>
 												<env>
 													<CATALINA_OPTS>-Dlogging.config=file:/usr/local/tomcat/etc/logback.xml -Dhazelcast.client.config=/usr/local/tomcat/etc/hazelcast.yaml</CATALINA_OPTS>
-													<JAVA_TOOL_OPTIONS>-javaagent:/usr/local/tomcat/etc/lib/jacocoagent.jar=includes=com.exemple.service.*,excludes=*SpringCGLIB*:*__MapperGenerated*,output=tcpserver,address=*,port=6301,classdumpdir=/usr/local/tomcat/etc/source</JAVA_TOOL_OPTIONS>
+													<JAVA_TOOL_OPTIONS>-javaagent:/usr/local/tomcat/etc/lib/jacocoagent.jar=includes=com.exemple.service.*,excludes=*SpringCGLIB*:*__MapperGenerated*,output=tcpserver,address=*,classdumpdir=/usr/local/tomcat/etc/source</JAVA_TOOL_OPTIONS>
 												</env>
 												<volumes>
 													<bind>
@@ -691,12 +733,12 @@
 											<run>
 												<ports>
 													<port>${gateway.port}:8080</port>
-													<port>6302:6302</port>
+													<port>6303:6300</port>
 												</ports>
 												<env>
 													<spring.config.location>/usr/local/etc/gateway/exemple-gateway.yml</spring.config.location>
 													<server.servlet.context-path>/</server.servlet.context-path>
-													<JAVA_TOOL_OPTIONS>-javaagent:/usr/local/etc/gateway/lib/jacocoagent.jar=includes=com.exemple.gateway.*,excludes=*SpringCGLIB*,output=tcpserver,address=*,port=6302,classdumpdir=/usr/local/tomcat/etc/source</JAVA_TOOL_OPTIONS>
+													<JAVA_TOOL_OPTIONS>-javaagent:/usr/local/etc/gateway/lib/jacocoagent.jar=includes=com.exemple.gateway.*,excludes=*SpringCGLIB*,output=tcpserver,address=*,classdumpdir=/usr/local/tomcat/etc/source</JAVA_TOOL_OPTIONS>
 												</env>
 												<volumes>
 													<bind>
@@ -876,6 +918,15 @@
 											<outputDirectory>${project.build.directory}/sources</outputDirectory>
 											<includes>**/*.java</includes>
 											<excludes>**/integration/**/*</excludes>
+										</artifactItem>
+										<artifactItem>
+											<groupId>exemple</groupId>
+											<artifactId>exemple-cdc</artifactId>
+											<version>1.0.0-SNAPSHOT</version>
+											<type>jar</type>
+											<classifier>sources</classifier>
+											<outputDirectory>${project.build.directory}/sources</outputDirectory>
+											<includes>**/*.java</includes>
 										</artifactItem>
 									</artifactItems>
 								</configuration>

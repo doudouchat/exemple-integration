@@ -38,6 +38,7 @@ public class InitKafka {
                 ConsumerConfig.GROUP_ID_CONFIG, "service_test",
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,
+                JsonDeserializer.VALUE_DEFAULT_TYPE, JsonNode.class,
                 JsonDeserializer.TRUSTED_PACKAGES, "*");
         return new KafkaConsumer<>(props);
     }
