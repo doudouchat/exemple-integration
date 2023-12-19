@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS account_event (
 	application text,
 	version text,
 	PRIMARY KEY ((id), date)
-);
+) WITH cdc=true;
 
 CREATE TABLE IF NOT EXISTS subscription_event (
 	email text,
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS subscription_event (
 	application text,
 	version text,
 	PRIMARY KEY ((email), date)
-);
+) WITH cdc=true;
 
 CREATE TABLE IF NOT EXISTS subscription_history (
 	email text,
