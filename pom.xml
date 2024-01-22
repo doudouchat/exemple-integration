@@ -236,6 +236,14 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- JUNIT -->
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 		<!-- JUNIT PLATEFORM -->
 
 		<dependency>
@@ -246,6 +254,14 @@
 		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-suite-engine</artifactId>
+		</dependency>
+
+		<!-- JSON PATH -->
+
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- REST ASSURED -->
