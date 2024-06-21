@@ -92,7 +92,7 @@ jobs:
       -  name: Build exemple gateway source
          run: mvn -f ${{ github.workspace }}/exemple-gateway source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-gateway/target/exemple-gateway-3.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-gateway -Dpackaging=jar -Dversion=3.0.0-SNAPSHOT -Dclassifier=sources
       -  name: build docker exemple gateway
-         run: docker build -t exemple-gateway --build-arg VERSION_OPENJDK=21-jdk-buster ${{ github.workspace }}/exemple-gateway
+         run: docker build -t exemple-gateway --build-arg VERSION_OPENJDK=21-jdk ${{ github.workspace }}/exemple-gateway
       -  name: Build with Maven
          run: mvn  --batch-mode clean verify -Pwebservice,it,report -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       -  uses: codecov/codecov-action@v4
