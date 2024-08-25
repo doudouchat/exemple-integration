@@ -11,19 +11,19 @@ on:
       branch_service:
         description: 'Service branch'
         required: true
-        default: 'master'
+        default: 'boot'
       branch_authorization:
         description: 'Authorization branch'
         required: true
-        default: 'master'
+        default: 'boot'
       branch_gateway:
         description: 'Gateway branch'
         required: true
-        default: 'master'
+        default: 'boot'
       branch_cdc:
         description: 'Cdc branch'
         required: true
-        default: 'master'
+        default: 'boot'
 concurrency:
   group: ${{ github.repository }}
   cancel-in-progress: false
