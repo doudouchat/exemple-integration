@@ -35,7 +35,7 @@
 		<configuration.path>file:${project.build.testOutputDirectory}/exemple-test.yml</configuration.path>
 
 		<!-- VERSION -->
-		<cassandra-version>4.1.6</cassandra-version>
+		<cassandra-version>5.0.0</cassandra-version>
 		<jacoco-version>0.8.12</jacoco-version>
 
 		<!-- SONAR -->
