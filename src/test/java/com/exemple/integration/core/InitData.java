@@ -70,7 +70,6 @@ public class InitData {
         ResourceExecutionContext.get().setKeyspace("test_service");
 
         SchemaEntity accountSchema = new SchemaEntity();
-        accountSchema.setApplication(TEST_APP);
         accountSchema.setVersion(VERSION_V1);
         accountSchema.setResource("account");
         accountSchema.setProfile("user");
@@ -97,7 +96,6 @@ public class InitData {
         schemaResource.save(accountSchema);
 
         SchemaEntity accountV0Schema = new SchemaEntity();
-        accountV0Schema.setApplication(TEST_APP);
         accountV0Schema.setVersion(VERSION_V0);
         accountV0Schema.setResource("account");
         accountV0Schema.setProfile("user");
@@ -106,7 +104,6 @@ public class InitData {
         schemaResource.save(accountV0Schema);
 
         SchemaEntity loginSchema = new SchemaEntity();
-        loginSchema.setApplication(TEST_APP);
         loginSchema.setVersion(VERSION_V1);
         loginSchema.setResource("login");
         loginSchema.setProfile("user");
@@ -115,7 +112,6 @@ public class InitData {
         schemaResource.save(loginSchema);
 
         SchemaEntity loginIdSchema = new SchemaEntity();
-        loginIdSchema.setApplication(TEST_APP);
         loginIdSchema.setVersion(VERSION_V1);
         loginIdSchema.setResource("login_id");
         loginIdSchema.setProfile("user");
@@ -124,7 +120,6 @@ public class InitData {
         schemaResource.save(loginIdSchema);
 
         SchemaEntity subscriptionSchema = new SchemaEntity();
-        subscriptionSchema.setApplication(TEST_APP);
         subscriptionSchema.setVersion(VERSION_V1);
         subscriptionSchema.setResource("subscription");
         subscriptionSchema.setProfile("user");

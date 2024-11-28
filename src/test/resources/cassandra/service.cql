@@ -57,13 +57,12 @@ CREATE TABLE IF NOT EXISTS account_history (
 );
 
 CREATE TABLE IF NOT EXISTS resource_schema ( 
-	app text,
 	version text,
 	resource text,
 	profile text,
 	content text,
 	patch set<text>,
-	PRIMARY KEY ((app), resource, version, profile)
+	PRIMARY KEY ((resource), version, profile)
 );
 
 CREATE TABLE IF NOT EXISTS account_event (

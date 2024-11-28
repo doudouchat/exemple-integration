@@ -62,12 +62,12 @@ public class SwaggerStepDefinitions {
 
     }
 
-    @Then("schema of application {string} is cached in keyspace {string}")
-    public void checkCache(String application, String keyspace) throws JsonProcessingException {
+    @Then("schema is cached in keyspace {string}")
+    public void checkCache(String keyspace) throws JsonProcessingException {
 
         IMap<SimpleKey, SchemaEntity> schema = cache.getMap("schema_resource");
-        assertThat(schema.get(new SimpleKey(keyspace, application, "v1", "account", "user")), is(notNullValue()));
-        assertThat(schema.get(new SimpleKey(keyspace, application, "v1", "account", "user")).getContent(),
+        assertThat(schema.get(new SimpleKey(keyspace, "account", "v1", "user")), is(notNullValue()));
+        assertThat(schema.get(new SimpleKey(keyspace, "account", "v1", "user")).getContent(),
                 is(MAPPER.readTree(context.lastGet().getBody().asString())));
 
     }
