@@ -11,9 +11,9 @@ Feature: schema
   Scenario Outline: get schema <application>
     When get schema of application <application>
     Then schema status is 200
-    And schema of application <application> is cached in keyspace <keyspace>
+    And schema is cached in keyspace <keyspace>
 
     Examples: 
-      | application | keyspace        |
-      | 'test'      | 'test_service' |
-#      | 'other'     | 'other_keyspace' |
+      | application | keyspace         |
+      | 'test'      | 'test_service'   |
+#     | 'other'     | 'other_keyspace' |
