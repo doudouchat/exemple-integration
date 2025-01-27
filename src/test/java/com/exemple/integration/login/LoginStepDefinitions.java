@@ -33,12 +33,12 @@ public class LoginStepDefinitions {
     public void remove(String username) {
 
         session.execute("delete from test_authorization.login where username = ?", username);
-        Row row = session.execute("select id from test_service.account where email = ?", username).one();
+        Row row = session.execute("select id from test_service.account_username where username = ? and field = ?", username, "email").one();
         if (row != null) {
             Object id = row.getObject(0);
             session.execute("delete from test_service.account where id = ?", id);
         }
-
+        session.execute("delete from test_service.account_username where username = ? and field = ?", username, "email");
     }
 
     @And("get id account {string}")
