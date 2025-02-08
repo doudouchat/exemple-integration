@@ -109,7 +109,7 @@ jobs:
            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
          run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.organization=doudouchat -Dsonar.projectKey=doudouchat_exemple-integration -Dsonar.host.url=https://sonarcloud.io
-      -  uses: codecov/codecov-action@v4
+      -  uses: codecov/codecov-action@v5
          with:
             verbose: true
             files: ${{ github.workspace}}/target/site/jacoco-it/jacoco.xml
