@@ -1,6 +1,6 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=doudouchat_exemple-integration&metric=alert_status)](https://sonarcloud.io/dashboard?id=doudouchat_exemple-integration)
 [![build](https://github.com/doudouchat/exemple-integration/workflows/build/badge.svg)](https://github.com/doudouchat/exemple-integration/actions)
-[![codecov](https://codecov.io/gh/doudouchat/exemple-integration/graph/badge.svg)](https://codecov.io/gh/doudouchat/exemple-integration)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=doudouchat_exemple-integration&metric=coverage)](https://sonarcloud.io/summary/new_code?id=doudouchat_exemple-integration)
 
 # exemple-integration
 
