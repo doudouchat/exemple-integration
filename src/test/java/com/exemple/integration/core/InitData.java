@@ -141,7 +141,7 @@ public class InitData {
     }
 
     @PostConstruct
-    public void initAuthorization() throws Exception {
+    public void initAuthorization() {
 
         var secret = "{bcrypt}" + BCrypt.hashpw("secret", BCrypt.gensalt());
 

@@ -50,12 +50,13 @@ public class IntegrationTestConfiguration {
     }
 
     @PostConstruct
-    public void suscribeConsumerEvent() throws Exception {
+    public void suscribeConsumerEvent() {
 
         consumerEvent.subscribe(List.of(accountTopic, subscriptionTopic).stream().distinct().toList(), new ConsumerRebalanceListener() {
 
             @Override
             public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+                // NOP
             }
 
             @Override
@@ -66,12 +67,13 @@ public class IntegrationTestConfiguration {
     }
 
     @PostConstruct
-    public void suscribeConsumerNewPassword() throws Exception {
+    public void suscribeConsumerNewPassword() {
 
         consumerNewPassword.subscribe(List.of("new_password"), new ConsumerRebalanceListener() {
 
             @Override
             public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+                // NOP
             }
 
             @Override

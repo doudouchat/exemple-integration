@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -65,7 +64,7 @@ public class SubscriptionStepDefinitions {
     @When("create subscription {string}")
     public void createSubscription(String email) {
 
-        Response response = SubscriptionApiClient.put(email, Collections.emptyMap(), authorizationContext, TEST_APP, VERSION_V1);
+        Response response = SubscriptionApiClient.put(email, authorizationContext, TEST_APP, VERSION_V1);
 
         context.savePut(response);
 
@@ -98,9 +97,9 @@ public class SubscriptionStepDefinitions {
 
         await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
             ConsumerRecords<String, JsonNode> records = consumerEvent.poll(Duration.ofSeconds(5));
-            assertThat(records.iterator()).toIterable().last().satisfies(record -> {
+            assertThat(records.iterator()).toIterable().last().satisfies(consumerRecord -> {
 
-                ObjectNode expectedBody = (ObjectNode) record.value();
+                ObjectNode expectedBody = (ObjectNode) consumerRecord.value();
                 expectedBody.remove("subscription_date");
 
                 assertThat(expectedBody).isEqualTo(body);
@@ -110,7 +109,7 @@ public class SubscriptionStepDefinitions {
     }
 
     @And("subscription {string} is unknown")
-    public void getSubscription(String email) throws IOException {
+    public void getSubscription(String email) {
 
         Response response = SubscriptionApiClient.get(email, authorizationContext, TEST_APP, VERSION_V1);
 

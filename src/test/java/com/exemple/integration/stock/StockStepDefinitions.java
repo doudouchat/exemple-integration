@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
@@ -66,7 +65,7 @@ public class StockStepDefinitions {
     }
 
     @Then("stock of product {string} from store {string} is {long}")
-    public void check(String product, String store, long amount) throws IOException {
+    public void check(String product, String store, long amount) {
 
         Response response = StockApiClient.get(store + "#" + salt, product, authorizationContext, BACK_APP);
 
@@ -77,14 +76,14 @@ public class StockStepDefinitions {
     }
 
     @Then("stock of product {string} from store {string} is unknown")
-    public void checkUnknown(String product, String store) throws IOException {
+    public void checkUnknown(String product, String store) {
 
         assertThat(context.lastResponse().getStatusCode()).as("stock %s %s exists", product, store).isEqualTo(404);
 
     }
 
     @Then("stock of product {string} from store {string} is {long}, is insufficient for {long}")
-    public void checkError(String product, String store, long stock, long quantity) throws IOException {
+    public void checkError(String product, String store, long stock, long quantity) {
 
         assertAll(
                 () -> assertThat(context.lastResponse().getStatusCode()).as("stock %s %s is correct", product, store).isEqualTo(400),
@@ -99,9 +98,9 @@ public class StockStepDefinitions {
 
         await().atMost(Duration.ofSeconds(30)).untilAsserted(() -> {
             ConsumerRecords<String, JsonNode> records = consumerEvent.poll(Duration.ofSeconds(5));
-            assertThat(records.iterator()).toIterable().last().satisfies(event -> {
+            assertThat(records.iterator()).toIterable().last().satisfies(consumerRecord -> {
 
-                ObjectNode expectedBody = (ObjectNode) event.value();
+                ObjectNode expectedBody = (ObjectNode) consumerRecord.value();
                 expectedBody.remove("store");
 
                 assertThat(expectedBody).isEqualTo(body);

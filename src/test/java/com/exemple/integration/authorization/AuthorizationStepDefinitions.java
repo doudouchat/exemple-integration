@@ -115,7 +115,7 @@ public class AuthorizationStepDefinitions {
     @When("disconnection")
     public void disconnect() {
 
-        Response response = AuthorizationApiClient.disconnection(context, TEST_APP);
+        Response response = AuthorizationApiClient.disconnection(context);
 
         context.save(response);
 

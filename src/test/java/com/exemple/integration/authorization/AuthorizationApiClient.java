@@ -128,7 +128,7 @@ public final class AuthorizationApiClient {
 
     }
 
-    public static Response disconnection(AuthorizationTestContext authorizationContext, String application) {
+    public static Response disconnection(AuthorizationTestContext authorizationContext) {
 
         var request = JsonRestTemplate.given(IntegrationTestConfiguration.AUTHORIZATION_URL, ContentType.URLENC);
 

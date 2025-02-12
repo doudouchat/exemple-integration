@@ -18,7 +18,7 @@ public final class SubscriptionApiClient {
 
     }
 
-    public static Response put(String email, Object body, AuthorizationTestContext authorizationContext, String application, String version) {
+    public static Response put(String email, AuthorizationTestContext authorizationContext, String application, String version) {
 
         var request = JsonRestTemplate.given();
 
