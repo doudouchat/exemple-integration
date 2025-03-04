@@ -9,7 +9,8 @@ Feature: api subscription
     When create subscription 'jean.dupond@gmail.com'
     Then subscription 'jean.dupond@gmail.com' is
       """
-      {
+      { 
+      	"email": "jean.dupond@gmail.com"
       }
       """
     And subscription event is
@@ -26,7 +27,8 @@ Feature: api subscription
     And create subscription 'jean.dupond@gmail.com'
     Then subscription 'jean.dupond@gmail.com' is
       """
-      {
+      { 
+      	"email": "jean.dupond@gmail.com"
       }
       """
     And subscription event is
