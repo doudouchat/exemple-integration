@@ -56,6 +56,12 @@ public final class JsonRestTemplate {
 
         return given(SERVICE_URL, ContentType.JSON);
     }
+    
+
+    public static RequestSpecification given(ContentType contentType) {
+
+        return given(SERVICE_URL, contentType);
+    }
 
     public static RequestSpecification given(String path, ContentType contentType) {
 

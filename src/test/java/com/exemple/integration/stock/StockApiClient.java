@@ -5,6 +5,7 @@ import static com.exemple.integration.core.InitData.APP_HEADER;
 import com.exemple.integration.JsonRestTemplate;
 import com.exemple.integration.authorization.AuthorizationTestContext;
 
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
 public final class StockApiClient {
@@ -15,9 +16,9 @@ public final class StockApiClient {
 
     }
 
-    public static Response post(String store, String product, Object body, AuthorizationTestContext authorizationContext, String application) {
+    public static Response increment(String store, String product, Long body, AuthorizationTestContext authorizationContext, String application) {
 
-        var request = JsonRestTemplate.given();
+        var request = JsonRestTemplate.given(ContentType.TEXT);
 
         authorizationContext.lastAccessToken().ifPresent(token -> request.header("Authorization", "Bearer " + token));
         authorizationContext.lastSession().ifPresent(session -> request.cookie("JSESSIONID", session.getValue()));
@@ -29,7 +30,7 @@ public final class StockApiClient {
         return request
                 .header(APP_HEADER, application)
                 .body(body)
-                .post(STOCK_URL, store, product);
+                .post(STOCK_URL + "/_increment", store, product);
 
     }
 
