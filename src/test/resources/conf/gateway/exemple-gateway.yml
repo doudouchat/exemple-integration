@@ -18,37 +18,39 @@ spring:
          httpclient:
             connect-timeout: 1000
             response-timeout: 60s
-         routes:
-         -  id: api-service
-            uri: http://172.17.0.1:${service.port}/ExempleService
-            predicates:
-            - Path=/ExempleService/**
-            filters:
-            - RewriteLocationResponseHeader=NEVER_STRIP, Location, ,
-            - AccessTokenRelay=
-            - RemoveRequestHeader=cookie
-            - RemoveRequestHeader=x-xsrf-token
-         -  id: authorization-service-token
-            uri: http://172.17.0.1:${authorization.port}/ExempleAuthorization
-            predicates:
-            - Path=/ExempleAuthorization/oauth/token
-            filters:
-            - RewriteLocationResponseHeader=NEVER_STRIP, Location, ,
-            - OAuthAccessToken=
-            - AddCsrfToken=
-         -  id: authorization-revoke-token
-            uri: http://172.17.0.1:${authorization.port}/ExempleAuthorization
-            predicates:
-            - Path=/ExempleAuthorization/oauth/revoke_token
-            filters:
-            - OAuthRevokeToken=
-            - AddCsrfToken=
-         -  id: authorization-service
-            uri: http://172.17.0.1:${authorization.port}/ExempleAuthorization
-            predicates:
-            - Path=/ExempleAuthorization/**
-            filters:
-            - RewriteLocationResponseHeader=NEVER_STRIP, Location, ,
-            - AccessTokenRelay=
-            - RemoveRequestHeader=cookie
-            - RemoveRequestHeader=x-xsrf-token
+         server:
+            webflux:
+                routes:
+                -  id: api-service
+                   uri: http://172.17.0.1:${service.port}/ExempleService
+                   predicates:
+                   - Path=/ExempleService/**
+                   filters:
+                   - RewriteLocationResponseHeader=NEVER_STRIP, Location, ,
+                   - AccessTokenRelay=
+                   - RemoveRequestHeader=cookie
+                   - RemoveRequestHeader=x-xsrf-token
+                -  id: authorization-service-token
+                   uri: http://172.17.0.1:${authorization.port}/ExempleAuthorization
+                   predicates:
+                   - Path=/ExempleAuthorization/oauth/token
+                   filters:
+                   - RewriteLocationResponseHeader=NEVER_STRIP, Location, ,
+                   - OAuthAccessToken=
+                   - AddCsrfToken=
+                -  id: authorization-revoke-token
+                   uri: http://172.17.0.1:${authorization.port}/ExempleAuthorization
+                   predicates:
+                   - Path=/ExempleAuthorization/oauth/revoke_token
+                   filters:
+                   - OAuthRevokeToken=
+                   - AddCsrfToken=
+                -  id: authorization-service
+                   uri: http://172.17.0.1:${authorization.port}/ExempleAuthorization
+                   predicates:
+                   - Path=/ExempleAuthorization/**
+                   filters:
+                   - RewriteLocationResponseHeader=NEVER_STRIP, Location, ,
+                   - AccessTokenRelay=
+                   - RemoveRequestHeader=cookie
+                   - RemoveRequestHeader=x-xsrf-token
