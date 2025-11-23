@@ -549,6 +549,8 @@
 												<env>
 													<JVM_OPTS>-Dcassandra.skip_wait_for_gossip_to_settle=0 -Dcassandra.initial_token=0</JVM_OPTS>
 													<JVM_EXTRA_OPTS>-javaagent:/tmp/lib/jacocoagent.jar=includes=com.exemple.cdc.*,output=tcpserver,address=*,classdumpdir=/tmp/agent/source -javaagent:/exemple-cdc-agent.jar=conf=/tmp/conf/exemple-cdc.yml</JVM_EXTRA_OPTS>
+													<HEAP_NEWSIZE>128M</HEAP_NEWSIZE>
+													<MAX_HEAP_SIZE>1024M</MAX_HEAP_SIZE>
 												</env>
 												<volumes>
 													<bind>
