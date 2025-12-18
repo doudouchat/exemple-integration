@@ -271,7 +271,7 @@ Feature: api patch account
       }
       """
 
-  Scenario: patch account fails because creation_date is required
+  Scenario: patch account fails because creation_date is readonly
     When patch account
       """
       [
@@ -285,7 +285,7 @@ Feature: api patch account
       """
       {
           "path": "/creation_date",
-          "code": "required"
+          "code": "readOnly"
       }
       """
 

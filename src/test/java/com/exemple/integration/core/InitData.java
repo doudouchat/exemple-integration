@@ -2,7 +2,6 @@ package com.exemple.integration.core;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -83,15 +82,7 @@ public class InitData {
                 {"type": "string","format": "date-time","readOnly": true}"
                 """));
 
-        ObjectNode patchCreationDate = MAPPER.createObjectNode();
-        patchCreationDate.put("op", "add");
-        patchCreationDate.put("path", "/required/0");
-        patchCreationDate.put("value", "creation_date");
-
-        Set<JsonNode> accountPatchs = new HashSet<>();
-        accountPatchs.add(patchUpdateDate);
-        accountPatchs.add(patchCreationDate);
-        accountSchema.setPatchs(accountPatchs);
+        accountSchema.setPatchs(Set.of(patchUpdateDate));
 
         schemaResource.save(accountSchema);
 
