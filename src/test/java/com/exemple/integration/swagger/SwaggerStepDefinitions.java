@@ -9,14 +9,13 @@ import org.springframework.cache.interceptor.SimpleKey;
 
 import com.exemple.integration.JsonRestTemplate;
 import com.exemple.service.resource.schema.model.SchemaEntity;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import tools.jackson.databind.ObjectMapper;
 
 public class SwaggerStepDefinitions {
 
@@ -63,7 +62,7 @@ public class SwaggerStepDefinitions {
     }
 
     @Then("schema is cached in keyspace {string}")
-    public void checkCache(String keyspace) throws JsonProcessingException {
+    public void checkCache(String keyspace) {
 
         IMap<SimpleKey, SchemaEntity> schema = cache.getMap("schema_resource");
         assertThat(schema.get(new SimpleKey(keyspace, "account", "v1", "user")), is(notNullValue()));

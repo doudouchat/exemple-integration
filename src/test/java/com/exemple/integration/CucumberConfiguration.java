@@ -7,13 +7,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.exemple.integration.core.IntegrationTestConfiguration;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.cucumber.java.DocStringType;
 import io.cucumber.java.ParameterType;
 import io.cucumber.spring.CucumberContextConfiguration;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @CucumberContextConfiguration
@@ -24,7 +23,7 @@ public class CucumberConfiguration {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @DocStringType
-    public JsonNode json(String content) throws JsonProcessingException {
+    public JsonNode json(String content) {
         return MAPPER.readTree(content);
     }
 

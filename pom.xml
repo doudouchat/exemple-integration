@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>3.5.0</version>
+		<version>4.0.0</version>
 		<relativePath />
 	</parent>
 	<groupId>exemple</groupId>
@@ -38,7 +38,6 @@
 		<cassandra.version>5.0.5</cassandra.version>
 		<zookeeper.version>3.9.4</zookeeper.version>
 		<jacoco.version>0.8.14</jacoco.version>
-		<maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
 
 		<!-- SONAR -->
 		<sonar.coverage.exclusions>**/integration/**/*.java</sonar.coverage.exclusions>
@@ -64,6 +63,14 @@
 				<version>7.33.0</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+
+			<!-- REST ASSURED -->
+
+			<dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>rest-assured</artifactId>
+				<version>6.0.0</version>
 			</dependency>
 
 		</dependencies>

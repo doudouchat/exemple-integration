@@ -17,15 +17,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.assertj.core.api.Condition;
+import org.assertj.core.util.Streams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.exemple.integration.authorization.AuthorizationTestContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
@@ -34,6 +31,10 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class AccountStepDefinitions {
 
@@ -175,7 +176,7 @@ public class AccountStepDefinitions {
     }
 
     @Then("account is")
-    public void getAccount(JsonNode body) throws IOException {
+    public void getAccount(JsonNode body) {
 
         assertAll(
                 () -> assertThat(context.lastResponse().getStatusCode()).as("account is incorrect %s", context.lastResponse().getStatusCode())
@@ -241,30 +242,30 @@ public class AccountStepDefinitions {
     }
 
     @And("account error only contains")
-    public void checkOnlyError(JsonNode body) throws IOException {
+    public void checkOnlyError(JsonNode body) {
 
         checkCountError(1);
         checkErrors(body);
     }
 
     @And("account error contains {int} errors")
-    public void checkCountError(int count) throws IOException {
+    public void checkCountError(int count) {
 
         assertThat(context.lastResponse().getStatusCode()).as("account has not error").isEqualTo(400);
 
         ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
 
-        assertThat(errors.elements()).as("errors %s not contain expected errors", errors.toPrettyString()).toIterable().hasSize(count);
+        assertThat(Streams.stream(errors)).as("errors %s not contain expected errors", errors.toPrettyString()).hasSize(count);
 
     }
 
     @And("account error contains")
-    public void checkErrors(JsonNode body) throws IOException {
+    public void checkErrors(JsonNode body) {
 
         ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
         assertThat(errors).as("errors %s not contain %s", errors.toPrettyString(), body.toPrettyString())
                 .anySatisfy(error -> {
-                    Iterator<Map.Entry<String, JsonNode>> expectedErrors = body.fields();
+                    Iterator<Map.Entry<String, JsonNode>> expectedErrors = body.properties().iterator();
                     while (expectedErrors.hasNext()) {
                         Map.Entry<String, JsonNode> expectedError = expectedErrors.next();
                         assertThat(error.get(expectedError.getKey())).isEqualTo(expectedError.getValue());

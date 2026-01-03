@@ -4,7 +4,6 @@ import static com.exemple.integration.core.InitData.TEST_APP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,17 +13,16 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Transpose;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class AuthorizationStepDefinitions {
 
@@ -139,7 +137,7 @@ public class AuthorizationStepDefinitions {
     }
 
     @And("connection error is")
-    public void checkError(JsonNode body) throws IOException {
+    public void checkError(JsonNode body) {
 
         assertThat(MAPPER.readTree(context.lastResponse().asString())).isEqualTo(body);
 
@@ -184,30 +182,30 @@ public class AuthorizationStepDefinitions {
     }
 
     @And("authorization error only contains")
-    public void checkOnlyError(JsonNode body) throws IOException {
+    public void checkOnlyError(JsonNode body) {
 
         checkCountError(1);
         checkErrors(body);
     }
 
     @And("authorizatioh error contains {int} errors")
-    public void checkCountError(int count) throws IOException {
+    public void checkCountError(int count) {
 
         assertThat(context.lastResponse().getStatusCode()).as("account has not error").isEqualTo(400);
 
         ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
 
-        assertThat(errors.elements()).as("errors %s not contain expected errors", errors.toPrettyString()).toIterable().hasSize(count);
+        assertThat(errors.elements().stream()).as("errors %s not contain expected errors", errors.toPrettyString()).hasSize(count);
 
     }
 
     @And("authorization error contains")
-    public void checkErrors(JsonNode body) throws IOException {
+    public void checkErrors(JsonNode body) {
 
         ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
-        assertThat(errors).as("errors %s not contain %s", errors.toPrettyString(), body.toPrettyString())
+        assertThat(errors).as("errors {} not contain {}", errors.toPrettyString(), body.toPrettyString())
                 .anySatisfy(error -> {
-                    Iterator<Map.Entry<String, JsonNode>> expectedErrors = body.fields();
+                    Iterator<Map.Entry<String, JsonNode>> expectedErrors = body.properties().iterator();
                     while (expectedErrors.hasNext()) {
                         Map.Entry<String, JsonNode> expectedError = expectedErrors.next();
                         assertThat(error.get(expectedError.getKey())).isEqualTo(expectedError.getValue());

@@ -7,7 +7,6 @@ import static org.assertj.core.condition.AnyOf.anyOf;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Iterator;
 import java.util.Map;
@@ -20,16 +19,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.exemple.integration.authorization.AuthorizationTestContext;
 import com.exemple.service.customer.subscription.SubscriptionResource;
 import com.exemple.service.resource.core.ResourceExecutionContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class SubscriptionStepDefinitions {
 
@@ -71,7 +70,7 @@ public class SubscriptionStepDefinitions {
     }
 
     @And("subscription {string} is")
-    public void getSubscription(String email, JsonNode body) throws IOException {
+    public void getSubscription(String email, JsonNode body) {
 
         assertAll(
                 () -> assertThat(context.lastResponse().getStatusCode()).as("subscription %s is not created", email).is(anyOf(
@@ -125,32 +124,32 @@ public class SubscriptionStepDefinitions {
     }
 
     @And("subscription error only contains")
-    public void checkOnlyError(JsonNode body) throws IOException {
+    public void checkOnlyError(JsonNode body) {
 
         checkCountError(1);
         checkErrors(body);
     }
 
     @And("subscription error contains {int} errors")
-    public void checkCountError(int count) throws IOException {
+    public void checkCountError(int count) {
 
         assertThat(context.lastResponse().getStatusCode()).as("subscription is correct").isEqualTo(400);
 
         ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
 
-        assertThat(errors.elements()).as("errors %s not contain expected errors", errors.toPrettyString()).toIterable().hasSize(count);
+        assertThat(errors.elements().stream()).as("errors %s not contain expected errors", errors.toPrettyString()).hasSize(count);
 
     }
 
     @And("subscription error contains")
-    public void checkErrors(JsonNode body) throws IOException {
+    public void checkErrors(JsonNode body) {
 
         ArrayNode errors = (ArrayNode) MAPPER.readTree(context.lastResponse().asString());
         assertAll(
                 () -> assertThat(context.lastResponse().getStatusCode()).isEqualTo(400),
                 () -> assertThat(errors).as("errors {} not contain {}", errors.toPrettyString(), body.toPrettyString())
                         .anySatisfy(error -> {
-                            Iterator<Map.Entry<String, JsonNode>> expectedErrors = body.fields();
+                            Iterator<Map.Entry<String, JsonNode>> expectedErrors = body.properties().iterator();
                             while (expectedErrors.hasNext()) {
                                 Map.Entry<String, JsonNode> expectedError = expectedErrors.next();
                                 assertThat(error.get(expectedError.getKey())).isEqualTo(expectedError.getValue());
