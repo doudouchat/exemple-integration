@@ -37,7 +37,7 @@
 		<!-- VERSION -->
 		<cassandra.version>5.0.5</cassandra.version>
 		<zookeeper.version>3.9.4</zookeeper.version>
-		<jacoco.version>0.8.12</jacoco.version>
+		<jacoco.version>0.8.14</jacoco.version>
 		<maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
 
 		<!-- SONAR -->
@@ -61,7 +61,7 @@
 			<dependency>
 				<groupId>io.cucumber</groupId>
 				<artifactId>cucumber-bom</artifactId>
-				<version>7.22.2</version>
+				<version>7.33.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -255,7 +255,7 @@
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.20.1</version>
+			<version>1.22.1</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -310,7 +310,7 @@
 				<plugin>
 					<groupId>io.fabric8</groupId>
 					<artifactId>docker-maven-plugin</artifactId>
-					<version>0.45.0</version>
+					<version>0.48.0</version>
 				</plugin>
 
 				<!-- TEST INTEGRATION -->
