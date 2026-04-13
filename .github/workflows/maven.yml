@@ -40,7 +40,7 @@ jobs:
             distribution: 'zulu'
             java-version: |
               17
-              21
+              25
       -  name: Cache Maven packages
          uses: actions/cache@v4
          with:
@@ -82,7 +82,7 @@ jobs:
          run: mvn -f ${{ github.workspace }}/exemple-service source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-service/target/exemple-service-4.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-service -Dpackaging=jar -Dversion=4.0.0-SNAPSHOT -Dclassifier=sources
       -  name: build docker exemple service
          run: |
-            TOMCAT_VERSION=$(mvn -f ${{ github.workspace }}/exemple-service help:evaluate -Dexpression=tomcat.version -q -DforceStdout)-jdk21
+            TOMCAT_VERSION=$(mvn -f ${{ github.workspace }}/exemple-service help:evaluate -Dexpression=tomcat.version -q -DforceStdout)-jdk25
             echo tomcat version is $TOMCAT_VERSION
             docker build -t exemple-service --build-arg VERSION_TOMCAT=${TOMCAT_VERSION} ${{ github.workspace }}/exemple-service
       -  name: Checkout exemple authorization
@@ -97,7 +97,7 @@ jobs:
          run: mvn -f ${{ github.workspace }}/exemple-authorization source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-authorization/target/exemple-authorization-3.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-authorization -Dpackaging=jar -Dversion=3.0.0-SNAPSHOT -Dclassifier=sources
       -  name: build docker exemple authorization
          run: |
-            TOMCAT_VERSION=$(mvn -f ${{ github.workspace }}/exemple-authorization help:evaluate -Dexpression=tomcat.version -q -DforceStdout)-jdk21
+            TOMCAT_VERSION=$(mvn -f ${{ github.workspace }}/exemple-authorization help:evaluate -Dexpression=tomcat.version -q -DforceStdout)-jdk25
             echo tomcat version is $TOMCAT_VERSION
             docker build -t exemple-authorization --build-arg VERSION_TOMCAT=${TOMCAT_VERSION} ${{ github.workspace }}/exemple-authorization
       -  name: Checkout exemple gateway
@@ -111,7 +111,7 @@ jobs:
       -  name: Build exemple gateway source
          run: mvn -f ${{ github.workspace }}/exemple-gateway source:aggregate install:install-file -Dfile=${{ github.workspace }}/exemple-gateway/target/exemple-gateway-3.0.0-SNAPSHOT-sources.jar -DgroupId=exemple -DartifactId=exemple-gateway -Dpackaging=jar -Dversion=3.0.0-SNAPSHOT -Dclassifier=sources
       -  name: build docker exemple gateway
-         run: docker build -t exemple-gateway --build-arg VERSION_TEMURIN=21-jdk ${{ github.workspace }}/exemple-gateway
+         run: docker build -t exemple-gateway --build-arg VERSION_TEMURIN=25-jdk ${{ github.workspace }}/exemple-gateway
       -  name: Build with Maven
          run: mvn  --batch-mode clean verify -Pwebservice,it,report -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       -  name: Analyse
